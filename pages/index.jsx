@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useRef, useContext, createContext } from "react";
 
 const ImgCtx = createContext({});
 
@@ -33,20 +33,22 @@ const CHARS = [
   { name:"Rin",   role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",c:"#ff4081", hair:"#1a0a00", outfit:"#2e1a00" },
 ];
 
-/* Prompts por personaje para Flux */
+/* Base de estilo consistente para todas las cartas */
+const BASE_STYLE = "masterpiece, ultra detailed, 8k, beautiful anime fantasy girl, perfect face, slim waist, sexy revealing fantasy armor bikini style, alluring pose, full body portrait, professional card game illustration, vibrant colors, fantasy lighting";
+
 const CHAR_PROMPTS = {
-  Yoru:  "anime fantasy female assassin, long black hair, revealing dark purple armored outfit, katana, dramatic lighting, full body portrait, detailed",
-  Akari: "anime fantasy dark mage woman, dark purple hair, revealing violet mage robes, magical energy orbs, full body portrait, detailed",
-  Sera:  "anime fantasy female healer cleric, green hair, revealing white and green holy armor, divine glowing light, full body portrait, detailed",
-  Nyx:   "anime fantasy female archer huntress, blue hair, revealing teal leather straps outfit, bow and arrow, forest background, full body portrait, detailed",
-  Rein:  "anime fantasy female paladin guardian, blonde hair, revealing gold plate armor bikini style, holy shield, full body portrait, detailed",
-  Vex:   "anime fantasy female summoner sorceress, pink hair, revealing dark pink magical outfit, summoning circles, full body portrait, detailed",
-  Lyra:  "anime fantasy female bard musician, orange hair, revealing orange fantasy costume, lute instrument, full body portrait, detailed",
-  Kaine: "anime fantasy female berserker warrior, red hair, revealing red battle armor, giant axe, fierce expression, full body portrait, detailed",
-  Faye:  "anime fantasy female spy rogue, teal hair, revealing dark teal leather outfit, twin daggers, shadows, full body portrait, detailed",
-  Mira:  "anime fantasy female druid nature mage, green hair, revealing nature-themed outfit with vines and flowers, full body portrait, detailed",
-  Dusk:  "anime fantasy female necromancer, purple hair, revealing dark gothic outfit, floating skulls, magical aura, full body portrait, detailed",
-  Rin:   "anime fantasy female kunoichi ninja, black hair, revealing red and black ninja outfit, shurikens, smoke, full body portrait, detailed",
+  Yoru:  `${BASE_STYLE}, assassin, long straight black hair, dark purple skimpy armor with cutouts, katana, dramatic dark purple lighting`,
+  Akari: `${BASE_STYLE}, dark mage, long dark purple hair, revealing violet arcane robes, glowing magical orbs around her, mystical purple energy`,
+  Sera:  `${BASE_STYLE}, healer cleric, long green hair, revealing white and gold holy bikini armor, divine golden light glow, holy symbols`,
+  Nyx:   `${BASE_STYLE}, huntress archer, long blue hair, revealing teal leather strap armor, bow and arrow, ethereal teal glow, forest fantasy`,
+  Rein:  `${BASE_STYLE}, paladin guardian, long blonde hair, revealing gold plate bikini armor, shining holy shield, radiant warm light`,
+  Vex:   `${BASE_STYLE}, summoner sorceress, long pink hair, revealing dark magenta magical outfit, summoning circles, chaotic pink energy swirls`,
+  Lyra:  `${BASE_STYLE}, bard musician, long orange hair, revealing orange fantasy stage costume, glowing magical lute, musical notes floating`,
+  Kaine: `${BASE_STYLE}, berserker warrior, long red hair, revealing scarlet battle bikini armor, massive battle axe, fierce intense expression, red aura`,
+  Faye:  `${BASE_STYLE}, spy rogue, long teal hair, revealing dark teal leather bodysuit, twin daggers, shadows and mist, mysterious`,
+  Mira:  `${BASE_STYLE}, druid nature mage, long green hair, revealing nature outfit with vines and flowers, glowing green nature energy, forest background`,
+  Dusk:  `${BASE_STYLE}, necromancer, long purple wavy hair, revealing dark gothic outfit, floating skulls, dark purple magical aura, ethereal`,
+  Rin:   `${BASE_STYLE}, kunoichi ninja, long black hair, revealing red and black ninja outfit, shurikens, smoke wisps, moonlight`,
 };
 
 /* ── ANIME ART – Fantasy / revealing style ── */
@@ -54,13 +56,27 @@ function AnimeArt({ char, rarity, w=160, h=200 }) {
   const imgs = useContext(ImgCtx);
   const imageUrl = imgs[char.name];
 
+  if (imageUrl === "__loading__") {
+    return (
+      <div style={{width:w, height:h, background:C.bg3, display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden"}}>
+        <style>{`@keyframes img_pulse{0%,100%{opacity:.25}50%{opacity:.55}}`}</style>
+        <div style={{
+          position:"absolute", inset:0,
+          background:`linear-gradient(135deg, ${char.c}12 0%, ${char.c}06 50%, ${char.c}12 100%)`,
+          animation:"img_pulse 1.8s ease-in-out infinite",
+        }}/>
+        <div style={{fontSize:w>80?22:14, marginBottom:4, opacity:.5}}>{["✨","🎨","⭐","💫","🌟"][Math.floor(Date.now()/600)%5]}</div>
+        <div style={{fontSize:w>80?10:8, color:char.c, opacity:.45, fontWeight:700, letterSpacing:1}}>GENERANDO</div>
+      </div>
+    );
+  }
+
   if (imageUrl) {
-    const r = RARITY[rarity];
     return (
       <div style={{width:w, height:h, overflow:"hidden", display:"block", position:"relative"}}>
         <img src={imageUrl} alt={char.name}
           style={{width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top", display:"block"}}/>
-        {/* Corner ornaments overlay */}
         <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}
           viewBox="0 0 160 200" preserveAspectRatio="none">
           <rect x="5" y="5" width="16" height="2" fill={char.c} opacity=".7"/>
@@ -661,10 +677,13 @@ export default function App(){
   const[toast,setToast]=useState(null);
   const[now,setNow]=useState(Date.now());
   const[cardImages,setCardImages]=useState(()=>{
-    try{ return JSON.parse(localStorage.getItem("lili_imgs")||"{}"); }catch{ return {}; }
+    try{
+      const saved=JSON.parse(localStorage.getItem("lili_imgs")||"{}");
+      // No guardar estados de carga
+      return Object.fromEntries(Object.entries(saved).filter(([,v])=>v!=="__loading__"));
+    }catch{ return {}; }
   });
-  const[generating,setGenerating]=useState(false);
-  const[genProgress,setGenProgress]=useState("");
+  const genRef=useRef(new Set()); // nombres siendo generados ahora
 
   useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t);},[]);
 
@@ -697,30 +716,45 @@ export default function App(){
 
   function toast_(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
 
-  async function generateAllImages(){
-    if(generating)return;
-    setGenerating(true);
-    const chars=CHARS.filter(ch=>!cardImages[ch.name]);
-    if(chars.length===0){toast_("Todas las imágenes ya generadas ✓");setGenerating(false);return;}
-    const updated={...cardImages};
-    for(const ch of chars){
-      setGenProgress(`Generando ${ch.name}...`);
+  /* Genera imágenes para los nombres dados (secuencial, sin duplicar) */
+  async function genImages(names){
+    for(const name of names){
+      if(genRef.current.has(name))continue;
+      genRef.current.add(name);
+      const ch=CHARS.find(c=>c.name===name);
+      if(!ch){genRef.current.delete(name);continue;}
+      // Marcar como cargando
+      setCardImages(prev=>({...prev,[name]:"__loading__"}));
       try{
-        const r=await fetch("/api/gen",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:CHAR_PROMPTS[ch.name]||`anime fantasy ${ch.role} woman, revealing fantasy outfit, full body portrait`})});
+        const r=await fetch("/api/gen",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({prompt:CHAR_PROMPTS[name]||`${BASE_STYLE}, ${ch.role}`})});
         const d=await r.json();
-        if(d.image){updated[ch.name]=d.image;setCardImages({...updated});localStorage.setItem("lili_imgs",JSON.stringify(updated));}
-      }catch(e){console.error(ch.name,e);}
+        if(d.image){
+          setCardImages(prev=>{
+            const next={...prev,[name]:d.image};
+            try{localStorage.setItem("lili_imgs",JSON.stringify(Object.fromEntries(Object.entries(next).filter(([,v])=>v!=="__loading__"))));}catch{}
+            return next;
+          });
+        }else{
+          setCardImages(prev=>{const n={...prev};if(n[name]==="__loading__")delete n[name];return n;});
+        }
+      }catch{
+        setCardImages(prev=>{const n={...prev};if(n[name]==="__loading__")delete n[name];return n;});
+      }finally{genRef.current.delete(name);}
     }
-    setGenProgress("");
-    setGenerating(false);
-    toast_("✨ Arte generado!");
   }
 
-  function clearImages(){
-    setCardImages({});
-    localStorage.removeItem("lili_imgs");
-    toast_("Imágenes borradas");
-  }
+  /* Auto-generar todos los personajes al montar */
+  useEffect(()=>{
+    const missing=CHARS.map(c=>c.name).filter(n=>!cardImages[n]&&!genRef.current.has(n));
+    if(missing.length>0)genImages(missing);
+  },[]);
+
+  /* Auto-generar cuando aparece una carta nueva sin imagen */
+  useEffect(()=>{
+    const missing=[...new Set(cards.map(c=>c.name))].filter(n=>!cardImages[n]&&!genRef.current.has(n));
+    if(missing.length>0)genImages(missing);
+  },[cards]);
 
   function buyCardPack(pack){
     if(lili<pack.price){toast_("LILI insuficiente ❌");return;}
@@ -857,20 +891,23 @@ export default function App(){
             <span style={{color:C.muted,fontSize:11}}>LILI</span>
           </div>
           <span style={{fontSize:12,color:C.muted}}>🎴{cards.length}</span>
-          <button onClick={generateAllImages} disabled={generating}
-            title="Generar arte AI para todas las cartas"
-            style={{background:generating?C.bg3:`${C.purple}22`,color:generating?C.muted:C.purple,
-              border:`1px solid ${generating?C.muted+"22":C.purple+"55"}`,
-              borderRadius:8,padding:"5px 12px",cursor:generating?"not-allowed":"pointer",
-              fontSize:11,fontWeight:700,letterSpacing:.5,transition:"all .2s",
-              boxShadow:generating?"none":`0 0 12px ${C.purple}22`}}>
-            {generating?genProgress||"Generando...":"🎨 Arte AI"}
-          </button>
-          {Object.keys(cardImages).length>0&&(
-            <button onClick={clearImages} title="Borrar imágenes cacheadas"
-              style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
-                borderRadius:8,padding:"5px 8px",cursor:"pointer",fontSize:10}}>🗑</button>
-          )}
+          {(()=>{
+            const loading=Object.values(cardImages).filter(v=>v==="__loading__").length;
+            const total=CHARS.length;
+            const done=Object.values(cardImages).filter(v=>v&&v!=="__loading__").length;
+            if(loading>0)return(
+              <div style={{display:"flex",alignItems:"center",gap:6,background:`${C.purple}15`,
+                border:`1px solid ${C.purple}30`,borderRadius:8,padding:"5px 10px"}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:C.purple,
+                  animation:"img_pulse 1s infinite"}}/>
+                <span style={{fontSize:10,color:C.purple,fontWeight:700}}>{done}/{total}</span>
+              </div>
+            );
+            if(done===total)return(
+              <div style={{fontSize:10,color:C.muted,opacity:.5}}>🎨 {done}/{total}</div>
+            );
+            return null;
+          })()}
         </div>
       </div>
 
