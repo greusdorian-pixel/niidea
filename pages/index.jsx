@@ -398,7 +398,7 @@ function MissionModal({mission,cards,onSend,onClose}){
           <div>
             <div style={{fontSize:22,fontWeight:900,color:"#fff",letterSpacing:1}}>{mission.emoji} {mission.name}</div>
             <div style={{fontSize:12,color:C.muted,marginTop:2}}>
-              ⏱ {mission.time}s · Min: {RARITY[FUSION_MAP[mission.minTier]]?.label} · Base: {mission.baseReward} LILI · Riesgo: {Math.round(mission.baseRisk*100)}%
+              ⏱ {mission.time}s · Min: {RARITY[FUSION_MAP[mission.minTier]]?.label} · Base: {mission.baseReward} COIN · Riesgo: {Math.round(mission.baseRisk*100)}%
             </div>
           </div>
           <button onClick={onClose} style={{background:"transparent",border:`1px solid ${C.muted}33`,
@@ -446,7 +446,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                 ))}
                 <div style={{background:C.bg3,border:`1px solid ${C.gold}18`,borderRadius:10,padding:12,marginBottom:12}}>
                   <div style={{fontSize:10,color:C.gold,fontWeight:700,marginBottom:8,letterSpacing:1}}>RECOMPENSAS</div>
-                  {[["LILI base",`+${stats.reward}`,C.gold],[`Bonus (${stats.bonusPct}%)`,`+${stats.bonusReward}`,C.gold],["XP",`+${stats.xpGain}`,C.cyan]].map(([l,v,col])=>(
+                  {[["COIN base",`+${stats.reward}`,C.gold],[`Bonus (${stats.bonusPct}%)`,`+${stats.bonusReward}`,C.gold],["XP",`+${stats.xpGain}`,C.cyan]].map(([l,v,col])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
                       <span style={{fontSize:11,color:C.muted}}>{l}</span>
                       <span style={{fontSize:12,color:col,fontWeight:700}}>{v}</span>
@@ -467,7 +467,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                     letterSpacing:1,boxShadow:`0 0 22px ${C.pink}55`,transition:"all .2s"}}
                   onMouseEnter={e=>{e.currentTarget.style.background=C.cyan;e.currentTarget.style.boxShadow=`0 0 22px ${C.cyan}55`;}}
                   onMouseLeave={e=>{e.currentTarget.style.background=C.pink;e.currentTarget.style.boxShadow=`0 0 22px ${C.pink}55`;}}>
-                  🚀 ENVIAR (5 LILI)
+                  🚀 ENVIAR (5 COIN)
                 </button>
               </div>
             )}
@@ -505,7 +505,7 @@ function LoginScreen({onAuth}){
       <div style={{background:C.bg2,border:`1px solid ${C.pink}28`,borderRadius:20,padding:"40px 36px",width:"100%",maxWidth:380,boxShadow:`0 0 60px ${C.pink}12`}}>
         <div style={{textAlign:"center",marginBottom:28}}>
           <CatLogo size={44}/>
-          <div style={{fontSize:28,fontWeight:900,color:C.pink,letterSpacing:3,marginTop:8,textShadow:`0 0 20px ${C.pink}88`}}>LILI</div>
+          <div style={{fontSize:28,fontWeight:900,color:C.pink,letterSpacing:3,marginTop:8,textShadow:`0 0 20px ${C.pink}88`}}>COIN</div>
           <div style={{fontSize:10,color:C.muted,letterSpacing:4}}>CARD UNIVERSE</div>
         </div>
         <form onSubmit={handle}>
@@ -698,7 +698,7 @@ export default function App(){
   },[cards]);
 
   function buyCardPack(pack){
-    if(lili<pack.price){toast_("LILI insuficiente ❌");return;}
+    if(lili<pack.price){toast_("COIN insuficiente ❌");return;}
     const newLili=lili-pack.price;
     const nc=makeCard(null,pack.rates);
     const newCards=[...cards,nc];
@@ -706,7 +706,7 @@ export default function App(){
     setCardReveal(nc);
   }
   function buyItemPack(pack){
-    if(lili<pack.price){toast_("LILI insuficiente ❌");return;}
+    if(lili<pack.price){toast_("COIN insuficiente ❌");return;}
     const newLili=lili-pack.price;
     const count=pack.count||1;
     const got=Array.from({length:count},()=>rollItemFromPool(pack.pool));
@@ -727,7 +727,7 @@ export default function App(){
     if(rw.lili>0)setLili(newLili);
     setPendingRewards(pr=>pr.filter(r=>r.id!==rw.id));
     scheduleSave(newLili,cards,items);
-    if(!rw.failed) toast_(`✨ +${rw.lili} LILI · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
+    if(!rw.failed) toast_(`✨ +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
     else           toast_(`💔 ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
 
@@ -735,7 +735,7 @@ export default function App(){
     const ca=cards.find(c=>c.id===idA),cb=cards.find(c=>c.id===idB);
     if(!ca||!cb)return null;
     if(ca.rarity!==cb.rarity||ca.rarity==="legendary")return null;
-    if(lili<25){toast_("Necesitas 25 LILI para fusionar");return null;}
+    if(lili<25){toast_("Necesitas 25 COIN para fusionar");return null;}
     const nxt=FUSION_MAP[FUSION_MAP.indexOf(ca.rarity)+1];
     const result=makeCard(nxt);
     const newLili=lili-25;
@@ -769,11 +769,11 @@ export default function App(){
     if(totalFused===0){toast_("Sin pares para fusionar");setAutoFusing(false);return;}
     const newLili=lili-cost;
     setLili(newLili);setCards(current);scheduleSave(newLili,current,items);
-    toast_(`⚡ Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} LILI)`);
+    toast_(`⚡ Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} COIN)`);
     setAutoFusing(false);
   }
   function sendOnMission(cardId,mission){
-    if(lili<5){toast_("Sin LILI");return;}
+    if(lili<5){toast_("Sin COIN");return;}
     const card=cards.find(c=>c.id===cardId);if(!card)return;
     const newCards=cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c);
     const newLili=lili-5;
@@ -831,7 +831,7 @@ export default function App(){
         <div style={{display:"flex",alignItems:"center",gap:10}}>
           <CatLogo size={38}/>
           <div>
-            <div style={{fontSize:22,fontWeight:900,letterSpacing:3,color:C.pink,textShadow:`0 0 20px ${C.pink}88`}}>LILI</div>
+            <div style={{fontSize:22,fontWeight:900,letterSpacing:3,color:C.pink,textShadow:`0 0 20px ${C.pink}88`}}>COIN</div>
             <div style={{fontSize:8,color:C.muted,letterSpacing:4,marginTop:-3}}>CARD UNIVERSE</div>
           </div>
         </div>
@@ -840,7 +840,7 @@ export default function App(){
           <div style={{background:`${C.gold}10`,border:`1px solid ${C.gold}28`,borderRadius:24,padding:"5px 14px",display:"flex",alignItems:"center",gap:7}}>
             <CatLogo size={15}/>
             <span style={{color:C.gold,fontWeight:900,fontSize:16,textShadow:`0 0 10px ${C.gold}66`}}>{lili}</span>
-            <span style={{color:C.muted,fontSize:11}}>LILI</span>
+            <span style={{color:C.muted,fontSize:11}}>COIN</span>
           </div>
           <span style={{fontSize:12,color:C.muted}}>🎴{cards.length}</span>
           {(()=>{
@@ -959,7 +959,7 @@ export default function App(){
                       padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed",
                       display:"flex",alignItems:"center",justifyContent:"center",gap:7,
                       boxShadow:lili>=pack.price?`0 0 18px ${pack.color}44`:undefined}}>
-                    <CatLogo size={14}/> {pack.price} LILI
+                    <CatLogo size={14}/> {pack.price} COIN
                   </button>
                 </div>
               ))}
@@ -984,7 +984,7 @@ export default function App(){
                       color:lili>=pack.price?"#000":"#333",border:"none",borderRadius:9,
                       padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed",
                       boxShadow:lili>=pack.price?`0 0 18px ${pack.color}44`:undefined}}>
-                    {pack.price} LILI
+                    {pack.price} COIN
                   </button>
                 </div>
               ))}
@@ -996,7 +996,7 @@ export default function App(){
         {tab==="Fusión"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{background:C.bg3,border:`1px solid ${C.pink}18`,borderRadius:14,padding:14,marginBottom:16}}>
-              <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:8,letterSpacing:2}}>FÓRMULA – 25 LILI</div>
+              <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:8,letterSpacing:2}}>FÓRMULA – 25 COIN</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6,alignItems:"center"}}>
                 {FUSION_MAP.map((r,i)=>(
                   <span key={r} style={{display:"flex",alignItems:"center",gap:3}}>
@@ -1054,7 +1054,7 @@ export default function App(){
                         border:"none",borderRadius:10,padding:"11px 26px",fontWeight:900,fontSize:14,
                         cursor:ok&&lili>=25?"pointer":"not-allowed",
                         boxShadow:ok&&lili>=25?`0 0 20px ${C.pink}55`:undefined}}>
-                      Fusionar (25 LILI)
+                      Fusionar (25 COIN)
                     </button>
                   </div>
                 </div>
@@ -1093,7 +1093,7 @@ export default function App(){
                       <span style={{fontSize:28}}>{m.emoji}</span>
                       <div>
                         <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{m.name}</div>
-                        <div style={{fontSize:11,color:C.muted}}>⏱ {m.time}s · 📊 {Math.round(m.baseRisk*100)}% riesgo · 💰 {m.baseReward} LILI</div>
+                        <div style={{fontSize:11,color:C.muted}}>⏱ {m.time}s · 📊 {Math.round(m.baseRisk*100)}% riesgo · 💰 {m.baseReward} COIN</div>
                       </div>
                     </div>
                     <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
