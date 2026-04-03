@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, createContext } from "react";
+import { supabase } from "../lib/supabase";
 
 const ImgCtx = createContext({});
 
@@ -477,13 +478,79 @@ function MissionModal({mission,cards,onSend,onClose}){
   );
 }
 
+/* ── LOGIN SCREEN ── */
+function LoginScreen({onAuth}){
+  const[email,setEmail]=useState("");
+  const[pass,setPass]=useState("");
+  const[mode,setMode]=useState("login"); // "login" | "register"
+  const[err,setErr]=useState("");
+  const[loading,setLoading]=useState(false);
+
+  async function handle(e){
+    e.preventDefault();
+    setErr("");setLoading(true);
+    let res;
+    if(mode==="register") res=await supabase.auth.signUp({email,password:pass});
+    else                  res=await supabase.auth.signInWithPassword({email,password:pass});
+    setLoading(false);
+    if(res.error){setErr(res.error.message);return;}
+    if(mode==="register"&&!res.data?.session){
+      setErr("Revisa tu correo para confirmar la cuenta.");return;
+    }
+    onAuth(res.data.session||res.data.user);
+  }
+
+  return(
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',sans-serif"}}>
+      <div style={{background:C.bg2,border:`1px solid ${C.pink}28`,borderRadius:20,padding:"40px 36px",width:"100%",maxWidth:380,boxShadow:`0 0 60px ${C.pink}12`}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <CatLogo size={44}/>
+          <div style={{fontSize:28,fontWeight:900,color:C.pink,letterSpacing:3,marginTop:8,textShadow:`0 0 20px ${C.pink}88`}}>LILI</div>
+          <div style={{fontSize:10,color:C.muted,letterSpacing:4}}>CARD UNIVERSE</div>
+        </div>
+        <form onSubmit={handle}>
+          <div style={{marginBottom:12}}>
+            <input value={email} onChange={e=>setEmail(e.target.value)}
+              type="email" placeholder="Correo" required
+              style={{width:"100%",background:C.bg3,border:`1px solid ${C.pink}22`,borderRadius:10,
+                padding:"11px 14px",color:C.text,fontSize:14,outline:"none"}}/>
+          </div>
+          <div style={{marginBottom:20}}>
+            <input value={pass} onChange={e=>setPass(e.target.value)}
+              type="password" placeholder="Contraseña (mín. 6 chars)" required minLength={6}
+              style={{width:"100%",background:C.bg3,border:`1px solid ${C.pink}22`,borderRadius:10,
+                padding:"11px 14px",color:C.text,fontSize:14,outline:"none"}}/>
+          </div>
+          {err&&<div style={{color:C.red,fontSize:12,marginBottom:12,textAlign:"center"}}>{err}</div>}
+          <button type="submit" disabled={loading}
+            style={{width:"100%",background:C.pink,color:"#000",border:"none",borderRadius:10,
+              padding:"12px 0",fontWeight:900,fontSize:15,cursor:"pointer",
+              boxShadow:`0 0 24px ${C.pink}44`,marginBottom:12}}>
+            {loading?"...":(mode==="login"?"Entrar":"Registrarse")}
+          </button>
+          <div style={{textAlign:"center"}}>
+            <button type="button" onClick={()=>{setMode(m=>m==="login"?"register":"login");setErr("");}}
+              style={{background:"none",border:"none",color:C.cyan,cursor:"pointer",fontSize:12}}>
+              {mode==="login"?"¿No tienes cuenta? Regístrate":"¿Ya tienes cuenta? Entra"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 const TABS=["Colección","Tienda","Fusión","Misiones"];
 
+const DEFAULT_ITEMS={health_potion:2,medicine:1,food:1,ration:0,atk_potion:0,shield:0,antidote:0,elixir:0,revive:0};
+
 export default function App(){
+  const[user,setUser]=useState(null);
+  const[authChecked,setAuthChecked]=useState(false);
   const[tab,setTab]=useState("Colección");
   const[lili,setLili]=useState(300);
   const[cards,setCards]=useState([makeCard("common"),makeCard("common"),makeCard("uncommon")]);
-  const[items,setItems]=useState({health_potion:2,medicine:1,food:1,ration:0,atk_potion:0,shield:0,antidote:0,elixir:0,revive:0});
+  const[items,setItems]=useState(DEFAULT_ITEMS);
   const[cardReveal,setCardReveal]=useState(null);
   const[itemReveal,setItemReveal]=useState(null);
   const[pendingRewards,setPendingRewards]=useState([]);
@@ -499,11 +566,65 @@ export default function App(){
   const[cardImages,setCardImages]=useState(()=>{
     try{
       const saved=JSON.parse(localStorage.getItem("lili_imgs")||"{}");
-      // No guardar estados de carga
       return Object.fromEntries(Object.entries(saved).filter(([,v])=>v!=="__loading__"));
     }catch{ return {}; }
   });
-  const genRef=useRef(new Set()); // nombres siendo generados ahora
+  const genRef=useRef(new Set());
+  const saveTimer=useRef(null);
+
+  // Auth init
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      setUser(session?.user||null);
+      setAuthChecked(true);
+      if(session?.user)loadState(session.user.id);
+    });
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      setUser(session?.user||null);
+      if(session?.user)loadState(session.user.id);
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
+
+  async function loadState(uid){
+    const{data}=await supabase.from("player_state").select("*").eq("user_id",uid).single();
+    if(data){
+      setLili(data.lili);
+      setCards(data.cards?.length?data.cards:[makeCard("common"),makeCard("common"),makeCard("uncommon")]);
+      setItems(data.items||DEFAULT_ITEMS);
+    }
+  }
+
+  // Debounced save – 2s after last change
+  function scheduleSave(newLili,newCards,newItems){
+    if(!user)return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current=setTimeout(async()=>{
+      await supabase.from("player_state").upsert({
+        user_id:user.id, lili:newLili, cards:newCards, items:newItems, updated_at:new Date().toISOString()
+      },{onConflict:"user_id"});
+    },2000);
+  }
+
+  function setLiliS(val){
+    const v=typeof val==="function"?val(lili):val;
+    setLili(v);scheduleSave(v,cards,items);
+  }
+  function setCardsS(val){
+    const v=typeof val==="function"?val(cards):val;
+    setCards(v);scheduleSave(lili,v,items);
+  }
+  function setItemsS(val){
+    const v=typeof val==="function"?val(items):val;
+    setItems(v);scheduleSave(lili,cards,v);
+  }
+
+  async function logout(){
+    await supabase.auth.signOut();
+    setUser(null);setLili(300);
+    setCards([makeCard("common"),makeCard("common"),makeCard("uncommon")]);
+    setItems(DEFAULT_ITEMS);
+  }
 
   useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t);},[]);
 
@@ -531,7 +652,7 @@ export default function App(){
       }
       return c;
     });
-    if(dirty)setCards(next);
+    if(dirty)setCardsS(next);
   },[now]);
 
   function toast_(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
@@ -578,30 +699,34 @@ export default function App(){
 
   function buyCardPack(pack){
     if(lili<pack.price){toast_("LILI insuficiente ❌");return;}
-    setLili(l=>l-pack.price);
+    const newLili=lili-pack.price;
     const nc=makeCard(null,pack.rates);
-    setCards(p=>[...p,nc]);
+    const newCards=[...cards,nc];
+    setLili(newLili);setCards(newCards);scheduleSave(newLili,newCards,items);
     setCardReveal(nc);
   }
   function buyItemPack(pack){
     if(lili<pack.price){toast_("LILI insuficiente ❌");return;}
-    setLili(l=>l-pack.price);
+    const newLili=lili-pack.price;
     const count=pack.count||1;
     const got=Array.from({length:count},()=>rollItemFromPool(pack.pool));
-    setItems(prev=>{const n={...prev};got.forEach(k=>{n[k]=(n[k]||0)+1;});return n;});
+    const newItems={...items};got.forEach(k=>{newItems[k]=(newItems[k]||0)+1;});
+    setLili(newLili);setItems(newItems);scheduleSave(newLili,cards,newItems);
     setItemReveal(got);
   }
   function applyItem(itemId,cardId){
     if(!items[itemId]||items[itemId]<1){toast_("Sin ese ítem");return;}
-    setCards(prev=>prev.map(c=>c.id===cardId?ITEMS[itemId].effect(c):c));
-    setItems(prev=>({...prev,[itemId]:prev[itemId]-1}));
+    const newCards=cards.map(c=>c.id===cardId?ITEMS[itemId].effect(c):c);
+    const newItems={...items,[itemId]:items[itemId]-1};
+    setCards(newCards);setItems(newItems);scheduleSave(lili,newCards,newItems);
     toast_(`${ITEMS[itemId].emoji} Usado en ${cards.find(c=>c.id===cardId)?.name}`);
   }
 
-  /* Claim – un solo toque, inmediato */
   function claimReward(rw){
-    if(rw.lili>0)setLili(l=>l+rw.lili);
+    const newLili=rw.lili>0?lili+rw.lili:lili;
+    if(rw.lili>0)setLili(newLili);
     setPendingRewards(pr=>pr.filter(r=>r.id!==rw.id));
+    scheduleSave(newLili,cards,items);
     if(!rw.failed) toast_(`✨ +${rw.lili} LILI · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
     else           toast_(`💔 ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
@@ -613,8 +738,9 @@ export default function App(){
     if(lili<25){toast_("Necesitas 25 LILI para fusionar");return null;}
     const nxt=FUSION_MAP[FUSION_MAP.indexOf(ca.rarity)+1];
     const result=makeCard(nxt);
-    setLili(l=>l-25);
-    setCards(prev=>prev.filter(c=>c.id!==ca.id&&c.id!==cb.id).concat(result));
+    const newLili=lili-25;
+    const newCards=cards.filter(c=>c.id!==ca.id&&c.id!==cb.id).concat(result);
+    setLili(newLili);setCards(newCards);scheduleSave(newLili,newCards,items);
     return result;
   }
   function manualFusion(){
@@ -641,15 +767,18 @@ export default function App(){
       }
     }
     if(totalFused===0){toast_("Sin pares para fusionar");setAutoFusing(false);return;}
-    setLili(l=>l-cost);setCards(current);
+    const newLili=lili-cost;
+    setLili(newLili);setCards(current);scheduleSave(newLili,current,items);
     toast_(`⚡ Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} LILI)`);
     setAutoFusing(false);
   }
   function sendOnMission(cardId,mission){
     if(lili<5){toast_("Sin LILI");return;}
     const card=cards.find(c=>c.id===cardId);if(!card)return;
-    setCards(prev=>prev.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c));
-    setLili(l=>l-5);setActiveMission(null);
+    const newCards=cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c);
+    const newLili=lili-5;
+    setCards(newCards);setLili(newLili);scheduleSave(newLili,newCards,items);
+    setActiveMission(null);
     toast_(`🎯 ${card.name} → "${mission.name}"`);
   }
 
@@ -678,6 +807,9 @@ export default function App(){
       </button>
     );
   };
+
+  if(!authChecked) return <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center"}}><div style={{color:C.muted,fontSize:13}}>...</div></div>;
+  if(!user) return <LoginScreen onAuth={u=>setUser(u)}/>;
 
   return(
     <ImgCtx.Provider value={cardImages}>
@@ -728,6 +860,11 @@ export default function App(){
             );
             return null;
           })()}
+          <button onClick={logout}
+            style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11}}>
+            Salir
+          </button>
         </div>
       </div>
 
