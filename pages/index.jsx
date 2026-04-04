@@ -80,7 +80,8 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
           position:"relative",
         }}>
           <img src={ch.img} alt={ch.name} style={{
-            width:"100%", height:130, objectFit:"cover", objectPosition:"center top", display:"block"
+            width:"100%", height:130, objectFit:"cover", objectPosition:"center top", display:"block",
+            filter: "brightness(0.75) contrast(1.1)"
           }}/>
           {/* bottom overlay */}
           <div style={{
@@ -151,8 +152,13 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
           width:"100%", height:"100%",
           objectFit:"cover", objectPosition:"center top",
           display:"block",
-          filter: isDivine ? "brightness(1.1) contrast(1.05)" : undefined,
+          filter: isDivine ? "brightness(0.9) contrast(1.15)" : "brightness(0.75) contrast(1.1)",
         }}/>
+        <img src="/marco.png" style={{
+          position:"absolute", top:0, left:0, width:"100%", height:"100%",
+          objectFit:"fill", pointerEvents:"none", zIndex:5,
+          opacity: 0.9
+        }} alt="marco"/>
 
         {/* Top gradient overlay */}
         <div style={{
@@ -315,11 +321,11 @@ const ITEM_PACKS = [
 ];
 
 const MISSIONS = [
-  { id:"m1", name:"Bosque Oscuro",    time:15,  baseReward:25,  baseRisk:0.35, minTier:0, emoji:"🌲", bg:"#071007" },
-  { id:"m2", name:"Mina Maldita",     time:30,  baseReward:55,  baseRisk:0.45, minTier:1, emoji:"⛏️", bg:"#130a07" },
-  { id:"m3", name:"Torre del Abismo", time:50,  baseReward:100, baseRisk:0.55, minTier:2, emoji:"🏰", bg:"#07071a" },
-  { id:"m4", name:"Cripta Eterna",    time:90,  baseReward:190, baseRisk:0.65, minTier:3, emoji:"💀", bg:"#13071a" },
-  { id:"m5", name:"El Imposible",     time:150, baseReward:480, baseRisk:0.78, minTier:4, emoji:"⚠️", bg:"#150505" },
+  { id:"m1", name:"Bosque Oscuro",    time:15,  baseReward:25,  baseRisk:0.35, minTier:0, emoji:"🌲", bg:"#071007", img: "/conceptos para misiones/bosque oscuro.webp" },
+  { id:"m2", name:"Mina Maldita",     time:30,  baseReward:55,  baseRisk:0.45, minTier:1, emoji:"⛏️", bg:"#130a07", img: "/conceptos para misiones/mina maldita.webp" },
+  { id:"m3", name:"Torre del Abismo", time:50,  baseReward:100, baseRisk:0.55, minTier:2, emoji:"🏰", bg:"#07071a", img: "/conceptos para misiones/torre delabismo.webp" },
+  { id:"m4", name:"Cripta Eterna",    time:90,  baseReward:190, baseRisk:0.65, minTier:3, emoji:"💀", bg:"#13071a", img: "/conceptos para misiones/crytap eterna.webp" },
+  { id:"m5", name:"El Imposible",     time:150, baseReward:480, baseRisk:0.78, minTier:4, emoji:"⚠️", bg:"#150505", img: "/conceptos para misiones/imposible.webp" },
 ];
 
 function rollRarity(rates){
@@ -1389,24 +1395,40 @@ export default function App(){
 
             {/* Misiones disponibles */}
             <div style={{fontSize:11,color:C.muted,marginBottom:12,letterSpacing:1}}>MISIONES DISPONIBLES</div>
+            <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:16}}>
             {MISSIONS.map(m=>(
               <div key={m.id} onClick={()=>setActiveMission(m)}
-                style={{background:`linear-gradient(90deg,${m.bg},${C.bg3})`,
-                  border:`1.5px solid ${C.pink}14`,borderRadius:13,padding:14,marginBottom:9,cursor:"pointer",transition:"all .2s"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor=`${C.pink}44`;e.currentTarget.style.transform="translateX(5px)";}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.pink}14`;e.currentTarget.style.transform="";}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <div style={{display:"flex",gap:12,alignItems:"center"}}>
-                    <span style={{fontSize:28}}>{m.emoji}</span>
-                    <div>
-                      <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{m.name}</div>
-                      <div style={{fontSize:11,color:C.muted}}>⏱ {m.time}s · 📊 {Math.round(m.baseRisk*100)}% riesgo · 💰 {m.baseReward} COIN</div>
-                    </div>
+                style={{
+                  position:"relative",
+                  borderRadius:16, overflow:"hidden", border:`1.5px solid ${C.pink}33`,
+                  cursor:"pointer", transition:"all .2s",
+                  flex:"1 1 280px", minWidth:280, height:140,
+                  boxShadow:`0 0 15px #000000aa`
+                }}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=C.pink;e.currentTarget.style.transform="scale(1.02)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.pink}33`;e.currentTarget.style.transform="";}}>
+                
+                <img src={m.img} alt={m.name} style={{width:"100%", height:"100%", objectFit:"cover", display:"block"}} />
+                <div style={{
+                  position:"absolute", inset:0,
+                  background:`linear-gradient(to top, #000000ee 0%, #00000055 45%, transparent 100%)`,
+                  pointerEvents:"none"
+                }}/>
+
+                <div style={{position:"absolute", bottom:0, left:0, right:0, padding:"12px 14px", display:"flex", justifyContent:"space-between", alignItems:"flex-end", pointerEvents:"none"}}>
+                  <div>
+                    {/* El usuario mencionó que la imagen ya tiene el nombre, pero mantenemos una versión opcional de refuerzo */}
+                    <div style={{fontSize:15,fontWeight:900,color:"#fff",textShadow:"0 2px 4px #000",marginBottom:2}}>{m.emoji} {m.name}</div>
+                    <div style={{fontSize:11,color:"#ddd",textShadow:"0 1px 2px #000"}}>⏱ {m.time}s · 📈 {Math.round(m.baseRisk*100)}% riesgo</div>
                   </div>
-                  <div style={{fontSize:11,color:C.pink,fontWeight:700}}>Seleccionar →</div>
+                  <div style={{textAlign:"right"}}>
+                    <div style={{fontSize:11,color:C.pink,fontWeight:800,marginBottom:2,textShadow:"0 1px 2px #000"}}>RECOMPENSA</div>
+                    <div style={{fontSize:14,fontWeight:900,color:C.gold,textShadow:"0 1px 2px #000"}}>💰 {m.baseReward} COIN</div>
+                  </div>
                 </div>
               </div>
             ))}
+            </div>
             {/* Cartas disponibles con botón ENVIAR MISIÓN */}
             {activeMission&&(
               <div style={{marginTop:16}}>
