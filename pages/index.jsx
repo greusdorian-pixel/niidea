@@ -97,9 +97,9 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
           }}>
             <div style={{fontSize:11,fontWeight:800,color:"#fff",textAlign:"center",
               textShadow:`0 0 8px ${col}`}}>{card.name}</div>
-            <div style={{display:"flex",justifyContent:"center",marginTop:2}}>
+            <div style={{display:"flex",justifyContent:"center",marginTop:2,gap:1}}>
               {Array.from({length:Math.max(5,r.stars)},(_,i)=>(
-                <span key={i} style={{fontSize:7,color:i<r.stars?col:"#2a2a3a"}}>★</span>
+                <Sprite key={i} icon="star_badge" size={8} style={{opacity:i<r.stars?1:.2,filter:i<r.stars?`drop-shadow(0 0 2px ${col})`:"grayscale(1)"}} />
               ))}
             </div>
           </div>
@@ -108,8 +108,8 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
             border:`1px solid ${col}55`,borderRadius:6,padding:"1px 5px",
             fontSize:7,color:col,fontWeight:700}}>{r.label}</div>
           {selected && <div style={{position:"absolute",top:4,right:4,background:col,color:"#000",
-            borderRadius:"50%",width:16,height:16,fontSize:9,fontWeight:900,
-            display:"flex",alignItems:"center",justifyContent:"center"}}>✓</div>}
+            borderRadius:"50%",width:16,height:16,
+            display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 0 8px ${col}`}}><CheckIcon size={10} color="#000" /></div>}
           {card.status !== "idle" && (
             <div style={{position:"absolute",bottom:38,right:4,fontSize:10}}>{card.status==="mission"?"":card.status==="injured"?"":""}</div>
           )}
@@ -118,7 +118,7 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
         <div style={{position:"absolute",top:-4,left:"50%",transform:"translateX(-50%)",
           background:"#07071a",border:`2px solid ${col}`,borderRadius:"50%",
           width:14,height:14,display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:8,color:col,boxShadow:`0 0 6px ${col}`}}>♥</div>
+          boxShadow:`0 0 6px ${col}`}}><HeartIcon size={8} color={col} /></div>
       </div>
     );
   }
@@ -199,9 +199,9 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
       }}>{r.label}</div>
 
       {/* Stars */}
-      <div style={{position:"absolute",top:22,left:"50%",transform:"translateX(-50%)",display:"flex",gap:1,zIndex:3}}>
+      <div style={{position:"absolute",top:22,left:"50%",transform:"translateX(-50%)",display:"flex",gap:2,zIndex:3}}>
         {Array.from({length:r.stars},(_,i)=>(
-          <span key={i} style={{fontSize:7,color:col,textShadow:`0 0 5px ${col}`}}>★</span>
+          <Sprite key={i} icon="star_badge" size={8} style={{filter:`drop-shadow(0 0 3px ${col})`}}/>
         ))}
       </div>
 
@@ -256,8 +256,8 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
       {selected&&(
         <div style={{position:"absolute",top:10,left:"50%",transform:"translateX(-50%)",
           background:col,color:"#000",borderRadius:"50%",width:20,height:20,
-          fontSize:11,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center",
-          boxShadow:`0 0 14px ${col}`,zIndex:6}}>✓</div>
+          display:"flex",alignItems:"center",justifyContent:"center",
+          boxShadow:`0 0 14px ${col}`,zIndex:6}}><CheckIcon size={12} color="#000" /></div>
       )}
     </div>
   );
@@ -436,6 +436,30 @@ function Z5Icon({size=28}){
 }
 function CatLogo({size=28}){ return <Z5Icon size={size}/>; }
 
+function CheckIcon({ size=16, color="currentColor", style={} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{display:"inline-block",verticalAlign:"middle",...style}}>
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  );
+}
+
+function XIcon({ size=16, color="currentColor", style={} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{display:"inline-block",verticalAlign:"middle",...style}}>
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  );
+}
+
+function HeartIcon({ size=12, color="currentColor", style={} }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{display:"inline-block",verticalAlign:"middle",...style}}>
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+  );
+}
+
 /* ── CARD PACK REVEAL ── */
 function CardPackReveal({card,onClose}){
   const[visible,setVisible]=useState(false);
@@ -447,8 +471,10 @@ function CardPackReveal({card,onClose}){
       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:24}}>
       <style>{`@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.7)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse_ring{0%,100%{opacity:.5}50%{opacity:1}}`}</style>
       <div style={{fontSize:16,fontWeight:900,letterSpacing:5,color:isDivine?"#fff":C.pink,
-        textShadow:`0 0 20px ${isDivine?"#fff":C.pink}`}}>
-        {isDivine?"✦ CARTA DIVINA ✦":"✦ CARTA OBTENIDA ✦"}
+        textShadow:`0 0 20px ${isDivine?"#fff":C.pink}`,display:"flex",alignItems:"center",gap:12}}>
+        <Sprite icon="star_badge" size={20} />
+        {isDivine?"CARTA DIVINA":"CARTA OBTENIDA"}
+        <Sprite icon="star_badge" size={20} />
       </div>
       <div style={{opacity:visible?1:0,animation:visible?"rise .6s cubic-bezier(.34,1.56,.64,1) both":"none"}}>
         <div style={{position:"relative"}}>
@@ -479,7 +505,11 @@ function ItemPackReveal({items:got,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:300,
       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:20}}>
-      <div style={{fontSize:16,fontWeight:900,letterSpacing:4,color:C.cyan}}>✦ ÍTEMS OBTENIDOS ✦</div>
+      <div style={{fontSize:16,fontWeight:900,letterSpacing:4,color:C.cyan,display:"flex",alignItems:"center",gap:12}}>
+        <Sprite icon="pack_premium" size={24} />
+        ÍTEMS OBTENIDOS
+        <Sprite icon="pack_premium" size={24} />
+      </div>
       <div style={{display:"flex",gap:20,flexWrap:"wrap",justifyContent:"center"}}>
         {got.map((k,i)=>{const it=ITEMS[k];return(
           <div key={i} style={{opacity:vis.includes(i)?1:0,transform:vis.includes(i)?"scale(1)":"scale(.5)",
@@ -532,7 +562,7 @@ function DailyModal({reward,streak,onClaim}){
     <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <div style={{background:C.bg2,border:`2px solid ${C.gold}44`,borderRadius:24,padding:"40px 44px",textAlign:"center"}}>
         <style>{`@keyframes bonus_pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}`}</style>
-        <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both"}}></div>
+        <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both",display:"flex",justifyContent:"center"}}><Sprite icon="star_badge" size={64}/></div>
         <div style={{fontSize:22,fontWeight:900,color:C.gold,letterSpacing:2}}>BONUS DIARIO</div>
         <div style={{fontSize:12,color:C.muted,marginTop:4,marginBottom:20}}>Racha: {streak} día{streak!==1?"s":""}</div>
         <div style={{fontSize:48,fontWeight:900,color:C.gold,marginBottom:24}}>+{reward} Z5</div>
@@ -561,7 +591,7 @@ function MissionResultModal({reward,onClaim}){
             <>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
                 <span style={{fontSize:12,color:C.muted}}>Z5</span>
-                <span style={{fontSize:16,fontWeight:900,color:C.gold}}>+{reward.lili}{reward.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:5}}>★BONUS</span>}</span>
+                <span style={{fontSize:16,fontWeight:900,color:C.gold}}>+{reward.lili}{reward.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:5,display:"inline-flex",alignItems:"center",gap:2}}><Sprite icon="star_badge" size={10}/>BONUS</span>}</span>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
                 <span style={{fontSize:12,color:C.muted}}>XP</span>
@@ -604,10 +634,10 @@ function MissionModal({mission,cards,onSend,onClose}){
           <div style={{display:"flex",alignItems:"center",gap:8}}><Sprite icon={mission.icon||"map"} size={26} />
             <div style={{fontSize:22,fontWeight:900,color:"#fff",letterSpacing:1}}>{mission.name}</div>
           </div>
-            <div style={{fontSize:12,color:C.muted,marginTop:2}}>⏱ {mission.time}s · Base: {mission.baseReward} Z5 · Riesgo: {Math.round(mission.baseRisk*100)}%</div>
+            <div style={{fontSize:12,color:C.muted,marginTop:2,display:"flex",alignItems:"center",gap:4}}><Sprite icon="timer" size={12}/> {mission.time}s · Base: {mission.baseReward} Z5 · Riesgo: {Math.round(mission.baseRisk*100)}%</div>
           </div>
           <button onClick={onClose} style={{background:"transparent",border:`1px solid ${C.muted}33`,
-            color:C.muted,borderRadius:8,width:32,height:32,cursor:"pointer",fontSize:16}}>✕</button>
+            color:C.muted,borderRadius:8,width:32,height:32,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><XIcon size={16} color={C.muted}/></button>
         </div>
         <div style={{display:"flex",flexWrap:"wrap"}}>
           <div style={{flex:"1 1 400px",padding:20}}>
@@ -622,18 +652,22 @@ function MissionModal({mission,cards,onSend,onClose}){
           </div>
           <div style={{flex:"0 0 260px",borderLeft:`1px solid ${C.border}`,padding:20,minHeight:300}}>
             <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:14,letterSpacing:2}}>ESTADÍSTICAS</div>
-            {!sc&&<div style={{color:C.muted,fontSize:13,textAlign:"center",marginTop:40}}>👉 Elige un personaje</div>}
+            {!sc&&<div style={{color:C.muted,fontSize:13,textAlign:"center",marginTop:40}}>Selecciona un guerrero</div>}
             {sc&&stats&&(
               <div>
                 <div style={{background:C.bg3,border:`1px solid ${RARITY[sc.rarity].color}22`,borderRadius:12,padding:10,marginBottom:14}}>
                   <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{sc.name}</div>
                   <div style={{fontSize:10,color:RARITY[sc.rarity].color}}>{RARITY[sc.rarity].label}</div>
-                  <div style={{fontSize:10,color:C.muted,marginTop:2}}>{sc.atk} {sc.def} {sc.spd}</div>
+                  <div style={{fontSize:10,color:C.muted,marginTop:2,display:"flex",gap:8}}>
+                    <span style={{color:C.red}}>ATK {sc.atk}</span>
+                    <span style={{color:C.cyan}}>DEF {sc.def}</span>
+                    <span style={{color:C.purple}}>SPD {sc.spd}</span>
+                  </div>
                 </div>
-                {[["✓ Éxito",stats.successPct,C.green],["✕ Fallo",stats.failPct,C.red]].map(([l,v,col])=>(
-                  <div key={l} style={{marginBottom:12}}>
+                {[[<><CheckIcon size={10} color={C.green} style={{marginRight:4}} /> Éxito</>,stats.successPct,C.green],[<><XIcon size={10} color={C.red} style={{marginRight:4}}/> Fallo</>,stats.failPct,C.red]].map(([l,v,col],idx)=>(
+                  <div key={idx} style={{marginBottom:12}}>
                     <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-                      <span style={{fontSize:11,color:col}}>{l}</span>
+                      <span style={{fontSize:11,color:col,display:"flex",alignItems:"center"}}>{l}</span>
                       <span style={{fontSize:15,fontWeight:900,color:col}}>{v}%</span>
                     </div>
                     <div style={{height:8,background:"#ffffff08",borderRadius:4,overflow:"hidden"}}>
@@ -1001,7 +1035,7 @@ export default function App(){
         {t}
         {isPending&&<span style={{position:"absolute",top:-6,right:-6,background:C.red,color:"#fff",
           borderRadius:"50%",width:18,height:18,fontSize:10,fontWeight:900,
-          display:"flex",alignItems:"center",justifyContent:"center"}}>{pendingCount}</span>}
+          display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 0 10px ${C.red}`}}>{pendingCount}</span>}
       </button>
     );
   };
@@ -1056,7 +1090,9 @@ export default function App(){
           <button onClick={()=>setCodeModal(true)}
             style={{background:`${C.cyan}12`,color:C.cyan,border:`1px solid ${C.cyan}44`,
               borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700,
-              boxShadow:`0 0 12px ${C.cyan}22`}}></button>
+              boxShadow:`0 0 12px ${C.cyan}22`,display:"flex",alignItems:"center",gap:6}}>
+            <Sprite icon="item_headphones" size={14}/> CÓDIGO
+          </button>
           <button onClick={logout}
             style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}20`,
               borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,letterSpacing:1}}>SALIR</button>
@@ -1441,8 +1477,9 @@ export default function App(){
             {/* Recompensas pendientes — ARRIBA DE TODO */}
             {pendingRewards.length>0&&(
               <div style={{marginBottom:20}}>
-                <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:10,letterSpacing:2}}>
-                  ✦ MISIONES COMPLETADAS ({pendingRewards.length})
+                <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:10,letterSpacing:2,display:"flex",alignItems:"center",gap:6}}>
+                  <Sprite icon="map" size={18} />
+                  MISIONES COMPLETADAS ({pendingRewards.length})
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
                   {pendingRewards.map(rw=>(
@@ -1463,7 +1500,7 @@ export default function App(){
                             </span>
                           </div>
                           <div style={{fontSize:10,color:C.muted}}>{rw.missionName}</div>
-                          {!rw.failed&&<div style={{fontSize:17,fontWeight:900,color:C.gold,marginTop:4}}>+{rw.lili} Z5{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:6}}>★BONUS</span>}</div>}
+                          {!rw.failed&&<div style={{fontSize:17,fontWeight:900,color:C.gold,marginTop:4,display:"flex",alignItems:"center",gap:6}}>+{rw.lili} Z5{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:6,display:"inline-flex",alignItems:"center",gap:2}}><Sprite icon="star_badge" size={10}/>BONUS</span>}</div>}
                           {rw.failed&&rw.dmg&&<div style={{fontSize:11,color:C.red,marginTop:4}}>-{rw.dmg} HP</div>}
                         </div>
                         <div style={{background:rw.failed?C.red:C.gold,color:"#000",borderRadius:10,
@@ -1481,7 +1518,10 @@ export default function App(){
             {/* ── EN MISIÓN ── */}
             {cards.filter(c=>c.status==="mission").length>0&&(
               <div style={{marginBottom:20}}>
-                <div style={{fontSize:10,color:C.cyan,fontWeight:900,marginBottom:10,letterSpacing:3,fontFamily:"'Orbitron',sans-serif"}}>⚔ EN MISIÓN</div>
+                <div style={{fontSize:10,color:C.cyan,fontWeight:900,marginBottom:10,letterSpacing:3,fontFamily:"'Orbitron',sans-serif",display:"flex",alignItems:"center",gap:8}}>
+                  <Sprite icon="pack_combat" size={18} />
+                  EN MISIÓN
+                </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
                   {cards.filter(c=>c.status==="mission").map(c=>{
                     const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
@@ -1500,7 +1540,9 @@ export default function App(){
                           <div style={{flex:1}}>
                             <div style={{fontSize:12,fontWeight:900,color:"#fff",letterSpacing:1}}>{c.name}</div>
                             <div style={{fontSize:9,color:r.color,letterSpacing:1}}>{r.label}</div>
-                            <div style={{fontSize:13,color:C.gold,fontWeight:900,marginTop:3,fontFamily:"'Orbitron',sans-serif"}}>⏱ {secs}s</div>
+                            <div style={{fontSize:13,color:C.gold,fontWeight:900,marginTop:3,fontFamily:"'Orbitron',sans-serif",display:"flex",alignItems:"center",gap:4}}>
+                              <Sprite icon="timer" size={14}/> {secs}s
+                            </div>
                           </div>
                         </div>
                         <div style={{height:3,background:"#ffffff08",borderRadius:2,overflow:"hidden"}}>
@@ -1515,7 +1557,7 @@ export default function App(){
             )}
 
             {/* ── GRID DE MISIONES ── */}
-            <div style={{fontSize:10,color:C.muted,marginBottom:12,letterSpacing:3,fontFamily:"'Orbitron',sans-serif"}}>MISIONES DISPONIBLES</div>
+            <div style={{fontSize:10,color:C.muted,marginBottom:12,letterSpacing:3,fontFamily:"'Orbitron',sans-serif",display:"flex",alignItems:"center",gap:8}}><Sprite icon="map" size={18}/> MISIONES DISPONIBLES</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12,marginBottom:activeMission?0:0}}>
             {MISSIONS.map(m=>{
               const active=activeMission?.id===m.id;
@@ -1535,14 +1577,17 @@ export default function App(){
                 <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"10px 12px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
                   <div>
                     <div style={{fontSize:13,fontWeight:900,color:"#fff",textShadow:`0 0 10px ${C.pink}`,letterSpacing:1}}>{m.name}</div>
-                    <div style={{fontSize:9,color:"#ccc",marginTop:1}}>⏱ {m.time}s &nbsp;⚠ {Math.round(m.baseRisk*100)}%</div>
+                    <div style={{fontSize:9,color:"#ccc",marginTop:1,display:"flex",alignItems:"center",gap:6}}>
+                      <span style={{display:"flex",alignItems:"center",gap:3}}><Sprite icon="timer" size={10}/> {m.time}s</span>
+                      <span style={{display:"flex",alignItems:"center",gap:3}}><Sprite icon="warning" size={10}/> {Math.round(m.baseRisk*100)}%</span>
+                    </div>
                   </div>
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:9,color:C.pink,fontWeight:900,letterSpacing:1}}>RECOMPENSA</div>
                     <div style={{fontSize:15,fontWeight:900,color:C.gold,textShadow:`0 0 8px ${C.gold}`}}>{m.baseReward}</div>
                   </div>
                 </div>
-                {active&&<div style={{position:"absolute",top:8,right:8,background:C.pink,borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:"#000"}}>✓</div>}
+                {active&&<div style={{position:"absolute",top:8,right:8,background:C.pink,borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 0 10px ${C.pink}`}}><CheckIcon size={12} color="#000" /></div>}
               </div>
             );})}
             </div>
@@ -1566,9 +1611,9 @@ export default function App(){
                   </div>
                   <button onClick={()=>setActiveMission(null)} style={{
                     background:"transparent",color:C.pink,border:`1px solid ${C.pink}44`,
-                    borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:14,fontWeight:900,
+                    borderRadius:8,width:30,height:30,cursor:"pointer",
                     display:"flex",alignItems:"center",justifyContent:"center",
-                    boxShadow:`0 0 10px ${C.pink}22`}}>✕</button>
+                    boxShadow:`0 0 10px ${C.pink}22`}}><XIcon size={14} color={C.pink} /></button>
                 </div>
                 {(()=>{
                   const avail=cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier);
