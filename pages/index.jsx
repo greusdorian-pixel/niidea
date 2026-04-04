@@ -134,37 +134,32 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
     >
       {/* ── CARD BODY ── */}
       <div style={{
-        width:cardW, height:cardH,
+        position:"absolute", inset: 0,
         borderRadius:14,
         overflow:"hidden",
-        position:"relative",
-        border:`3px solid ${col}`,
-        boxShadow:`
-          0 0 0 1px #000,
-          0 0 25px ${col}55,
-          0 0 60px ${col}22,
-          inset 0 0 20px #00000088
-        `,
-        background:"#07071a",
+        backgroundColor:"#07071a",
       }}>
         {/* Character image */}
         <img src={ch.img} alt={ch.name} style={{
           width:"100%", height:"100%",
           objectFit:"cover", objectPosition:"center top",
           display:"block",
-          filter: isDivine ? "brightness(0.9) contrast(1.15)" : "brightness(0.75) contrast(1.1)",
+          filter: isDivine ? "brightness(0.9) contrast(1.15)" : "brightness(0.75) contrast(1.1)"
         }}/>
-        <img src="/marco.png" style={{
-          position:"absolute", top:0, left:0, width:"100%", height:"100%",
-          objectFit:"fill", pointerEvents:"none", zIndex:5,
-          opacity: 0.9
-        }} alt="marco"/>
+      </div>
+
+      {/* Frame overlay */}
+      <img src="/marco.png" style={{
+        position:"absolute", inset: "-4%", width:"108%", height:"108%",
+        objectFit:"fill", pointerEvents:"none",
+        filter: `drop-shadow(0 0 10px ${col}66)` // suave glow del color de rareza detrás del marco
+      }} alt="marco"/>
 
         {/* Top gradient overlay */}
         <div style={{
-          position:"absolute", top:0, left:0, right:0, height:60,
+          position:"absolute", top:0, left:0, right:0, height:70,
           background:`linear-gradient(${col}44 0%, transparent 100%)`,
-          pointerEvents:"none",
+          pointerEvents:"none", borderRadius:"14px 14px 0 0"
         }}/>
 
         {/* Rarity badge */}
@@ -248,38 +243,8 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
             </div>
           </div>
         )}
-      </div>
 
-      {/* ── ORNATE FRAME OVERLAYS ── */}
-      {/* Heart top center */}
-      <div style={{
-        position:"absolute", top:-10, left:"50%", transform:"translateX(-50%)",
-        background:"#07071a", border:`2px solid ${col}`,
-        borderRadius:"50%", width:22, height:22,
-        display:"flex", alignItems:"center", justifyContent:"center",
-        fontSize:11, color:col, fontWeight:900,
-        boxShadow:`0 0 12px ${col}, 0 0 24px ${col}66`,
-        zIndex:2,
-      }}>♥</div>
-
-      {/* Corner gems */}
-      {[[-6,-6,"nw"],[cardW-14,-6,"ne"],[-6,cardH-14,"sw"],[cardW-14,cardH-14,"se"]].map(([x,y,pos])=>(
-        <div key={pos} style={{
-          position:"absolute", left:x, top:y,
-          width:10, height:10,
-          background:col,
-          boxShadow:`0 0 8px ${col}`,
-          transform:"rotate(45deg)",
-          zIndex:2,
-          opacity:.9,
-        }}/>
-      ))}
-
-      {/* Side ornament bars */}
-      <div style={{position:"absolute",left:-3,top:"35%",width:3,height:"30%",
-        background:`linear-gradient(transparent,${col},transparent)`,opacity:.8,zIndex:2}}/>
-      <div style={{position:"absolute",right:-3,top:"35%",width:3,height:"30%",
-        background:`linear-gradient(transparent,${col},transparent)`,opacity:.8,zIndex:2}}/>
+      {/* Removed the old decorative gems, hearts, and sidebars here. */}
 
       {/* Selected check */}
       {selected && (
@@ -1363,7 +1328,10 @@ export default function App(){
             {/* Héroes en misión */}
             {cards.filter(c=>c.status==="mission").length>0&&(
               <div style={{marginBottom:20}}>
-                <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>⏳ EN MISIÓN</div>
+                <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>
+                  <img src="/icons/in_mission.png" alt="mission" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
+                  EN MISIÓN
+                </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
                   {cards.filter(c=>c.status==="mission").map(c=>{
                     const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
@@ -1379,7 +1347,10 @@ export default function App(){
                           <div style={{flex:1}}>
                             <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{c.name}</div>
                             <div style={{fontSize:10,color:r.color}}>{r.label}</div>
-                            <div style={{fontSize:12,color:C.gold,fontWeight:700,marginTop:2}}>⏳ {secs}s</div>
+                            <div style={{fontSize:12,color:C.gold,fontWeight:700,marginTop:2}}>
+                              <img src="/icons/time.png" alt="tiempo" style={{width:12,height:12,verticalAlign:"middle",marginRight:4}}/>
+                              {secs}s
+                            </div>
                           </div>
                         </div>
                         <div style={{height:5,background:"#ffffff08",borderRadius:4,overflow:"hidden"}}>
@@ -1418,12 +1389,21 @@ export default function App(){
                 <div style={{position:"absolute", bottom:0, left:0, right:0, padding:"12px 14px", display:"flex", justifyContent:"space-between", alignItems:"flex-end", pointerEvents:"none"}}>
                   <div>
                     {/* El usuario mencionó que la imagen ya tiene el nombre, pero mantenemos una versión opcional de refuerzo */}
-                    <div style={{fontSize:15,fontWeight:900,color:"#fff",textShadow:"0 2px 4px #000",marginBottom:2}}>{m.emoji} {m.name}</div>
-                    <div style={{fontSize:11,color:"#ddd",textShadow:"0 1px 2px #000"}}>⏱ {m.time}s · 📈 {Math.round(m.baseRisk*100)}% riesgo</div>
+                    <div style={{fontSize:15,fontWeight:900,color:"#fff",textShadow:"0 2px 4px #000",marginBottom:2}}>
+                      <img src="/icons/mission.png" alt="mision" style={{width:16,height:16,verticalAlign:"middle",marginRight:4}}/>
+                      {m.name}
+                    </div>
+                    <div style={{fontSize:11,color:"#ddd",textShadow:"0 1px 2px #000"}}>
+                      <img src="/icons/time.png" alt="time" style={{width:12,height:12,verticalAlign:"middle",marginRight:4}}/> {m.time}s · 
+                      <img src="/icons/risk.png" alt="risk" style={{width:12,height:12,verticalAlign:"middle",marginLeft:6,marginRight:4}}/> {Math.round(m.baseRisk*100)}% riesgo
+                    </div>
                   </div>
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:11,color:C.pink,fontWeight:800,marginBottom:2,textShadow:"0 1px 2px #000"}}>RECOMPENSA</div>
-                    <div style={{fontSize:14,fontWeight:900,color:C.gold,textShadow:"0 1px 2px #000"}}>💰 {m.baseReward} COIN</div>
+                    <div style={{fontSize:14,fontWeight:900,color:C.gold,textShadow:"0 1px 2px #000"}}>
+                      <img src="/icons/coin.png" alt="coin" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
+                      {m.baseReward} COIN
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1433,7 +1413,8 @@ export default function App(){
             {activeMission&&(
               <div style={{marginTop:16}}>
                 <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:14,letterSpacing:2}}>
-                  {activeMission.emoji} {activeMission.name} — ELIGE PERSONAJE
+                  <img src="/icons/mission.png" alt="mision" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
+                  {activeMission.name} — ELIGE PERSONAJE
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:20,alignItems:"flex-start"}}>
                   {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).map(c=>(
