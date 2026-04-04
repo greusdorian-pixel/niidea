@@ -532,6 +532,50 @@ function ArenaResultModal({result,onClose}){
   );
 }
 
+/* ── MISSION RESULT MODAL ── */
+function MissionResultModal({reward,onClaim}){
+  const ok=!reward.failed;
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <style>{`@keyframes mr_pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}`}</style>
+      <div style={{background:C.bg2,border:`2px solid ${ok?C.gold:C.red}44`,borderRadius:22,padding:"32px 36px",textAlign:"center",maxWidth:360,width:"100%",
+        animation:"mr_pop .5s cubic-bezier(.34,1.56,.64,1) both"}}>
+        <div style={{fontSize:52,marginBottom:8}}>{ok?"🎉":"💔"}</div>
+        <div style={{fontSize:22,fontWeight:900,color:ok?C.gold:C.red,letterSpacing:2}}>{ok?"¡MISIÓN EXITOSA!":"MISIÓN FALLIDA"}</div>
+        <div style={{fontSize:14,color:"#fff",marginTop:6,fontWeight:700}}>{reward.charName}</div>
+        <div style={{fontSize:11,color:C.muted,marginTop:2,marginBottom:16}}>{reward.missionName}</div>
+        <div style={{background:C.bg3,borderRadius:12,padding:14,marginBottom:20,textAlign:"left"}}>
+          {ok?(
+            <>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                <span style={{fontSize:12,color:C.muted}}>COIN</span>
+                <span style={{fontSize:16,fontWeight:900,color:C.gold}}>+{reward.lili}{reward.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:5}}>★BONUS</span>}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                <span style={{fontSize:12,color:C.muted}}>XP</span>
+                <span style={{fontSize:13,fontWeight:700,color:C.cyan}}>+{reward.xp}</span>
+              </div>
+            </>
+          ):(
+            <>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+                <span style={{fontSize:12,color:C.muted}}>Daño recibido</span>
+                <span style={{fontSize:13,fontWeight:700,color:C.red}}>-{reward.dmg} HP</span>
+              </div>
+              <div style={{fontSize:11,color:C.muted,marginTop:4}}>🩹 Tu personaje necesita descansar...</div>
+            </>
+          )}
+        </div>
+        <button onClick={onClaim} style={{width:"100%",background:ok?C.gold:C.red,color:"#000",
+          border:"none",borderRadius:10,padding:"12px 0",fontWeight:900,fontSize:15,cursor:"pointer",
+          boxShadow:`0 0 20px ${ok?C.gold:C.red}44`}}>
+          {ok?"¡RECLAMAR!":"CONTINUAR"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── MISSION SELECT MODAL ── */
 function MissionModal({mission,cards,onSend,onClose}){
   const[sel,setSel]=useState(null);
@@ -670,6 +714,7 @@ export default function App(){
   const[cardReveal,setCardReveal]=useState(null);
   const[itemReveal,setItemReveal]=useState(null);
   const[pendingRewards,setPendingRewards]=useState([]);
+  const[missionResultModal,setMissionResultModal]=useState(null);
   const[fusionA,setFusionA]=useState(null);
   const[fusionB,setFusionB]=useState(null);
   const[fusionResult,setFusionResult]=useState(null);
@@ -755,7 +800,9 @@ export default function App(){
           const bonus=Math.random()<(stats?.bonusPct||10)/100;
           const liliGain=bonus?stats.bonusReward:stats.reward;
           const xpGain=stats?.xpGain||15;
-          setPendingRewards(pr=>[...pr,{id:Date.now()+Math.random(),lili:liliGain,bonus,xp:xpGain,charName:c.name,missionName:m?.name,cardId:c.id}]);
+          const rw={id:Date.now()+Math.random(),lili:liliGain,bonus,xp:xpGain,charName:c.name,missionName:m?.name,cardId:c.id};
+          setPendingRewards(pr=>[...pr,rw]);
+          setTimeout(()=>setMissionResultModal(rw),300);
           const newXp=c.xp+xpGain; const lUp=newXp>=(c.level*20);
           return{...c,status:"idle",missionEnd:null,currentMission:null,shielded:false,
             atkBuff:Math.max(0,c.atkBuff-1),missionBonus:c.unique?c.missionBonus:0,
@@ -763,7 +810,9 @@ export default function App(){
             level:lUp?c.level+1:c.level,def:lUp?c.def+2:c.def,emotionalState:"motivated"};
         }else{
           const dmg=22+Math.floor(Math.random()*32);
-          setPendingRewards(pr=>[...pr,{id:Date.now()+Math.random(),lili:0,bonus:false,xp:0,charName:c.name,missionName:m?.name,failed:true,dmg,cardId:c.id}]);
+          const rwFail={id:Date.now()+Math.random(),lili:0,bonus:false,xp:0,charName:c.name,missionName:m?.name,failed:true,dmg,cardId:c.id};
+          setPendingRewards(pr=>[...pr,rwFail]);
+          setTimeout(()=>setMissionResultModal(rwFail),300);
           return{...c,status:"injured",missionEnd:null,currentMission:null,shielded:false,missionBonus:0,
             hp:Math.max(5,c.hp-dmg),emotionalState:"traumatized",restEnd:Date.now()+45000};
         }
@@ -1265,113 +1314,121 @@ export default function App(){
         {/* ── MISIONES ── */}
         {tab==="Misiones"&&(
           <div style={{animation:"fade_in .3s both"}}>
-            <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
-              {/* Left: missions */}
-              <div style={{flex:"1 1 300px"}}>
-                <div style={{fontSize:11,color:C.muted,marginBottom:12,letterSpacing:1}}>MISIONES DISPONIBLES</div>
-                {MISSIONS.map(m=>(
-                  <div key={m.id} onClick={()=>setActiveMission(m)}
-                    style={{background:`linear-gradient(90deg,${m.bg},${C.bg3})`,
-                      border:`1.5px solid ${C.pink}14`,borderRadius:13,padding:14,marginBottom:9,cursor:"pointer",transition:"all .2s"}}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor=`${C.pink}44`;e.currentTarget.style.transform="translateX(5px)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.pink}14`;e.currentTarget.style.transform="";}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div style={{display:"flex",gap:12,alignItems:"center"}}>
-                        <span style={{fontSize:28}}>{m.emoji}</span>
-                        <div>
-                          <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{m.name}</div>
-                          <div style={{fontSize:11,color:C.muted}}>⏱ {m.time}s · 📊 {Math.round(m.baseRisk*100)}% riesgo · 💰 {m.baseReward} COIN</div>
-                        </div>
-                      </div>
-                      <div style={{fontSize:11,color:C.pink,fontWeight:700}}>Seleccionar →</div>
-                    </div>
-                  </div>
-                ))}
-                {/* Cartas disponibles con botón ENVIAR MISIÓN */}
-                {activeMission&&(
-                  <div style={{marginTop:16}}>
-                    <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:14,letterSpacing:2}}>
-                      {activeMission.emoji} {activeMission.name} — ELIGE PERSONAJE
-                    </div>
-                    <div style={{display:"flex",flexWrap:"wrap",gap:20,alignItems:"flex-start"}}>
-                      {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).map(c=>(
-                        <CardUI key={c.id} card={c} mode="mission"
-                          onSendMission={()=>sendOnMission(c.id,activeMission)}/>
-                      ))}
-                      {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).length===0&&(
-                        <div style={{color:C.muted,fontSize:13}}>Sin personajes disponibles para esta misión.</div>
-                      )}
-                    </div>
-                    <button onClick={()=>setActiveMission(null)}
-                      style={{marginTop:16,background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
-                        borderRadius:8,padding:"6px 16px",cursor:"pointer",fontSize:12}}>
-                      ← Volver a misiones
-                    </button>
-                  </div>
-                )}
-              </div>
-              {/* Right: pending + active */}
-              <div style={{flex:"0 1 240px"}}>
-                {pendingRewards.length>0&&(
-                  <div style={{marginBottom:16}}>
-                    <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:8,letterSpacing:2}}>
-                      ✓ COMPLETADAS ({pendingRewards.length})
-                    </div>
-                    {pendingRewards.map(rw=>(
-                      <div key={rw.id} style={{
-                        background:rw.failed?`linear-gradient(135deg,#1a0505,${C.bg3})`:`linear-gradient(135deg,#071a05,${C.bg3})`,
-                        border:`1.5px solid ${rw.failed?C.red+"45":C.gold+"55"}`,
-                        borderRadius:12,padding:"10px 12px",marginBottom:8}}>
-                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontSize:11,fontWeight:700,color:rw.failed?C.red:C.gold}}>
-                              {rw.failed?"✕ Fallida":"✓ "+rw.charName}
-                            </div>
-                            <div style={{fontSize:10,color:C.muted,marginTop:1}}>{rw.missionName}{rw.failed&&rw.dmg?` · -${rw.dmg} HP`:""}</div>
-                            {!rw.failed&&<div style={{fontSize:15,fontWeight:900,color:C.gold,marginTop:2}}>+{rw.lili}{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:5}}>BONUS</span>}</div>}
+            {/* Recompensas pendientes — ARRIBA DE TODO */}
+            {pendingRewards.length>0&&(
+              <div style={{marginBottom:20}}>
+                <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:10,letterSpacing:2}}>
+                  ✦ MISIONES COMPLETADAS ({pendingRewards.length})
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+                  {pendingRewards.map(rw=>(
+                    <div key={rw.id} onClick={()=>{claimReward(rw);}} style={{
+                      background:rw.failed?`linear-gradient(135deg,#1a0505,${C.bg3})`:`linear-gradient(135deg,#071a07,${C.bg3})`,
+                      border:`2px solid ${rw.failed?C.red+"55":C.gold+"66"}`,
+                      borderRadius:14,padding:"14px 18px",cursor:"pointer",transition:"all .15s",
+                      minWidth:200,flex:"1 1 200px",maxWidth:320,
+                      boxShadow:`0 0 20px ${rw.failed?C.red:C.gold}18`}}
+                      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=`0 4px 30px ${rw.failed?C.red:C.gold}33`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=`0 0 20px ${rw.failed?C.red:C.gold}18`;}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                            <span style={{fontSize:18}}>{rw.failed?"💔":"🎉"}</span>
+                            <span style={{fontSize:13,fontWeight:800,color:rw.failed?C.red:C.gold}}>
+                              {rw.failed?"Misión Fallida":rw.charName}
+                            </span>
                           </div>
-                          <button onClick={()=>claimReward(rw)} style={{
-                            flexShrink:0,background:rw.failed?`${C.red}20`:`${C.gold}20`,
-                            color:rw.failed?C.red:C.gold,border:`1.5px solid ${rw.failed?C.red+"50":C.gold+"50"}`,
-                            borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:12,fontWeight:800,transition:"all .12s"}}
-                            onMouseEnter={e=>{e.currentTarget.style.background=rw.failed?C.red:C.gold;e.currentTarget.style.color="#000";}}
-                            onMouseLeave={e=>{e.currentTarget.style.background=rw.failed?`${C.red}20`:`${C.gold}20`;e.currentTarget.style.color=rw.failed?C.red:C.gold;}}>
-                            {rw.failed?"OK":"RECLAMAR"}
-                          </button>
+                          <div style={{fontSize:10,color:C.muted}}>{rw.missionName}</div>
+                          {!rw.failed&&<div style={{fontSize:17,fontWeight:900,color:C.gold,marginTop:4}}>+{rw.lili} COIN{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:6}}>★BONUS</span>}</div>}
+                          {rw.failed&&rw.dmg&&<div style={{fontSize:11,color:C.red,marginTop:4}}>-{rw.dmg} HP</div>}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>EN MISIÓN</div>
-                {cards.filter(c=>c.status==="mission").map(c=>{
-                  const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
-                  const total=MISSIONS.find(x=>x.id===c.currentMission)?.time||60;
-                  const pct=Math.round(((total-secs)/total)*100);
-                  const r=RARITY[c.rarity];
-                  const ch=CHARS[c.charIdx]||CHARS[0];
-                  return(
-                    <div key={c.id} style={{background:C.bg3,border:`1px solid ${r.color}18`,borderRadius:12,padding:11,marginBottom:10}}>
-                      <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8}}>
-                        <img src={ch.img} alt={ch.name} style={{width:44,height:55,objectFit:"cover",objectPosition:"center top",borderRadius:8,flexShrink:0,border:`1px solid ${r.color}40`}}/>
-                        <div>
-                          <div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{c.name}</div>
-                          <div style={{fontSize:10,color:r.color}}>{r.label}</div>
-                          <div style={{fontSize:10,color:C.gold}}>⏳ {secs}s</div>
+                        <div style={{background:rw.failed?C.red:C.gold,color:"#000",borderRadius:10,
+                          padding:"8px 16px",fontWeight:900,fontSize:12,flexShrink:0,
+                          boxShadow:`0 0 12px ${rw.failed?C.red:C.gold}55`}}>
+                          {rw.failed?"OK":"RECLAMAR"}
                         </div>
-                      </div>
-                      <div style={{height:4,background:"#ffffff08",borderRadius:4,overflow:"hidden"}}>
-                        <div style={{height:"100%",background:C.gold,borderRadius:4,
-                          width:pct+"%",transition:"width 1s linear",boxShadow:`0 0 8px ${C.gold}88`}}/>
                       </div>
                     </div>
-                  );
-                })}
-                {cards.filter(c=>c.status==="mission").length===0&&pendingRewards.length===0&&(
-                  <div style={{fontSize:12,color:"#2a2a3a"}}>Sin héroes en misión.</div>
-                )}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Héroes en misión */}
+            {cards.filter(c=>c.status==="mission").length>0&&(
+              <div style={{marginBottom:20}}>
+                <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>⏳ EN MISIÓN</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+                  {cards.filter(c=>c.status==="mission").map(c=>{
+                    const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
+                    const total=MISSIONS.find(x=>x.id===c.currentMission)?.time||60;
+                    const pct=Math.round(((total-secs)/total)*100);
+                    const r=RARITY[c.rarity];
+                    const ch=CHARS[c.charIdx]||CHARS[0];
+                    return(
+                      <div key={c.id} style={{background:C.bg3,border:`1px solid ${r.color}22`,borderRadius:14,padding:12,
+                        minWidth:220,flex:"1 1 220px",maxWidth:320}}>
+                        <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:8}}>
+                          <img src={ch.img} alt={ch.name} style={{width:44,height:55,objectFit:"cover",objectPosition:"center top",borderRadius:8,flexShrink:0,border:`1px solid ${r.color}40`}}/>
+                          <div style={{flex:1}}>
+                            <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{c.name}</div>
+                            <div style={{fontSize:10,color:r.color}}>{r.label}</div>
+                            <div style={{fontSize:12,color:C.gold,fontWeight:700,marginTop:2}}>⏳ {secs}s</div>
+                          </div>
+                        </div>
+                        <div style={{height:5,background:"#ffffff08",borderRadius:4,overflow:"hidden"}}>
+                          <div style={{height:"100%",background:`linear-gradient(90deg,${C.cyan},${C.gold})`,borderRadius:4,
+                            width:pct+"%",transition:"width 1s linear",boxShadow:`0 0 8px ${C.gold}88`}}/>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Misiones disponibles */}
+            <div style={{fontSize:11,color:C.muted,marginBottom:12,letterSpacing:1}}>MISIONES DISPONIBLES</div>
+            {MISSIONS.map(m=>(
+              <div key={m.id} onClick={()=>setActiveMission(m)}
+                style={{background:`linear-gradient(90deg,${m.bg},${C.bg3})`,
+                  border:`1.5px solid ${C.pink}14`,borderRadius:13,padding:14,marginBottom:9,cursor:"pointer",transition:"all .2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=`${C.pink}44`;e.currentTarget.style.transform="translateX(5px)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.pink}14`;e.currentTarget.style.transform="";}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{display:"flex",gap:12,alignItems:"center"}}>
+                    <span style={{fontSize:28}}>{m.emoji}</span>
+                    <div>
+                      <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{m.name}</div>
+                      <div style={{fontSize:11,color:C.muted}}>⏱ {m.time}s · 📊 {Math.round(m.baseRisk*100)}% riesgo · 💰 {m.baseReward} COIN</div>
+                    </div>
+                  </div>
+                  <div style={{fontSize:11,color:C.pink,fontWeight:700}}>Seleccionar →</div>
+                </div>
+              </div>
+            ))}
+            {/* Cartas disponibles con botón ENVIAR MISIÓN */}
+            {activeMission&&(
+              <div style={{marginTop:16}}>
+                <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:14,letterSpacing:2}}>
+                  {activeMission.emoji} {activeMission.name} — ELIGE PERSONAJE
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:20,alignItems:"flex-start"}}>
+                  {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).map(c=>(
+                    <CardUI key={c.id} card={c} mode="mission"
+                      onSendMission={()=>sendOnMission(c.id,activeMission)}/>
+                  ))}
+                  {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).length===0&&(
+                    <div style={{color:C.muted,fontSize:13}}>Sin personajes disponibles para esta misión.</div>
+                  )}
+                </div>
+                <button onClick={()=>setActiveMission(null)}
+                  style={{marginTop:16,background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
+                    borderRadius:8,padding:"6px 16px",cursor:"pointer",fontSize:12}}>
+                  ← Volver a misiones
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -1460,6 +1517,7 @@ export default function App(){
       {codeModal&&<CodeModal onClose={()=>setCodeModal(false)} onRedeem={redeemCode}/>}
       {dailyModal&&<DailyModal reward={dailyReward} streak={dailyStreak} onClaim={claimDailyBonus}/>}
       {arenaResult&&<ArenaResultModal result={arenaResult} onClose={()=>{setArenaResult(null);rollArenaEnemy_();}}/>}
+      {missionResultModal&&<MissionResultModal reward={missionResultModal} onClaim={()=>{claimReward(missionResultModal);setMissionResultModal(null);}}/>}
 
       {/* TOAST */}
       {toast&&(
