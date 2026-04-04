@@ -24,27 +24,33 @@ const CHARS = [
   { name:"Faye",  img:"/chars/faye.png",  pos:"center 25%", role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5" },
   { name:"Kaine", img:"/chars/kaine.png", pos:"center 30%", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744" },
   { name:"Akari", img:"/chars/akari.png", pos:"center 15%", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",        c:"#7c4dff" },
+  { name:"Nova",  img:"/chars/nova1.png", pos:"center 20%", role:"Maga Gélida",cls:"Maga",    atkT:"Hielo",        c:"#4dd0ff" },
   // uncommon — sugestivas
   { name:"Rein",  img:"/chars/rein.png",  pos:"center 20%", role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f" },
   { name:"Yoru",  img:"/chars/yoru.png",  pos:"center 25%", role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb" },
+  { name:"Scarlet",img:"/chars/scarlet1.png",pos:"center 25%",role:"Cazadora",  cls:"Arquera", atkT:"Fuego",        c:"#ff5722" },
+  { name:"Raven", img:"/chars/raven1.png", pos:"center 30%", role:"Sirena",     cls:"Maga",    atkT:"Agua",         c:"#00bcd4" },
   // rare — más sensual
   { name:"Lyra",  img:"/chars/lyra.png",  pos:"center 15%", role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800" },
   // epic — explícitas
   { name:"Vex",   img:"/chars/vex.png",   pos:"center 20%", role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081" },
   { name:"Mira",  img:"/chars/mira.png",  pos:"center 35%", role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03" },
+  { name:"Echo",  img:"/chars/echo1.png", pos:"center 40%", role:"Bardo",      cls:"Soporte", atkT:"Caos",         c:"#00cfff" },
   // legendary — muy explícitas
   { name:"Dusk",  img:"/chars/dusk.png",  pos:"center 30%", role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2" },
   { name:"Rin",   img:"/chars/rin.png",   pos:"center 30%", role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081" },
   { name:"Zero",  img:"/chars/zero.png",  pos:"center 30%", role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff" },
   { name:"Nyx",   img:"/chars/nyx.png",   pos:"center 25%", role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff" },
+  { name:"Luna",  img:"/chars/luna3.png", pos:"center 40%", role:"Tentadora",  cls:"Hechicera",atkT:"Seducción",    c:"#ff00ff" },
+  { name:"Iris",  img:"/chars/iris3.png", pos:"center 35%", role:"Reina",      cls:"Vacío",   atkT:"Dominio",      c:"#ffeb3b" },
 ];
 
 const RARITY_POOLS = {
-  common:    ["Sera","Faye","Kaine","Akari"],
-  uncommon:  ["Rein","Yoru"],
+  common:    ["Sera","Faye","Kaine","Akari","Nova"],
+  uncommon:  ["Rein","Yoru","Scarlet","Raven"],
   rare:      ["Lyra"],
-  epic:      ["Vex","Mira"],
-  legendary: ["Dusk","Rin","Zero","Nyx"],
+  epic:      ["Vex","Mira","Echo"],
+  legendary: ["Dusk","Rin","Zero","Nyx","Luna","Iris"],
 };
 
 /* Precios venta */
