@@ -8,6 +8,7 @@ const C = {
   pink:"#e040fb", cyan:"#00e5ff", gold:"#ffd54f",
   red:"#ff1744", green:"#00e676", purple:"#7c4dff",
   text:"#e8e8f8", muted:"#5a5a7a", border:"#ffffff0d",
+  divine:"#ffffff",
 };
 
 const RARITY = {
@@ -16,25 +17,26 @@ const RARITY = {
   rare:      { label:"Raro",       color:"#1e88e5", glow:"#1e88e522", tier:2, stars:3 },
   epic:      { label:"Épico",      color:"#ab47bc", glow:"#ab47bc33", tier:3, stars:4 },
   legendary: { label:"Legendario", color:"#ffd54f", glow:"#ffd54f44", tier:4, stars:5 },
+  divine:    { label:"DIVINA",     color:"#ffffff", glow:"#ffffff55", tier:5, stars:6 },
 };
 const FUSION_MAP = ["common","uncommon","rare","epic","legendary"];
 
 const CHARS = [
-  { name:"Yoru",  role:"Asesina",    cls:"Sombra",  atkT:"Filo",    c:"#e040fb", hair:"#1a1a1a", outfit:"#2d0040" },
-  { name:"Akari", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",   c:"#7c4dff", hair:"#0d0d2e", outfit:"#1a0040" },
-  { name:"Sera",  role:"Sanadora",   cls:"Clérigo", atkT:"Luz",     c:"#00e676", hair:"#1a3300", outfit:"#003322" },
-  { name:"Nyx",   role:"Cazadora",   cls:"Arquera", atkT:"Flecha",  c:"#00e5ff", hair:"#001a2e", outfit:"#002233" },
-  { name:"Rein",  role:"Guardiana",  cls:"Paladín", atkT:"Escudo",  c:"#ffd54f", hair:"#2e1a00", outfit:"#2e2000" },
-  { name:"Vex",   role:"Invocadora", cls:"Maga",    atkT:"Caos",    c:"#ff4081", hair:"#2e0010", outfit:"#1a0015" },
-  { name:"Lyra",  role:"Bardo",      cls:"Soporte", atkT:"Sonido",  c:"#ff9800", hair:"#2e1500", outfit:"#2e1a00" },
-  { name:"Kaine", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",  c:"#ff1744", hair:"#1a0000", outfit:"#2e0010" },
-  { name:"Faye",  role:"Espía",      cls:"Sombra",  atkT:"Veneno",  c:"#00bfa5", hair:"#001a18", outfit:"#001510" },
-  { name:"Mira",  role:"Druida",     cls:"Maga",    atkT:"Natura",  c:"#76ff03", hair:"#0a1a00", outfit:"#0d2000" },
-  { name:"Dusk",  role:"Nigromante", cls:"Maga",    atkT:"Muerte",  c:"#7e57c2", hair:"#110011", outfit:"#1a0030" },
-  { name:"Rin",   role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",c:"#ff4081", hair:"#1a0a00", outfit:"#2e1a00" },
+  { name:"Yoru",  role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb", hair:"#1a1a1a", outfit:"#2d0040" },
+  { name:"Akari", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",        c:"#7c4dff", hair:"#0d0d2e", outfit:"#1a0040" },
+  { name:"Sera",  role:"Sanadora",   cls:"Clérigo", atkT:"Luz",          c:"#00e676", hair:"#1a3300", outfit:"#003322" },
+  { name:"Nyx",   role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff", hair:"#001a2e", outfit:"#002233" },
+  { name:"Rein",  role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f", hair:"#2e1a00", outfit:"#2e2000" },
+  { name:"Vex",   role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081", hair:"#2e0010", outfit:"#1a0015" },
+  { name:"Lyra",  role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800", hair:"#2e1500", outfit:"#2e1a00" },
+  { name:"Kaine", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744", hair:"#1a0000", outfit:"#2e0010" },
+  { name:"Faye",  role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5", hair:"#001a18", outfit:"#001510" },
+  { name:"Mira",  role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03", hair:"#0a1a00", outfit:"#0d2000" },
+  { name:"Dusk",  role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2", hair:"#110011", outfit:"#1a0030" },
+  { name:"Rin",   role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081", hair:"#1a0a00", outfit:"#2e1a00" },
+  { name:"Zero",  role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff", hair:"#ffffff", outfit:"#050505" },
 ];
 
-/* Base de estilo consistente para todas las cartas */
 const BASE_STYLE = "masterpiece, ultra detailed, 8k, beautiful anime fantasy girl, perfect face, slim waist, sexy revealing fantasy armor bikini style, alluring pose, full body portrait, professional card game illustration, vibrant colors, fantasy lighting";
 
 const CHAR_PROMPTS = {
@@ -50,12 +52,35 @@ const CHAR_PROMPTS = {
   Mira:  `${BASE_STYLE}, druid nature mage, long green hair, revealing nature outfit with vines and flowers, glowing green nature energy, forest background`,
   Dusk:  `${BASE_STYLE}, necromancer, long purple wavy hair, revealing dark gothic outfit, floating skulls, dark purple magical aura, ethereal`,
   Rin:   `${BASE_STYLE}, kunoichi ninja, long black hair, revealing red and black ninja outfit, shurikens, smoke wisps, moonlight`,
+  Zero:  `masterpiece, ultra detailed, 8k, transcendent divine anime girl, perfect ethereal beauty, long flowing pure white hair, radiant white energy, minimalist white and void black revealing divine outfit, cosmic black void background, floating geometric void particles, omnipotent calm expression, glowing white eyes, she is THE ABSOLUTE ZERO, professional card game illustration, divine otherworldly lighting, white energy trails`,
 };
 
-/* ── ANIME ART – Fantasy / revealing style ── */
+/* Precios de venta */
+const SELL_PRICES = { common:20, uncommon:50, rare:120, epic:260, legendary:600 };
+
+/* Enemigos de arena */
+const ARENA_ENEMIES = [
+  { name:"Golem Roto",      emoji:"🗿", tier:0, hp:80,   atk:14,  def:6,   reward:25,  xp:8  },
+  { name:"Lobo Sombra",     emoji:"🐺", tier:0, hp:110,  atk:20,  def:8,   reward:35,  xp:10 },
+  { name:"Arquera Oscura",  emoji:"🏹", tier:1, hp:160,  atk:32,  def:15,  reward:60,  xp:15 },
+  { name:"Espectro Maldito",emoji:"👻", tier:1, hp:140,  atk:38,  def:12,  reward:70,  xp:18 },
+  { name:"Caballero Roto",  emoji:"⚔️", tier:2, hp:240,  atk:52,  def:28,  reward:110, xp:25 },
+  { name:"Dragón Menor",    emoji:"🐉", tier:2, hp:300,  atk:60,  def:35,  reward:140, xp:30 },
+  { name:"Demonio Élite",   emoji:"😈", tier:3, hp:450,  atk:88,  def:48,  reward:230, xp:45 },
+  { name:"Ángel Caído",     emoji:"😇", tier:3, hp:500,  atk:95,  def:55,  reward:260, xp:50 },
+  { name:"Dragón Arcano",   emoji:"🔥", tier:4, hp:800,  atk:140, def:80,  reward:420, xp:80 },
+  { name:"Titán del Vacío", emoji:"🌌", tier:5, hp:2000, atk:400, def:280, reward:900, xp:150},
+];
+
+/* Costo de entrenamiento progresivo */
+const TRAIN_COST = (lvl) => 30 + lvl * 15;
+
+/* ── ANIME ART ── */
 function AnimeArt({ char, rarity, w=160, h=200 }) {
   const {imgs, onErr} = useContext(ImgCtx);
   const imageUrl = imgs[char.name];
+
+  const isDivine = rarity === "divine";
 
   if (imageUrl === "__loading__") {
     return (
@@ -86,10 +111,11 @@ function AnimeArt({ char, rarity, w=160, h=200 }) {
           <rect x="153" y="5" width="2" height="16" fill={char.c} opacity=".7"/>
           <rect x="0" y="175" width="160" height="25" fill={C.bg} opacity=".55"/>
         </svg>
+        {isDivine && <div style={{position:"absolute",inset:0,boxShadow:"inset 0 0 30px #ffffff33",pointerEvents:"none"}}/>}
       </div>
     );
   }
-  // No image yet – show loading placeholder (auto-generates on mount)
+
   return (
     <div style={{width:w, height:h, background:C.bg3, display:"flex", flexDirection:"column",
       alignItems:"center", justifyContent:"center", position:"relative", overflow:"hidden"}}>
@@ -152,7 +178,7 @@ function rollItemFromPool(pool){
 }
 function makeCard(rarity,rates){
   const r=rarity||rollRarity(rates||{common:100});
-  const ch=CHARS[Math.floor(Math.random()*CHARS.length)];
+  const ch=CHARS.filter(c=>c.name!=="Zero")[Math.floor(Math.random()*(CHARS.length-1))];
   const tier=RARITY[r].tier;
   return{
     id:Math.random().toString(36).slice(2,10),
@@ -164,10 +190,26 @@ function makeCard(rarity,rates){
     atk:10+tier*13+Math.floor(Math.random()*9),
     def:4+tier*5+Math.floor(Math.random()*4),
     spd:8+tier*7+Math.floor(Math.random()*7),
-    level:1,xp:0,
+    level:1,xp:0,trainLevel:0,
     status:"idle",emotionalState:"idle",
     shielded:false,atkBuff:0,missionBonus:0,
-    missionEnd:null,currentMission:null,
+    missionEnd:null,currentMission:null,restEnd:null,
+  };
+}
+function makeZeroCard(){
+  const ch=CHARS.find(c=>c.name==="Zero");
+  return{
+    id:"zero_"+Math.random().toString(36).slice(2,8),
+    charIdx:CHARS.indexOf(ch),
+    name:"Zero",role:"La Absoluta",cls:"Vacío",atkT:"Aniquilación",color:"#ffffff",
+    rarity:"divine",
+    hp:9999,maxHp:9999,
+    atk:999,def:999,spd:999,
+    level:99,xp:0,trainLevel:0,
+    status:"idle",emotionalState:"motivated",
+    shielded:true,atkBuff:0,missionBonus:-0.95,
+    missionEnd:null,currentMission:null,restEnd:null,
+    unique:true,
   };
 }
 function calcMissionStats(card,mission){
@@ -209,99 +251,107 @@ function CatLogo({size=28}){
 }
 
 function Stars({count,color}){
+  const total=Math.max(5,count);
   return(
     <span style={{display:"inline-flex",gap:1}}>
-      {[1,2,3,4,5].map(i=>(
-        <span key={i} style={{fontSize:8,color:i<=count?color:"#2a2a3a",lineHeight:1}}>★</span>
+      {Array.from({length:total},(_,i)=>(
+        <span key={i} style={{fontSize:8,color:i<count?color:"#2a2a3a",lineHeight:1,
+          textShadow:i<count&&color==="#ffffff"?`0 0 6px #fff`:undefined}}>★</span>
       ))}
     </span>
   );
 }
 
 function CardUI({card,selected,onClick,mini=false}){
-  const r=RARITY[card.rarity];
+  const r=RARITY[card.rarity]||RARITY.common;
   const ch=CHARS[card.charIdx]||CHARS[0];
   const hpPct=Math.round((card.hp/card.maxHp)*100);
   const stCol={idle:C.green,mission:C.gold,injured:C.red,resting:C.cyan}[card.status]||C.muted;
+  const isDivine=card.rarity==="divine";
 
   if(mini)return(
     <div onClick={onClick} style={{
-      background:selected?`${r.color}18`:C.bg3,
-      border:`1.5px solid ${selected?r.color:"#ffffff0e"}`,
+      background:selected?`${r.color}18`:isDivine?"#0a0a16":C.bg3,
+      border:`1.5px solid ${selected?r.color:isDivine?"#ffffff30":"#ffffff0e"}`,
       borderRadius:10,padding:8,cursor:"pointer",
       width:92,textAlign:"center",userSelect:"none",
-      boxShadow:selected?`0 0 16px ${r.glow}`:"none",
+      boxShadow:selected?`0 0 16px ${r.glow}`:isDivine?"0 0 20px #ffffff18":"none",
       transition:"all .18s",position:"relative",
     }}>
-      {selected&&<div style={{position:"absolute",top:-7,right:-7,background:r.color,color:"#000",
+      {selected&&<div style={{position:"absolute",top:-7,right:-7,background:r.color,color:isDivine?"#000":"#000",
         borderRadius:"50%",width:18,height:18,fontSize:10,fontWeight:900,
         display:"flex",alignItems:"center",justifyContent:"center",zIndex:3}}>✓</div>}
       <div style={{height:72,overflow:"hidden",borderRadius:6,marginBottom:4}}>
         <AnimeArt char={ch} rarity={card.rarity} w={92} h={72}/>
       </div>
-      <div style={{fontSize:11,fontWeight:700,color:"#fff"}}>{card.name}</div>
+      <div style={{fontSize:11,fontWeight:700,color:isDivine?"#fff":"#fff",
+        textShadow:isDivine?"0 0 8px #fff":undefined}}>{card.name}</div>
       <Stars count={r.stars} color={r.color}/>
     </div>
   );
 
   return(
     <div onClick={onClick} style={{
-      background:`linear-gradient(170deg,${C.bg3} 60%,${r.color}0d)`,
-      border:`1.5px solid ${selected?r.color:"#ffffff0e"}`,
+      background:isDivine?`linear-gradient(170deg,#0a0a1a,#1a1a2e)`:`linear-gradient(170deg,${C.bg3} 60%,${r.color}0d)`,
+      border:`1.5px solid ${isDivine?"#ffffff40":r.color+"28"}`,
       borderRadius:14,overflow:"hidden",
       cursor:onClick?"pointer":"default",
       width:160,flexShrink:0,userSelect:"none",
-      boxShadow:selected?`0 0 26px ${r.glow},0 4px 20px #00000080`:`0 4px 16px #00000055`,
+      boxShadow:isDivine?"0 0 40px #ffffff22,0 4px 20px #00000080":selected?`0 0 26px ${r.glow},0 4px 20px #00000080`:`0 4px 16px #00000055`,
       transition:"transform .2s,box-shadow .2s",position:"relative",
     }}
-      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 0 30px ${r.glow},0 8px 28px #00000090`;}}}
-      onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=selected?`0 0 26px ${r.glow},0 4px 20px #00000080`:`0 4px 16px #00000055`;}}
+      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=isDivine?"0 0 60px #ffffff33,0 8px 28px #00000090":`0 0 30px ${r.glow},0 8px 28px #00000090`;}}}
+      onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=isDivine?"0 0 40px #ffffff22,0 4px 20px #00000080":selected?`0 0 26px ${r.glow},0 4px 20px #00000080`:`0 4px 16px #00000055`;}}
     >
       {selected&&<div style={{position:"absolute",top:8,right:8,background:r.color,color:"#000",
         borderRadius:"50%",width:22,height:22,fontSize:12,fontWeight:900,
         display:"flex",alignItems:"center",justifyContent:"center",zIndex:4}}>✓</div>}
+      {isDivine&&<div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,#ffffff04,#ffffff08,#ffffff04)",pointerEvents:"none",zIndex:1}}/>}
       <div style={{height:190,overflow:"hidden",position:"relative"}}>
         <AnimeArt char={ch} rarity={card.rarity} w={160} h={190}/>
         <div style={{position:"absolute",bottom:0,left:0,right:0,height:55,
           background:`linear-gradient(transparent,${C.bg3})`}}/>
         <div style={{position:"absolute",top:8,left:8,
-          background:"#00000088",border:`1px solid ${r.color}55`,
+          background:isDivine?"#00000099":"#00000088",border:`1px solid ${r.color}55`,
           borderRadius:20,padding:"2px 8px",fontSize:9,color:r.color,
-          fontWeight:700,backdropFilter:"blur(6px)"}}>
+          fontWeight:700,backdropFilter:"blur(6px)",zIndex:2,
+          textShadow:isDivine?"0 0 8px #fff":undefined}}>
           {r.label}
         </div>
         {card.status!=="idle"&&<div style={{position:"absolute",bottom:12,right:8,
           background:"#00000099",border:`1px solid ${stCol}44`,borderRadius:20,
-          padding:"2px 8px",fontSize:9,color:stCol,fontWeight:700}}>
+          padding:"2px 8px",fontSize:9,color:stCol,fontWeight:700,zIndex:2}}>
           {card.status==="mission"?"🎯 Misión":card.status==="injured"?"🩹 Herida":"😴 Desc."}
         </div>}
-        {card.shielded&&<div style={{position:"absolute",top:8,right:8,fontSize:13}}>🛡️</div>}
+        {card.shielded&&<div style={{position:"absolute",top:8,right:8,fontSize:13,zIndex:2}}>🛡️</div>}
         {card.atkBuff>0&&<div style={{position:"absolute",top:28,right:8,fontSize:11,
-          color:C.red,fontWeight:700,textShadow:`0 0 8px ${C.red}`}}>+ATK</div>}
+          color:C.red,fontWeight:700,textShadow:`0 0 8px ${C.red}`,zIndex:2}}>+ATK</div>}
       </div>
-      <div style={{padding:"10px 12px 12px"}}>
+      <div style={{padding:"10px 12px 12px",position:"relative",zIndex:2}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:2}}>
           <div>
-            <div style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:.3}}>{card.name}</div>
+            <div style={{fontSize:14,fontWeight:800,color:"#fff",letterSpacing:.3,
+              textShadow:isDivine?"0 0 10px #fff":undefined}}>{card.name}</div>
             <div style={{fontSize:10,color:ch.c,marginTop:1}}>{card.role}</div>
           </div>
           <Stars count={r.stars} color={r.color}/>
         </div>
         <div style={{marginTop:7,marginBottom:5}}>
           <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:C.muted,marginBottom:2}}>
-            <span>HP</span><span style={{color:hpPct>60?C.green:hpPct>30?C.gold:C.red}}>{card.hp}/{card.maxHp}</span>
+            <span>HP</span><span style={{color:isDivine?C.divine:hpPct>60?C.green:hpPct>30?C.gold:C.red}}>{card.hp}/{card.maxHp}</span>
           </div>
           <div style={{height:3,background:"#ffffff0e",borderRadius:3,overflow:"hidden"}}>
             <div style={{height:"100%",borderRadius:3,
-              background:hpPct>60?C.green:hpPct>30?C.gold:C.red,
-              width:hpPct+"%",transition:"width .4s",
-              boxShadow:hpPct>60?`0 0 6px ${C.green}88`:hpPct>30?`0 0 6px ${C.gold}88`:`0 0 6px ${C.red}88`}}/>
+              background:isDivine?C.divine:hpPct>60?C.green:hpPct>30?C.gold:C.red,
+              width:(isDivine?100:hpPct)+"%",transition:"width .4s",
+              boxShadow:isDivine?"0 0 10px #fff88":hpPct>60?`0 0 6px ${C.green}88`:hpPct>30?`0 0 6px ${C.gold}88`:`0 0 6px ${C.red}88`}}/>
           </div>
         </div>
         <div style={{display:"flex",gap:8,fontSize:10}}>
           <span style={{color:"#ff7043"}}>⚔️ {card.atk}</span>
           <span style={{color:"#42a5f5"}}>🛡️ {card.def}</span>
           <span style={{color:"#ab47bc"}}>💨 {card.spd}</span>
+          {card.level>1&&<span style={{color:C.gold,marginLeft:"auto"}}>Lv{card.level}</span>}
         </div>
       </div>
     </div>
@@ -311,28 +361,31 @@ function CardUI({card,selected,onClick,mini=false}){
 function CardPackReveal({card,onClose}){
   const[visible,setVisible]=useState(false);
   useEffect(()=>{const t=setTimeout(()=>setVisible(true),150);return()=>clearTimeout(t);},[]);
-  const r=RARITY[card.rarity];
+  const r=RARITY[card.rarity]||RARITY.common;
+  const isDivine=card.rarity==="divine";
   return(
     <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:300,
       display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:20}}>
-      <style>{`@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.7)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse_ring{0%,100%{opacity:.6}50%{opacity:1}}`}</style>
-      <div style={{fontSize:16,fontWeight:900,letterSpacing:5,color:C.pink,textShadow:`0 0 20px ${C.pink}`}}>✦ CARTA OBTENIDA ✦</div>
+      <style>{`@keyframes rise{from{opacity:0;transform:translateY(40px) scale(.7)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse_ring{0%,100%{opacity:.6}50%{opacity:1}}@keyframes divine_glow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}`}</style>
+      <div style={{fontSize:16,fontWeight:900,letterSpacing:5,color:isDivine?"#fff":C.pink,textShadow:`0 0 20px ${isDivine?"#fff":C.pink}`}}>
+        {isDivine?"✦ CARTA DIVINA OBTENIDA ✦":"✦ CARTA OBTENIDA ✦"}
+      </div>
       <div style={{opacity:visible?1:0,animation:visible?"rise .6s cubic-bezier(.34,1.56,.64,1) both":"none"}}>
         <div style={{position:"relative",display:"inline-block"}}>
           <div style={{position:"absolute",inset:-20,borderRadius:30,
             background:`radial-gradient(circle,${r.glow} 0%,transparent 70%)`,
-            animation:"pulse_ring 1.5s infinite"}}/>
+            animation:isDivine?"divine_glow 1.5s infinite":"pulse_ring 1.5s infinite"}}/>
           <CardUI card={card}/>
         </div>
       </div>
       {visible&&(
         <button onClick={onClose} style={{
-          background:"transparent",color:C.pink,border:`2px solid ${C.pink}`,
+          background:"transparent",color:isDivine?"#fff":C.pink,border:`2px solid ${isDivine?"#fff":C.pink}`,
           borderRadius:10,padding:"10px 44px",fontSize:15,fontWeight:900,
-          cursor:"pointer",letterSpacing:2,boxShadow:`0 0 20px ${C.pink}44`,transition:"all .2s",
+          cursor:"pointer",letterSpacing:2,boxShadow:`0 0 20px ${isDivine?"#ffffff44":C.pink+"44"}`,transition:"all .2s",
         }}
-          onMouseEnter={e=>{e.currentTarget.style.background=C.pink;e.currentTarget.style.color="#000";}}
-          onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=C.pink;}}>
+          onMouseEnter={e=>{e.currentTarget.style.background=isDivine?"#fff":C.pink;e.currentTarget.style.color="#000";}}
+          onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=isDivine?"#fff":C.pink;}}>
           CONTINUAR
         </button>
       )}
@@ -367,13 +420,8 @@ function ItemPackReveal({items:got,onClose}){
         })}
       </div>
       {vis.length===got.length&&(
-        <button onClick={onClose} style={{
-          background:"transparent",color:C.cyan,border:`2px solid ${C.cyan}`,
-          borderRadius:10,padding:"10px 44px",fontSize:15,fontWeight:900,
-          cursor:"pointer",letterSpacing:2,boxShadow:`0 0 20px ${C.cyan}44`,transition:"all .2s",
-        }}
-          onMouseEnter={e=>{e.currentTarget.style.background=C.cyan;e.currentTarget.style.color="#000";}}
-          onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color=C.cyan;}}>
+        <button onClick={onClose} style={{background:"transparent",color:C.cyan,border:`2px solid ${C.cyan}`,
+          borderRadius:10,padding:"10px 44px",fontSize:15,fontWeight:900,cursor:"pointer",letterSpacing:2}}>
           CONTINUAR
         </button>
       )}
@@ -478,11 +526,97 @@ function MissionModal({mission,cards,onSend,onClose}){
   );
 }
 
+/* ── CODE MODAL ── */
+function CodeModal({onClose,onRedeem}){
+  const[val,setVal]=useState("");
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000dd",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{background:C.bg2,border:`1px solid ${C.cyan}30`,borderRadius:20,padding:"32px 36px",width:"100%",maxWidth:380,boxShadow:`0 0 60px ${C.cyan}15`}}>
+        <div style={{fontSize:18,fontWeight:900,color:C.cyan,letterSpacing:3,marginBottom:6,textAlign:"center",textShadow:`0 0 16px ${C.cyan}88`}}>🔑 CÓDIGO SECRETO</div>
+        <div style={{fontSize:11,color:C.muted,textAlign:"center",marginBottom:20}}>Ingresa un código para desbloquear recompensas únicas</div>
+        <input value={val} onChange={e=>setVal(e.target.value.toUpperCase())}
+          placeholder="CÓDIGO..."
+          style={{width:"100%",background:C.bg3,border:`1px solid ${C.cyan}30`,borderRadius:10,
+            padding:"12px 16px",color:C.text,fontSize:16,outline:"none",
+            textAlign:"center",letterSpacing:4,fontWeight:700,marginBottom:16}}/>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={onClose} style={{flex:1,background:"transparent",color:C.muted,
+            border:`1px solid ${C.muted}22`,borderRadius:10,padding:"10px 0",cursor:"pointer",fontSize:13}}>
+            Cancelar
+          </button>
+          <button onClick={()=>onRedeem(val)} style={{flex:2,background:C.cyan,color:"#000",
+            border:"none",borderRadius:10,padding:"10px 0",fontWeight:900,fontSize:14,cursor:"pointer",
+            boxShadow:`0 0 20px ${C.cyan}44`}}>
+            CANJEAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── DAILY BONUS MODAL ── */
+function DailyModal({reward,streak,onClaim}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{background:C.bg2,border:`2px solid ${C.gold}44`,borderRadius:24,padding:"40px 44px",textAlign:"center",boxShadow:`0 0 80px ${C.gold}22`}}>
+        <style>{`@keyframes bonus_pop{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}`}</style>
+        <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both"}}>🎁</div>
+        <div style={{fontSize:22,fontWeight:900,color:C.gold,letterSpacing:2,textShadow:`0 0 20px ${C.gold}88`}}>BONUS DIARIO</div>
+        <div style={{fontSize:12,color:C.muted,marginTop:4,marginBottom:20}}>Racha: {streak} {streak>1?"días consecutivos":"día"}</div>
+        <div style={{fontSize:48,fontWeight:900,color:C.gold,textShadow:`0 0 30px ${C.gold}`,marginBottom:24}}>
+          +{reward} COIN
+        </div>
+        <button onClick={onClaim} style={{background:C.gold,color:"#000",border:"none",
+          borderRadius:12,padding:"14px 50px",fontWeight:900,fontSize:16,cursor:"pointer",
+          boxShadow:`0 0 30px ${C.gold}55`,letterSpacing:1}}>
+          ¡RECLAMAR!
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── ARENA RESULT MODAL ── */
+function ArenaResultModal({result,onClose}){
+  const won=result.won;
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
+      <div style={{background:C.bg2,border:`2px solid ${won?C.gold:C.red}44`,borderRadius:22,padding:"32px 36px",textAlign:"center",maxWidth:360,width:"100%",boxShadow:`0 0 60px ${won?C.gold:C.red}22`}}>
+        <div style={{fontSize:44,marginBottom:8}}>{won?"🏆":"💀"}</div>
+        <div style={{fontSize:22,fontWeight:900,color:won?C.gold:C.red,letterSpacing:2,textShadow:`0 0 16px ${won?C.gold:C.red}`}}>
+          {won?"¡VICTORIA!":"DERROTA"}
+        </div>
+        <div style={{fontSize:13,color:C.muted,marginTop:4,marginBottom:16}}>
+          {result.card.name} vs {result.enemy.emoji} {result.enemy.name}
+        </div>
+        <div style={{background:C.bg3,borderRadius:12,padding:14,marginBottom:20,textAlign:"left"}}>
+          {[
+            [won?"COIN ganado":"COIN ganado",`+${result.coinGain}`,won?C.gold:C.muted],
+            ["XP ganado",`+${result.xpGain}`,C.cyan],
+            ["Rondas",`${result.rounds}`,C.muted],
+          ].map(([l,v,col])=>(
+            <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+              <span style={{fontSize:12,color:C.muted}}>{l}</span>
+              <span style={{fontSize:13,fontWeight:700,color:col}}>{v}</span>
+            </div>
+          ))}
+          {result.leveledUp&&<div style={{fontSize:12,color:C.gold,marginTop:4}}>⬆️ {result.card.name} subió de nivel!</div>}
+        </div>
+        <button onClick={onClose} style={{width:"100%",background:won?C.gold:C.red,color:"#000",
+          border:"none",borderRadius:10,padding:"11px 0",fontWeight:900,fontSize:14,cursor:"pointer"}}>
+          CONTINUAR
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── LOGIN SCREEN ── */
 function LoginScreen({onAuth}){
   const[email,setEmail]=useState("");
   const[pass,setPass]=useState("");
-  const[mode,setMode]=useState("login"); // "login" | "register"
+  const[mode,setMode]=useState("login");
   const[err,setErr]=useState("");
   const[loading,setLoading]=useState(false);
 
@@ -540,7 +674,7 @@ function LoginScreen({onAuth}){
   );
 }
 
-const TABS=["Colección","Tienda","Fusión","Misiones"];
+const TABS=["Colección","Tienda","Fusión","Misiones","Arena"];
 
 const DEFAULT_ITEMS={health_potion:2,medicine:1,food:1,ration:0,atk_potion:0,shield:0,antidote:0,elixir:0,revive:0};
 
@@ -563,6 +697,7 @@ export default function App(){
   const[collFilter,setCollFilter]=useState("all");
   const[toast,setToast]=useState(null);
   const[now,setNow]=useState(Date.now());
+  /* imagen */
   const[cardImages,setCardImages]=useState(()=>{
     try{
       const saved=JSON.parse(localStorage.getItem("lili_imgs")||"{}");
@@ -571,6 +706,19 @@ export default function App(){
   });
   const genRef=useRef(new Set());
   const saveTimer=useRef(null);
+  /* nuevas mecánicas */
+  const[codeModal,setCodeModal]=useState(false);
+  const[arenaEnemy,setArenaEnemy]=useState(null);
+  const[arenaFighter,setArenaFighter]=useState(null);
+  const[arenaResult,setArenaResult]=useState(null);
+  const[dailyModal,setDailyModal]=useState(false);
+  const[dailyReward,setDailyReward]=useState(0);
+  const[dailyStreak,setDailyStreak]=useState(1);
+  const[redeemed,setRedeemed]=useState(()=>{
+    try{return new Set(JSON.parse(localStorage.getItem("redeemed")||"[]"));}
+    catch{return new Set();}
+  });
+  const[trainTarget,setTrainTarget]=useState(null); // cardId siendo entrenada
 
   // Auth init
   useEffect(()=>{
@@ -595,29 +743,20 @@ export default function App(){
     }
   }
 
-  // Debounced save – 2s after last change
+  // Debounced save
   function scheduleSave(newLili,newCards,newItems){
     if(!user)return;
     clearTimeout(saveTimer.current);
     saveTimer.current=setTimeout(async()=>{
       await supabase.from("player_state").upsert({
-        user_id:user.id, lili:newLili, cards:newCards, items:newItems, updated_at:new Date().toISOString()
+        user_id:user.id,lili:newLili,cards:newCards,items:newItems,updated_at:new Date().toISOString()
       },{onConflict:"user_id"});
     },2000);
   }
 
-  function setLiliS(val){
-    const v=typeof val==="function"?val(lili):val;
-    setLili(v);scheduleSave(v,cards,items);
-  }
-  function setCardsS(val){
-    const v=typeof val==="function"?val(cards):val;
-    setCards(v);scheduleSave(lili,v,items);
-  }
-  function setItemsS(val){
-    const v=typeof val==="function"?val(items):val;
-    setItems(v);scheduleSave(lili,cards,v);
-  }
+  function setLiliS(val){const v=typeof val==="function"?val(lili):val;setLili(v);scheduleSave(v,cards,items);}
+  function setCardsS(val){const v=typeof val==="function"?val(cards):val;setCards(v);scheduleSave(lili,v,items);}
+  function setItemsS(val){const v=typeof val==="function"?val(items):val;setItems(v);scheduleSave(lili,cards,v);}
 
   async function logout(){
     await supabase.auth.signOut();
@@ -626,11 +765,18 @@ export default function App(){
     setItems(DEFAULT_ITEMS);
   }
 
+  // Timers
   useEffect(()=>{const t=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(t);},[]);
 
+  // Mission + rest resolution
   useEffect(()=>{
     let dirty=false;
     const next=cards.map(c=>{
+      // Auto-curación de heridas (45s gratis)
+      if(c.status==="injured"&&c.restEnd&&now>=c.restEnd){
+        dirty=true;
+        return{...c,status:"idle",hp:Math.min(c.maxHp,Math.floor(c.maxHp*0.5)),restEnd:null};
+      }
       if(c.status==="mission"&&c.missionEnd&&now>=c.missionEnd){
         dirty=true;
         const m=MISSIONS.find(x=>x.id===c.currentMission);
@@ -643,11 +789,21 @@ export default function App(){
           const liliGain=bonus?stats.bonusReward:stats.reward;
           const xpGain=stats?.xpGain||15;
           setPendingRewards(pr=>[...pr,{id:Date.now()+Math.random(),lili:liliGain,bonus,xp:xpGain,charName:c.name,missionName:m?.name,cardId:c.id}]);
-          return{...c,status:"idle",missionEnd:null,currentMission:null,shielded:false,atkBuff:Math.max(0,c.atkBuff-1),missionBonus:0,atk:atkWas?c.atk-20:c.atk,xp:c.xp+xpGain,emotionalState:"motivated"};
+          const newXp=c.xp+xpGain;
+          const levelUp=newXp>=(c.level*20);
+          return{...c,status:"idle",missionEnd:null,currentMission:null,shielded:false,
+            atkBuff:Math.max(0,c.atkBuff-1),missionBonus:c.unique?c.missionBonus:0,
+            atk:atkWas?c.atk-20:c.atk,
+            xp:levelUp?newXp-c.level*20:newXp,
+            level:levelUp?c.level+1:c.level,
+            def:levelUp?c.def+2:c.def,
+            emotionalState:"motivated"};
         } else {
           const dmg=22+Math.floor(Math.random()*32);
           setPendingRewards(pr=>[...pr,{id:Date.now()+Math.random(),lili:0,bonus:false,xp:0,charName:c.name,missionName:m?.name,failed:true,dmg,cardId:c.id}]);
-          return{...c,status:"injured",missionEnd:null,currentMission:null,shielded:false,missionBonus:0,hp:Math.max(5,c.hp-dmg),emotionalState:"traumatized"};
+          return{...c,status:"injured",missionEnd:null,currentMission:null,shielded:false,missionBonus:0,
+            hp:Math.max(5,c.hp-dmg),emotionalState:"traumatized",
+            restEnd:Date.now()+45000}; // auto-cura en 45s
         }
       }
       return c;
@@ -657,14 +813,13 @@ export default function App(){
 
   function toast_(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
 
-  /* Genera imágenes para los nombres dados (secuencial, sin duplicar) */
+  // Genera imágenes
   async function genImages(names){
     for(const name of names){
       if(genRef.current.has(name))continue;
       genRef.current.add(name);
       const ch=CHARS.find(c=>c.name===name);
       if(!ch){genRef.current.delete(name);continue;}
-      // Marcar como cargando
       setCardImages(prev=>({...prev,[name]:"__loading__"}));
       try{
         const r=await fetch("/api/gen",{method:"POST",headers:{"Content-Type":"application/json"},
@@ -685,7 +840,6 @@ export default function App(){
     }
   }
 
-  /* Limpiar URL caducada y regenerar */
   function clearAndRegen(name){
     genRef.current.delete(name);
     setCardImages(prev=>{
@@ -696,19 +850,38 @@ export default function App(){
     genImages([name]);
   }
 
-  /* Auto-generar todos los personajes al montar (ignora caché, URLs de Flux expiran) */
+  // Auto-generar al montar
   useEffect(()=>{
     try{localStorage.removeItem("lili_imgs");}catch{}
     setCardImages({});
     genImages(CHARS.map(c=>c.name));
   },[]);
 
-  /* Auto-generar cuando aparece una carta nueva sin imagen */
+  // Auto-generar cartas nuevas
   useEffect(()=>{
     const missing=[...new Set(cards.map(c=>c.name))].filter(n=>!cardImages[n]&&!genRef.current.has(n));
     if(missing.length>0)genImages(missing);
   },[cards]);
 
+  // Bonus diario
+  useEffect(()=>{
+    const today=new Date().toDateString();
+    const last=localStorage.getItem("last_daily");
+    if(last!==today){
+      const streak=Math.min(10,parseInt(localStorage.getItem("daily_streak")||"0")+1);
+      const reward=Math.min(600,100+(streak-1)*60);
+      setDailyReward(reward);setDailyStreak(streak);setDailyModal(true);
+      localStorage.setItem("last_daily",today);
+      localStorage.setItem("daily_streak",streak.toString());
+    }
+  },[]);
+
+  // Arena: generar enemigo al entrar al tab
+  useEffect(()=>{
+    if(tab==="Arena"&&!arenaEnemy)rollArenaEnemy_();
+  },[tab]);
+
+  /* ── FUNCIONES ── */
   function buyCardPack(pack){
     if(lili<pack.price){toast_("COIN insuficiente ❌");return;}
     const newLili=lili-pack.price;
@@ -733,7 +906,6 @@ export default function App(){
     setCards(newCards);setItems(newItems);scheduleSave(lili,newCards,newItems);
     toast_(`${ITEMS[itemId].emoji} Usado en ${cards.find(c=>c.id===cardId)?.name}`);
   }
-
   function claimReward(rw){
     const newLili=rw.lili>0?lili+rw.lili:lili;
     if(rw.lili>0)setLili(newLili);
@@ -742,11 +914,120 @@ export default function App(){
     if(!rw.failed) toast_(`✨ +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
     else           toast_(`💔 ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
-
+  function claimDailyBonus(){
+    const newLili=lili+dailyReward;
+    setLiliS(newLili);
+    setDailyModal(false);
+    toast_(`🎁 +${dailyReward} COIN — Día ${dailyStreak}`);
+  }
+  function redeemCode(code){
+    const c=code.trim().toUpperCase();
+    if(c==="NOPEGA1"){
+      if(redeemed.has("NOPEGA1")||cards.some(x=>x.name==="Zero")){toast_("Código ya canjeado ❌");return;}
+      const zc=makeZeroCard();
+      const newCards=[...cards,zc];
+      setCardsS(newCards);
+      const nr=new Set(redeemed);nr.add("NOPEGA1");setRedeemed(nr);
+      try{localStorage.setItem("redeemed",JSON.stringify([...nr]));}catch{}
+      setCodeModal(false);
+      toast_("⚡ ZERO desbloqueada — LA ABSOLUTA");
+      setTimeout(()=>setCardReveal(zc),300);
+    } else {
+      toast_("Código inválido ❌");
+    }
+  }
+  function sellCard(cardId){
+    const card=cards.find(c=>c.id===cardId);
+    if(!card||card.unique||card.status==="mission")return;
+    const price=SELL_PRICES[card.rarity]||20;
+    const newCards=cards.filter(c=>c.id!==cardId);
+    const newLili=lili+price;
+    setActiveCard(null);
+    setCardsS(newCards);
+    setLiliS(newLili);
+    toast_(`💰 Vendida ${card.name} → +${price} COIN`);
+  }
+  function sellItem(itemId){
+    if(!items[itemId]||items[itemId]<1){toast_("Sin ítems para vender");return;}
+    const price=5;
+    const newItems={...items,[itemId]:items[itemId]-1};
+    const newLili=lili+price;
+    setItemsS(newItems);
+    setLiliS(newLili);
+    toast_(`💰 Vendido ${ITEMS[itemId].name} → +${price} COIN`);
+  }
+  function trainStat(cardId,stat){
+    const card=cards.find(c=>c.id===cardId);
+    if(!card||card.unique)return;
+    const cost=TRAIN_COST(card.trainLevel||0);
+    if(lili<cost){toast_(`Necesitas ${cost} COIN ❌`);return;}
+    const boost={hp:15,atk:5,def:4,spd:3}[stat]||5;
+    const newCards=cards.map(c=>c.id===cardId?{
+      ...c,
+      hp:stat==="hp"?c.hp+boost:c.hp,
+      maxHp:stat==="hp"?c.maxHp+boost:c.maxHp,
+      atk:stat==="atk"?c.atk+boost:c.atk,
+      def:stat==="def"?c.def+boost:c.def,
+      spd:stat==="spd"?c.spd+boost:c.spd,
+      trainLevel:(c.trainLevel||0)+1,
+    }:c);
+    setCardsS(newCards);
+    setLiliS(lili-cost);
+    toast_(`💪 +${boost} ${stat.toUpperCase()} en ${card.name} (-${cost} COIN)`);
+  }
+  function rollArenaEnemy_(){
+    const maxTier=cards.length?Math.max(...cards.map(c=>RARITY[c.rarity].tier)):0;
+    const tier=Math.min(5,Math.max(0,maxTier+Math.floor(Math.random()*3)-1));
+    const pool=ARENA_ENEMIES.filter(e=>e.tier<=Math.max(1,tier));
+    setArenaEnemy(pool[Math.floor(Math.random()*pool.length)]);
+    setArenaFighter(null);
+  }
+  function startArenaBattle(){
+    const card=cards.find(c=>c.id===arenaFighter);
+    const enemy=arenaEnemy;
+    if(!card||!enemy){toast_("Selecciona un personaje");return;}
+    if(card.status!=="idle"){toast_("El personaje debe estar libre");return;}
+    // Simulación de batalla
+    let pHP=card.hp,eHP=enemy.hp,rounds=0,leveledUp=false;
+    while(pHP>0&&eHP>0&&rounds<200){
+      const pDmg=Math.max(1,card.atk-Math.floor(enemy.def*0.6)+Math.floor(Math.random()*12));
+      eHP-=pDmg;if(eHP<=0)break;
+      const eDmg=Math.max(1,enemy.atk-Math.floor(card.def*0.6)+Math.floor(Math.random()*10));
+      if(!card.shielded)pHP-=eDmg;
+      else{pHP-=Math.floor(eDmg*0.3);}
+      rounds++;
+    }
+    const won=eHP<=0;
+    const coinGain=won?enemy.reward:Math.max(5,Math.floor(enemy.reward*0.08));
+    const xpGain=won?enemy.xp:Math.floor(enemy.xp*0.2);
+    const newLili=lili+coinGain;
+    const newCards=cards.map(c=>{
+      if(c.id!==card.id)return c;
+      if(c.unique)return{...c,xp:c.xp+xpGain}; // Zero no pierde HP
+      const newHP=Math.max(1,Math.floor(c.hp*(pHP/card.hp)));
+      const newXp=c.xp+xpGain;
+      const lUp=newXp>=(c.level*20);
+      if(lUp)leveledUp=true;
+      return{
+        ...c,
+        hp:newHP,
+        status:!won&&newHP<c.maxHp*0.25?"injured":c.status,
+        restEnd:!won&&newHP<c.maxHp*0.25?Date.now()+45000:c.restEnd,
+        emotionalState:won?"motivated":c.emotionalState,
+        xp:lUp?newXp-c.level*20:newXp,
+        level:lUp?c.level+1:c.level,
+        atk:lUp?c.atk+3:c.atk,
+        def:lUp?c.def+2:c.def,
+      };
+    });
+    setLiliS(newLili);
+    setCardsS(newCards);
+    setArenaResult({won,enemy,card,coinGain,xpGain,rounds,leveledUp});
+  }
   function doFusion(idA,idB){
     const ca=cards.find(c=>c.id===idA),cb=cards.find(c=>c.id===idB);
     if(!ca||!cb)return null;
-    if(ca.rarity!==cb.rarity||ca.rarity==="legendary")return null;
+    if(ca.rarity!==cb.rarity||ca.rarity==="legendary"||ca.unique||cb.unique)return null;
     if(lili<25){toast_("Necesitas 25 COIN para fusionar");return null;}
     const nxt=FUSION_MAP[FUSION_MAP.indexOf(ca.rarity)+1];
     const result=makeCard(nxt);
@@ -769,7 +1050,7 @@ export default function App(){
       changed=false;
       for(const tier of[0,1,2,3]){
         const rar=FUSION_MAP[tier];
-        const pool=current.filter(c=>c.status==="idle"&&c.rarity===rar);
+        const pool=current.filter(c=>c.status==="idle"&&c.rarity===rar&&!c.unique);
         if(pool.length>=2&&lili-cost>=25){
           const[a,b]=pool;
           const result=makeCard(FUSION_MAP[tier+1]);
@@ -829,6 +1110,8 @@ export default function App(){
       <style>{`
         @keyframes fade_in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+        @keyframes img_pulse{0%,100%{opacity:.25}50%{opacity:.55}}
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}
         ::-webkit-scrollbar-track{background:#0c0c1e}
@@ -848,7 +1131,7 @@ export default function App(){
           </div>
         </div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{TABS.map(t=><NavBtn key={t} t={t}/>)}</div>
-        <div style={{display:"flex",gap:12,alignItems:"center"}}>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
           <div style={{background:`${C.gold}10`,border:`1px solid ${C.gold}28`,borderRadius:24,padding:"5px 14px",display:"flex",alignItems:"center",gap:7}}>
             <CatLogo size={15}/>
             <span style={{color:C.gold,fontWeight:900,fontSize:16,textShadow:`0 0 10px ${C.gold}66`}}>{lili}</span>
@@ -857,21 +1140,23 @@ export default function App(){
           <span style={{fontSize:12,color:C.muted}}>🎴{cards.length}</span>
           {(()=>{
             const loading=Object.values(cardImages).filter(v=>v==="__loading__").length;
-            const total=CHARS.length;
             const done=Object.values(cardImages).filter(v=>v&&v!=="__loading__").length;
+            const total=CHARS.length;
             if(loading>0)return(
               <div style={{display:"flex",alignItems:"center",gap:6,background:`${C.purple}15`,
                 border:`1px solid ${C.purple}30`,borderRadius:8,padding:"5px 10px"}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:C.purple,
-                  animation:"img_pulse 1s infinite"}}/>
+                <div style={{width:8,height:8,borderRadius:"50%",background:C.purple,animation:"img_pulse 1s infinite"}}/>
                 <span style={{fontSize:10,color:C.purple,fontWeight:700}}>{done}/{total}</span>
               </div>
             );
-            if(done===total)return(
-              <div style={{fontSize:10,color:C.muted,opacity:.5}}>🎨 {done}/{total}</div>
-            );
+            if(done===total)return<div style={{fontSize:10,color:C.muted,opacity:.5}}>🎨 {done}/{total}</div>;
             return null;
           })()}
+          <button onClick={()=>setCodeModal(true)}
+            style={{background:`${C.cyan}10`,color:C.cyan,border:`1px solid ${C.cyan}30`,
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>
+            🔑
+          </button>
           <button onClick={logout}
             style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
               borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11}}>
@@ -882,7 +1167,7 @@ export default function App(){
 
       <div style={{padding:16,maxWidth:1040,margin:"0 auto",position:"relative",zIndex:1}}>
 
-        {/* COLECCIÓN */}
+        {/* ── COLECCIÓN ── */}
         {tab==="Colección"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
@@ -914,8 +1199,40 @@ export default function App(){
                 <div key={c.id} style={{display:"flex",flexDirection:"column"}}>
                   <CardUI card={c} selected={activeCard===c.id} onClick={()=>setActiveCard(activeCard===c.id?null:c.id)}/>
                   {activeCard===c.id&&(
-                    <div style={{background:C.bg3,border:`1px solid ${RARITY[c.rarity].color}1a`,
+                    <div style={{background:C.bg3,border:`1px solid ${RARITY[c.rarity]?.color||"#fff"}1a`,
                       borderRadius:"0 0 12px 12px",padding:10,width:160,marginTop:-2}}>
+                      {/* VENDER */}
+                      {!c.unique&&c.status!=="mission"&&(
+                        <button onClick={()=>sellCard(c.id)}
+                          style={{width:"100%",background:`${C.gold}10`,color:C.gold,
+                            border:`1px solid ${C.gold}30`,borderRadius:7,padding:"6px 0",
+                            cursor:"pointer",fontSize:11,fontWeight:700,marginBottom:8,
+                            display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>
+                          💰 Vender ({SELL_PRICES[c.rarity]||20} COIN)
+                        </button>
+                      )}
+                      {/* ENTRENAR */}
+                      {!c.unique&&(
+                        <div>
+                          <div style={{fontSize:9,color:C.cyan,marginBottom:4,fontWeight:700,letterSpacing:1}}>
+                            ENTRENAR ({TRAIN_COST(c.trainLevel||0)} COIN)
+                          </div>
+                          <div style={{display:"flex",gap:3,marginBottom:8,flexWrap:"wrap"}}>
+                            {[["hp","❤️ HP"],["atk","⚔️ ATK"],["def","🛡️ DEF"],["spd","💨 SPD"]].map(([s,l])=>(
+                              <button key={s} onClick={()=>trainStat(c.id,s)}
+                                disabled={lili<TRAIN_COST(c.trainLevel||0)}
+                                style={{flex:1,minWidth:34,background:lili>=TRAIN_COST(c.trainLevel||0)?`${C.cyan}12`:"transparent",
+                                  color:lili>=TRAIN_COST(c.trainLevel||0)?C.cyan:"#2a2a3a",
+                                  border:`1px solid ${lili>=TRAIN_COST(c.trainLevel||0)?C.cyan+"30":"#ffffff06"}`,
+                                  borderRadius:5,padding:"4px 2px",cursor:lili>=TRAIN_COST(c.trainLevel||0)?"pointer":"not-allowed",
+                                  fontSize:10,fontWeight:700}}>
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {/* ÍTEMS */}
                       <div style={{fontSize:9,color:C.pink,marginBottom:6,fontWeight:700,letterSpacing:1}}>USAR ÍTEM</div>
                       {ITEM_ORDER.map(k=>{
                         const it=ITEMS[k],qty=items[k]||0;
@@ -934,7 +1251,11 @@ export default function App(){
                           </button>
                         );
                       })}
-                      {c.status==="mission"&&<div style={{fontSize:9,color:C.red,textAlign:"center",marginTop:3}}>En misión</div>}
+                      {c.status==="injured"&&c.restEnd&&(
+                        <div style={{fontSize:9,color:C.cyan,textAlign:"center",marginTop:4}}>
+                          🩹 Auto-cura en {Math.max(0,Math.ceil((c.restEnd-now)/1000))}s
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -944,7 +1265,7 @@ export default function App(){
           </div>
         )}
 
-        {/* TIENDA */}
+        {/* ── TIENDA ── */}
         {tab==="Tienda"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:12,letterSpacing:2}}>SOBRES DE CARTAS</div>
@@ -977,7 +1298,7 @@ export default function App(){
               ))}
             </div>
             <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:12,letterSpacing:2}}>KITS DE ÍTEMS</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:14}}>
+            <div style={{display:"flex",flexWrap:"wrap",gap:14,marginBottom:28}}>
               {ITEM_PACKS.map(pack=>(
                 <div key={pack.id} style={{background:C.bg3,border:`1.5px solid ${pack.color}22`,
                   borderRadius:16,padding:18,minWidth:190,maxWidth:220,flex:"1 1 190px"}}>
@@ -1001,10 +1322,33 @@ export default function App(){
                 </div>
               ))}
             </div>
+            {/* VENDER ÍTEMS */}
+            <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:12,letterSpacing:2}}>VENDER ÍTEMS (5 COIN c/u)</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+              {ITEM_ORDER.map(k=>{
+                const it=ITEMS[k],qty=items[k]||0;
+                return(
+                  <div key={k} style={{background:C.bg3,border:`1px solid ${it.color}22`,borderRadius:12,
+                    padding:"12px 16px",display:"flex",alignItems:"center",gap:10,opacity:qty>0?1:.3}}>
+                    <span style={{fontSize:24}}>{it.emoji}</span>
+                    <div>
+                      <div style={{fontSize:12,fontWeight:700,color:it.color}}>{it.name}</div>
+                      <div style={{fontSize:10,color:C.muted}}>×{qty} disponibles</div>
+                    </div>
+                    <button onClick={()=>sellItem(k)} disabled={qty<1}
+                      style={{marginLeft:"auto",background:qty>0?`${C.gold}15`:"transparent",color:qty>0?C.gold:"#2a2a3a",
+                        border:`1px solid ${qty>0?C.gold+"40":"#ffffff06"}`,borderRadius:7,
+                        padding:"5px 10px",cursor:qty>0?"pointer":"not-allowed",fontSize:11,fontWeight:700}}>
+                      Vender
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
-        {/* FUSIÓN */}
+        {/* ── FUSIÓN ── */}
         {tab==="Fusión"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{background:C.bg3,border:`1px solid ${C.pink}18`,borderRadius:14,padding:14,marginBottom:16}}>
@@ -1035,7 +1379,7 @@ export default function App(){
             </div>
             <div style={{fontSize:11,color:C.muted,marginBottom:10}}>O selecciona 2 cartas libres de la misma rareza:</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:12,marginBottom:20}}>
-              {cards.filter(c=>c.status==="idle").map(c=>{
+              {cards.filter(c=>c.status==="idle"&&!c.unique).map(c=>{
                 const sel=fusionA===c.id||fusionB===c.id;
                 return(
                   <div key={c.id} onClick={()=>{
@@ -1086,11 +1430,9 @@ export default function App(){
           </div>
         )}
 
-        {/* MISIONES */}
+        {/* ── MISIONES ── */}
         {tab==="Misiones"&&(
           <div style={{animation:"fade_in .3s both",display:"flex",gap:16,flexWrap:"wrap"}}>
-
-            {/* Left: mission list */}
             <div style={{flex:"2 1 300px"}}>
               <div style={{fontSize:11,color:C.muted,marginBottom:12,letterSpacing:1}}>MISIONES DISPONIBLES</div>
               {MISSIONS.map(m=>(
@@ -1121,11 +1463,7 @@ export default function App(){
                 </div>
               ))}
             </div>
-
-            {/* Right: completed rewards + active missions */}
             <div style={{flex:"1 1 220px"}}>
-
-              {/* Pending rewards – inline, un solo toque */}
               {pendingRewards.length>0&&(
                 <div style={{marginBottom:16}}>
                   <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:8,letterSpacing:2}}>
@@ -1152,14 +1490,10 @@ export default function App(){
                           )}
                         </div>
                         <button onClick={()=>claimReward(rw)} style={{
-                          flexShrink:0,
-                          background:rw.failed?`${C.red}20`:`${C.gold}20`,
-                          color:rw.failed?C.red:C.gold,
-                          border:`1.5px solid ${rw.failed?C.red+"50":C.gold+"50"}`,
-                          borderRadius:8,padding:"7px 12px",
-                          cursor:"pointer",fontSize:12,fontWeight:800,letterSpacing:.3,
-                          transition:"all .12s",
-                        }}
+                          flexShrink:0,background:rw.failed?`${C.red}20`:`${C.gold}20`,
+                          color:rw.failed?C.red:C.gold,border:`1.5px solid ${rw.failed?C.red+"50":C.gold+"50"}`,
+                          borderRadius:8,padding:"7px 12px",cursor:"pointer",fontSize:12,fontWeight:800,
+                          transition:"all .12s",}}
                           onMouseEnter={e=>{e.currentTarget.style.background=rw.failed?C.red:C.gold;e.currentTarget.style.color="#000";}}
                           onMouseLeave={e=>{e.currentTarget.style.background=rw.failed?`${C.red}20`:`${C.gold}20`;e.currentTarget.style.color=rw.failed?C.red:C.gold;}}>
                           {rw.failed?"OK":"RECLAMAR"}
@@ -1169,8 +1503,6 @@ export default function App(){
                   ))}
                 </div>
               )}
-
-              {/* Active missions */}
               <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>EN MISIÓN</div>
               {cards.filter(c=>c.status==="mission").map(c=>{
                 const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
@@ -1202,12 +1534,114 @@ export default function App(){
             </div>
           </div>
         )}
+
+        {/* ── ARENA ── */}
+        {tab==="Arena"&&(
+          <div style={{animation:"fade_in .3s both"}}>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:20}}>
+              <div style={{fontSize:20,fontWeight:900,color:C.red,textShadow:`0 0 16px ${C.red}88`,letterSpacing:2}}>⚔️ ARENA</div>
+              <div style={{fontSize:11,color:C.muted}}>Lucha contra enemigos para ganar COIN y XP</div>
+            </div>
+
+            {arenaEnemy&&(
+              <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                {/* Enemigo */}
+                <div style={{flex:"0 0 240px"}}>
+                  <div style={{fontSize:11,color:C.red,fontWeight:700,marginBottom:10,letterSpacing:2}}>ENEMIGO</div>
+                  <div style={{background:`linear-gradient(135deg,#1a0505,${C.bg3})`,
+                    border:`2px solid ${C.red}40`,borderRadius:18,padding:22,textAlign:"center",
+                    boxShadow:`0 0 40px ${C.red}18`}}>
+                    <div style={{fontSize:64,marginBottom:8}}>{arenaEnemy.emoji}</div>
+                    <div style={{fontSize:18,fontWeight:900,color:"#fff",marginBottom:4}}>{arenaEnemy.name}</div>
+                    <div style={{display:"flex",justifyContent:"center",gap:12,fontSize:13,marginBottom:14}}>
+                      <span style={{color:"#ff7043"}}>⚔️ {arenaEnemy.atk}</span>
+                      <span style={{color:"#42a5f5"}}>🛡️ {arenaEnemy.def}</span>
+                      <span style={{color:C.green}}>❤️ {arenaEnemy.hp}</span>
+                    </div>
+                    <div style={{background:`${C.gold}12`,border:`1px solid ${C.gold}30`,borderRadius:10,padding:"8px 0",marginBottom:8}}>
+                      <div style={{fontSize:11,color:C.muted,marginBottom:2}}>Recompensa</div>
+                      <div style={{fontSize:20,fontWeight:900,color:C.gold}}>+{arenaEnemy.reward} COIN</div>
+                      <div style={{fontSize:11,color:C.cyan}}>+{arenaEnemy.xp} XP</div>
+                    </div>
+                    <div style={{fontSize:10,color:C.muted}}>Tier {arenaEnemy.tier}</div>
+                  </div>
+                  <button onClick={rollArenaEnemy_}
+                    style={{marginTop:10,width:"100%",background:`${C.muted}12`,color:C.muted,
+                      border:`1px solid ${C.muted}25`,borderRadius:10,padding:"8px 0",
+                      cursor:"pointer",fontSize:12,fontWeight:700}}>
+                    🔄 Otro enemigo
+                  </button>
+                </div>
+
+                {/* Seleccionar luchador */}
+                <div style={{flex:"1 1 300px"}}>
+                  <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>TU LUCHADOR</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:16}}>
+                    {cards.filter(c=>c.status==="idle").map(c=>(
+                      <div key={c.id} onClick={()=>setArenaFighter(arenaFighter===c.id?null:c.id)}>
+                        <CardUI card={c} selected={arenaFighter===c.id} mini/>
+                      </div>
+                    ))}
+                    {cards.filter(c=>c.status==="idle").length===0&&(
+                      <div style={{color:C.muted,fontSize:13}}>Sin personajes libres para luchar.</div>
+                    )}
+                  </div>
+
+                  {arenaFighter&&(()=>{
+                    const fc=cards.find(c=>c.id===arenaFighter);
+                    if(!fc)return null;
+                    // Preview odds
+                    const winChance=Math.min(95,Math.max(5,
+                      50+Math.round(((fc.atk-arenaEnemy.atk)/2)+((fc.def-arenaEnemy.def)*0.8)+((fc.hp-arenaEnemy.hp)/10))
+                    ));
+                    return(
+                      <div style={{background:C.bg3,border:`1px solid ${C.pink}22`,borderRadius:14,padding:16,marginBottom:14}}>
+                        <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:12}}>
+                          <div style={{width:50,height:62,borderRadius:8,overflow:"hidden",flexShrink:0}}>
+                            <AnimeArt char={CHARS[fc.charIdx]||CHARS[0]} rarity={fc.rarity} w={50} h={62}/>
+                          </div>
+                          <div>
+                            <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{fc.name}</div>
+                            <div style={{fontSize:10,color:RARITY[fc.rarity].color}}>{RARITY[fc.rarity].label}</div>
+                            <div style={{fontSize:10,color:C.muted}}>⚔{fc.atk} 🛡{fc.def} ❤{fc.hp}</div>
+                          </div>
+                          <div style={{marginLeft:"auto",textAlign:"right"}}>
+                            <div style={{fontSize:10,color:C.muted}}>Prob. victoria</div>
+                            <div style={{fontSize:22,fontWeight:900,color:winChance>60?C.green:winChance>40?C.gold:C.red,
+                              textShadow:`0 0 12px currentColor`}}>{winChance}%</div>
+                          </div>
+                        </div>
+                        {[["Tú",fc.atk,fc.def,fc.hp],["Enemigo",arenaEnemy.atk,arenaEnemy.def,arenaEnemy.hp]].map(([n,a,d,h],i)=>(
+                          <div key={n} style={{display:"flex",gap:10,fontSize:11,marginBottom:4,color:i===0?C.cyan:C.red}}>
+                            <span style={{width:52,fontWeight:700}}>{n}</span>
+                            <span>⚔️{a}</span><span>🛡️{d}</span><span>❤️{h}</span>
+                          </div>
+                        ))}
+                        <button onClick={startArenaBattle}
+                          style={{marginTop:14,width:"100%",background:`linear-gradient(90deg,${C.red},${C.pink})`,
+                            color:"#fff",border:"none",borderRadius:12,padding:"13px 0",
+                            fontWeight:900,fontSize:15,cursor:"pointer",letterSpacing:1,
+                            boxShadow:`0 0 28px ${C.red}44`}}>
+                          ⚔️ ¡LUCHAR!
+                        </button>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
 
       {/* MODALS */}
       {cardReveal&&<CardPackReveal card={cardReveal} onClose={()=>setCardReveal(null)}/>}
       {itemReveal&&<ItemPackReveal items={itemReveal} onClose={()=>setItemReveal(null)}/>}
       {activeMission&&<MissionModal mission={activeMission} cards={cards} onSend={sendOnMission} onClose={()=>setActiveMission(null)}/>}
+      {codeModal&&<CodeModal onClose={()=>setCodeModal(false)} onRedeem={redeemCode}/>}
+      {dailyModal&&<DailyModal reward={dailyReward} streak={dailyStreak} onClaim={claimDailyBonus}/>}
+      {arenaResult&&<ArenaResultModal result={arenaResult} onClose={()=>{setArenaResult(null);rollArenaEnemy_();}}/>}
 
       {/* TOAST */}
       {toast&&(
