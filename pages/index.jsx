@@ -149,10 +149,10 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
       </div>
 
       {/* Frame overlay */}
-      <img src="/marco.png" style={{
-        position:"absolute", inset: "-4%", width:"108%", height:"108%",
+      <img src="/marco_v2.png" style={{
+        position:"absolute", top:0, left:0, width:"100%", height:"100%",
         objectFit:"fill", pointerEvents:"none",
-        filter: `drop-shadow(0 0 10px ${col}66)` // suave glow del color de rareza detrás del marco
+        filter: `drop-shadow(0 0 10px ${col}66)`
       }} alt="marco"/>
 
         {/* Top gradient overlay */}
