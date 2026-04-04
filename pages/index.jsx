@@ -57,7 +57,7 @@ const TRAIN_COST = (lvl) => 30 + lvl * 15;
 /* mode: "col" = colección (stats), "mission" = enviar misión (botón), "mini" = compacta, "arena" = arena */
 function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
   const r = RARITY[card.rarity] || RARITY.common;
-  const ch = CHARS[card.charIdx] || CHARS[0];
+  const ch = CHARS.find(c=>c.name===card.name) || CHARS[card.charIdx] || CHARS[0];
   const isDivine = card.rarity === "divine";
   const col = r.color;
   const hpPct = Math.min(100, Math.round((card.hp / card.maxHp) * 100));
@@ -1482,7 +1482,7 @@ export default function App(){
                     const total=MISSIONS.find(x=>x.id===c.currentMission)?.time||60;
                     const pct=Math.round(((total-secs)/total)*100);
                     const r=RARITY[c.rarity];
-                    const ch=CHARS[c.charIdx]||CHARS[0];
+                    const ch=CHARS.find(x=>x.name===c.name)||CHARS[c.charIdx]||CHARS[0];
                     return(
                       <div key={c.id} style={{
                         background:`linear-gradient(135deg,#04001a,${C.bg3})`,
