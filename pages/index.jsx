@@ -19,20 +19,33 @@ const RARITY = {
 const FUSION_MAP = ["common","uncommon","rare","epic","legendary"];
 
 const CHARS = [
-  { name:"Yoru",  img:"/chars/yoru.png",  pos:"center 20%", role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb" },
+  // common — SFW
+  { name:"Sera",  img:"/chars/sera.png",  pos:"center 15%", role:"Sanadora",   cls:"Clérigo", atkT:"Luz",          c:"#00e676" },
+  { name:"Faye",  img:"/chars/faye.png",  pos:"center 25%", role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5" },
+  { name:"Kaine", img:"/chars/kaine.png", pos:"center 30%", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744" },
   { name:"Akari", img:"/chars/akari.png", pos:"center 15%", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",        c:"#7c4dff" },
-  { name:"Sera",  img:"/chars/sera.png",  pos:"center 10%", role:"Sanadora",   cls:"Clérigo", atkT:"Luz",          c:"#00e676" },
-  { name:"Nyx",   img:"/chars/nyx.png",   pos:"center 30%", role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff" },
-  { name:"Rein",  img:"/chars/rein.png",  pos:"center 15%", role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f" },
-  { name:"Vex",   img:"/chars/vex.png",   pos:"center 15%", role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081" },
-  { name:"Lyra",  img:"/chars/lyra.png",  pos:"center 10%", role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800" },
-  { name:"Kaine", img:"/chars/kaine.png", pos:"center 20%", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744" },
-  { name:"Faye",  img:"/chars/faye.png",  pos:"center 20%", role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5" },
-  { name:"Mira",  img:"/chars/mira.png",  pos:"center 10%", role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03" },
-  { name:"Dusk",  img:"/chars/dusk.png",  pos:"center 15%", role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2" },
-  { name:"Rin",   img:"/chars/rin.png",   pos:"center 5%",  role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081" },
-  { name:"Zero",  img:"/chars/zero.png",  pos:"center 5%",  role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff" },
+  // uncommon — sugestivas
+  { name:"Rein",  img:"/chars/rein.png",  pos:"center 20%", role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f" },
+  { name:"Yoru",  img:"/chars/yoru.png",  pos:"center 25%", role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb" },
+  // rare — más sensual
+  { name:"Lyra",  img:"/chars/lyra.png",  pos:"center 15%", role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800" },
+  // epic — explícitas
+  { name:"Vex",   img:"/chars/vex.png",   pos:"center 20%", role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081" },
+  { name:"Mira",  img:"/chars/mira.png",  pos:"center 35%", role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03" },
+  // legendary — muy explícitas
+  { name:"Dusk",  img:"/chars/dusk.png",  pos:"center 30%", role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2" },
+  { name:"Rin",   img:"/chars/rin.png",   pos:"center 30%", role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081" },
+  { name:"Zero",  img:"/chars/zero.png",  pos:"center 30%", role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff" },
+  { name:"Nyx",   img:"/chars/nyx.png",   pos:"center 25%", role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff" },
 ];
+
+const RARITY_POOLS = {
+  common:    ["Sera","Faye","Kaine","Akari"],
+  uncommon:  ["Rein","Yoru"],
+  rare:      ["Lyra"],
+  epic:      ["Vex","Mira"],
+  legendary: ["Dusk","Rin","Zero","Nyx"],
+};
 
 /* Precios venta */
 const SELL_PRICES = { common:20, uncommon:50, rare:120, epic:260, legendary:600 };
@@ -354,7 +367,8 @@ function rollItemFromPool(pool){
 }
 function makeCard(rarity,rates){
   const r=rarity||rollRarity(rates||{common:100});
-  const eligibleChars=CHARS.filter(c=>!["Zero","Faye","Kaine"].includes(c.name));
+  const pool=RARITY_POOLS[r]||RARITY_POOLS.common;
+  const eligibleChars=CHARS.filter(c=>pool.includes(c.name));
   const ch=eligibleChars[Math.floor(Math.random()*eligibleChars.length)];
   const tier=RARITY[r].tier;
   return{
@@ -1135,72 +1149,202 @@ export default function App(){
 
         {/* ── TIENDA ── */}
         {tab==="Tienda"&&(
-          <div style={{animation:"fade_in .3s both"}}>
-            <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:12,letterSpacing:2}}>SOBRES DE CARTAS</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:14,marginBottom:28}}>
-              {CARD_PACKS.map(pack=>(
-                <div key={pack.id} style={{background:C.bg3,border:`1.5px solid ${pack.color}22`,
-                  borderRadius:16,padding:18,minWidth:190,maxWidth:220,flex:"1 1 190px"}}>
-                  <div style={{fontSize:17,fontWeight:900,color:pack.color,marginBottom:3}}>{pack.name}</div>
-                  <div style={{fontSize:11,color:C.muted,marginBottom:12}}>{pack.desc}</div>
-                  {Object.entries(pack.rates).filter(([,v])=>v>0).map(([k,v])=>(
-                    <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-                      <span style={{fontSize:11,color:RARITY[k].color}}>{RARITY[k].label}</span>
-                      <div style={{display:"flex",gap:5,alignItems:"center"}}>
-                        <div style={{height:3,width:50,background:"#ffffff07",borderRadius:3,overflow:"hidden"}}>
-                          <div style={{height:"100%",width:v+"%",background:RARITY[k].color,borderRadius:3}}/>
-                        </div>
-                        <span style={{fontSize:10,color:C.muted,minWidth:24,textAlign:"right"}}>{v}%</span>
+          <div style={{animation:"fade_in .4s both"}}>
+            <style>{`
+              @keyframes card_hover{0%,100%{box-shadow:0 0 20px var(--gc)33}50%{box-shadow:0 0 40px var(--gc)66}}
+              @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+              .shop-card{transition:transform .2s,box-shadow .2s;}
+              .shop-card:hover{transform:translateY(-6px) scale(1.01);}
+              .buy-btn{transition:all .15s;letter-spacing:2px;font-family:'Orbitron',sans-serif;}
+              .buy-btn:hover:not(:disabled){filter:brightness(1.2);transform:scale(1.02);}
+              .buy-btn:active:not(:disabled){transform:scale(0.98);}
+            `}</style>
+
+            {/* ── SECTION HEADER ── */}
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.pink}66,transparent)`}}/>
+              <div style={{fontSize:10,fontWeight:900,color:C.pink,letterSpacing:5,fontFamily:"'Orbitron',sans-serif",
+                textShadow:`0 0 15px ${C.pink}`}}>SOBRES DE CARTAS</div>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${C.pink}66)`}}/>
+            </div>
+
+            {/* ── CARD PACKS GRID ── */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:16,marginBottom:40}}>
+              {CARD_PACKS.map(pack=>{
+                const canBuy=lili>=pack.price;
+                return(
+                <div key={pack.id} className="shop-card" style={{
+                  position:"relative",borderRadius:18,overflow:"hidden",
+                  background:`linear-gradient(160deg, #0a0018 0%, #020010 60%, ${pack.color}0a 100%)`,
+                  border:`1px solid ${pack.color}44`,
+                  boxShadow:`0 0 30px ${pack.color}18, inset 0 0 30px ${pack.color}06`,
+                }}>
+                  {/* Top accent bar */}
+                  <div style={{height:3,background:`linear-gradient(90deg,transparent,${pack.color},transparent)`}}/>
+                  <div style={{padding:"20px 20px 18px"}}>
+                    {/* Pack name + icon */}
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+                      <div style={{width:36,height:36,borderRadius:10,
+                        background:`linear-gradient(135deg,${pack.color}44,${pack.color}11)`,
+                        border:`1px solid ${pack.color}66`,display:"flex",alignItems:"center",justifyContent:"center",
+                        boxShadow:`0 0 12px ${pack.color}44`}}>
+                        <Z5Icon size={26}/>
+                      </div>
+                      <div>
+                        <div style={{fontSize:15,fontWeight:900,color:"#fff",fontFamily:"'Orbitron',sans-serif",
+                          letterSpacing:1,textShadow:`0 0 10px ${pack.color}88`}}>{pack.name}</div>
+                        <div style={{fontSize:9,color:pack.color,letterSpacing:2,opacity:.8}}>{pack.desc}</div>
                       </div>
                     </div>
-                  ))}
-                  <button onClick={()=>buyCardPack(pack)} disabled={lili<pack.price}
-                    style={{marginTop:14,width:"100%",background:lili>=pack.price?pack.color:"#ffffff08",
-                      color:lili>=pack.price?"#000":"#333",border:"none",borderRadius:9,
-                      padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed",
-                      display:"flex",alignItems:"center",justifyContent:"center",gap:7}}>
-                    <Z5Icon size={18}/> {pack.price} Z5
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:12,letterSpacing:2}}>KITS DE ÍTEMS</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:14,marginBottom:28}}>
-              {ITEM_PACKS.map(pack=>(
-                <div key={pack.id} style={{background:C.bg3,border:`1.5px solid ${pack.color}22`,borderRadius:16,padding:18,minWidth:190,maxWidth:220,flex:"1 1 190px"}}>
-                  <Sprite icon={pack.icon} size={42} style={{marginBottom:6}} />
-                  <div style={{fontSize:16,fontWeight:900,color:pack.color,marginBottom:3}}>{pack.name}</div>
-                  <div style={{fontSize:11,color:C.muted,marginBottom:12}}>{pack.desc}</div>
-                  {pack.pool.map(([k,p])=>(
-                    <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
-                      <span style={{fontSize:11,color:ITEMS[k]?.color,display:"flex",alignItems:"center",gap:4}}><Sprite icon={ITEMS[k]?.icon} size={14}/> {ITEMS[k]?.name}</span>
-                      <span style={{fontSize:10,color:C.muted}}>{Math.round(p*100)}%</span>
+
+                    {/* Divider */}
+                    <div style={{height:1,background:`linear-gradient(90deg,transparent,${pack.color}44,transparent)`,margin:"12px 0"}}/>
+
+                    {/* Rates */}
+                    <div style={{marginBottom:14}}>
+                      {Object.entries(pack.rates).filter(([,v])=>v>0).map(([k,v])=>(
+                        <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+                          <span style={{fontSize:9,color:RARITY[k].color,fontWeight:700,letterSpacing:1,
+                            textShadow:`0 0 6px ${RARITY[k].color}88`}}>{RARITY[k].label}</span>
+                          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                            <div style={{height:2,width:60,background:"#ffffff08",borderRadius:2,overflow:"hidden"}}>
+                              <div style={{height:"100%",width:`${v}%`,borderRadius:2,
+                                background:`linear-gradient(90deg,${RARITY[k].color}88,${RARITY[k].color})`,
+                                boxShadow:`0 0 4px ${RARITY[k].color}`}}/>
+                            </div>
+                            <span style={{fontSize:9,color:RARITY[k].color,fontWeight:700,minWidth:26,textAlign:"right"}}>{v}%</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  <button onClick={()=>buyItemPack(pack)} disabled={lili<pack.price}
-                    style={{marginTop:12,width:"100%",background:lili>=pack.price?pack.color:"#ffffff08",
-                      color:lili>=pack.price?"#000":"#333",border:"none",borderRadius:9,
-                      padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed"}}>
-                    {pack.price} Z5
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:12,letterSpacing:2}}>VENDER ÍTEMS (5 Z5 c/u)</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-              {ITEM_ORDER.map(k=>{const it=ITEMS[k],qty=items[k]||0;return(
-                <div key={k} style={{background:C.bg3,border:`1px solid ${it.color}22`,borderRadius:12,
-                  padding:"12px 16px",display:"flex",alignItems:"center",gap:10,opacity:qty>0?1:.3}}>
-                  <Sprite icon={it.icon} size={32} />
-                  <div>
-                    <div style={{fontSize:12,fontWeight:700,color:it.color}}>{it.name}</div>
-                    <div style={{fontSize:10,color:C.muted}}>×{qty}</div>
+
+                    {/* Buy button */}
+                    <button onClick={()=>buyCardPack(pack)} disabled={!canBuy} className="buy-btn"
+                      style={{
+                        width:"100%",border:"none",borderRadius:10,padding:"11px 0",
+                        cursor:canBuy?"pointer":"not-allowed",fontWeight:900,fontSize:12,
+                        background:canBuy
+                          ?`linear-gradient(90deg,${pack.color}dd,${pack.color}99)`
+                          :"#ffffff08",
+                        color:canBuy?"#000":"#333",
+                        boxShadow:canBuy?`0 0 20px ${pack.color}55`:undefined,
+                        display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+                      }}>
+                      <Z5Icon size={16}/> {pack.price} Z5
+                    </button>
                   </div>
-                  <button onClick={()=>sellItem(k)} disabled={qty<1}
-                    style={{marginLeft:"auto",background:qty>0?`${C.gold}15`:"transparent",color:qty>0?C.gold:"#2a2a3a",
-                      border:`1px solid ${qty>0?C.gold+"40":"#ffffff06"}`,borderRadius:7,
-                      padding:"5px 10px",cursor:qty>0?"pointer":"not-allowed",fontSize:11,fontWeight:700}}>
-                    Vender
+                  {/* Bottom corner gem */}
+                  <div style={{position:"absolute",bottom:-4,right:-4,width:12,height:12,
+                    background:pack.color,transform:"rotate(45deg)",
+                    boxShadow:`0 0 10px ${pack.color}`}}/>
+                </div>
+              );})}
+            </div>
+
+            {/* ── SECTION HEADER ITEMS ── */}
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.cyan}66,transparent)`}}/>
+              <div style={{fontSize:10,fontWeight:900,color:C.cyan,letterSpacing:5,fontFamily:"'Orbitron',sans-serif",
+                textShadow:`0 0 15px ${C.cyan}`}}>KITS DE ÍTEMS</div>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${C.cyan}66)`}}/>
+            </div>
+
+            {/* ── ITEM PACKS ── */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:16,marginBottom:40}}>
+              {ITEM_PACKS.map(pack=>{
+                const canBuy=lili>=pack.price;
+                return(
+                <div key={pack.id} className="shop-card" style={{
+                  position:"relative",borderRadius:18,overflow:"hidden",
+                  background:`linear-gradient(160deg,#0a0018,#020010,${pack.color}0a)`,
+                  border:`1px solid ${pack.color}44`,
+                  boxShadow:`0 0 30px ${pack.color}18,inset 0 0 30px ${pack.color}06`,
+                }}>
+                  <div style={{height:3,background:`linear-gradient(90deg,transparent,${pack.color},transparent)`}}/>
+                  <div style={{padding:"18px 20px"}}>
+                    {/* Icon + name */}
+                    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                      <div style={{
+                        width:52,height:52,borderRadius:14,
+                        background:`linear-gradient(135deg,${pack.color}33,${pack.color}0a)`,
+                        border:`1px solid ${pack.color}55`,
+                        display:"flex",alignItems:"center",justifyContent:"center",
+                        boxShadow:`0 0 20px ${pack.color}44`,flexShrink:0,
+                      }}>
+                        <Sprite icon={pack.icon} size={38}/>
+                      </div>
+                      <div>
+                        <div style={{fontSize:14,fontWeight:900,color:"#fff",fontFamily:"'Orbitron',sans-serif",
+                          letterSpacing:1,textShadow:`0 0 10px ${pack.color}88`}}>{pack.name}</div>
+                        <div style={{fontSize:9,color:pack.color,letterSpacing:1,marginTop:2}}>{pack.desc}</div>
+                      </div>
+                    </div>
+                    <div style={{height:1,background:`linear-gradient(90deg,transparent,${pack.color}44,transparent)`,marginBottom:10}}/>
+                    {/* Pool items */}
+                    {pack.pool.map(([k,p])=>(
+                      <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                        <span style={{fontSize:10,color:ITEMS[k]?.color,display:"flex",alignItems:"center",gap:5,fontWeight:700}}>
+                          <Sprite icon={ITEMS[k]?.icon} size={16}/> {ITEMS[k]?.name}
+                        </span>
+                        <span style={{fontSize:10,color:ITEMS[k]?.color,fontWeight:900,
+                          textShadow:`0 0 6px ${ITEMS[k]?.color}`}}>{Math.round(p*100)}%</span>
+                      </div>
+                    ))}
+                    <button onClick={()=>buyItemPack(pack)} disabled={!canBuy} className="buy-btn"
+                      style={{
+                        marginTop:14,width:"100%",border:"none",borderRadius:10,padding:"11px 0",
+                        cursor:canBuy?"pointer":"not-allowed",fontWeight:900,fontSize:12,
+                        background:canBuy?`linear-gradient(90deg,${pack.color}dd,${pack.color}99)`:"#ffffff08",
+                        color:canBuy?"#000":"#333",
+                        boxShadow:canBuy?`0 0 20px ${pack.color}55`:undefined,
+                      }}>
+                      <Z5Icon size={16} style={{display:"inline",verticalAlign:"middle",marginRight:6}}/>{pack.price} Z5
+                    </button>
+                  </div>
+                  <div style={{position:"absolute",bottom:-4,right:-4,width:10,height:10,
+                    background:pack.color,transform:"rotate(45deg)",boxShadow:`0 0 8px ${pack.color}`}}/>
+                </div>
+              );})}
+            </div>
+
+            {/* ── SECTION HEADER SELL ── */}
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,${C.gold}66,transparent)`}}/>
+              <div style={{fontSize:10,fontWeight:900,color:C.gold,letterSpacing:5,fontFamily:"'Orbitron',sans-serif",
+                textShadow:`0 0 15px ${C.gold}`}}>VENDER ÍTEMS · 5 Z5 c/u</div>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,transparent,${C.gold}66)`}}/>
+            </div>
+
+            {/* ── SELL ITEMS ── */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
+              {ITEM_ORDER.map(k=>{
+                const it=ITEMS[k],qty=items[k]||0;
+                return(
+                <div key={k} style={{
+                  background:`linear-gradient(135deg,#050010,${it.color}06)`,
+                  border:`1px solid ${qty>0?it.color+"44":"#ffffff08"}`,
+                  borderRadius:14,padding:"12px 14px",
+                  display:"flex",flexDirection:"column",gap:8,
+                  opacity:qty>0?1:.35,transition:"opacity .2s",
+                  boxShadow:qty>0?`0 0 16px ${it.color}11`:undefined,
+                }}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <Sprite icon={it.icon} size={28}/>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:11,fontWeight:700,color:it.color,
+                        textShadow:`0 0 6px ${it.color}88`,letterSpacing:.5}}>{it.name}</div>
+                      <div style={{fontSize:9,color:C.muted,marginTop:1}}>×{qty} disponibles</div>
+                    </div>
+                  </div>
+                  <button onClick={()=>sellItem(k)} disabled={qty<1} className="buy-btn"
+                    style={{
+                      width:"100%",border:`1px solid ${qty>0?C.gold+"55":"#ffffff08"}`,borderRadius:8,
+                      padding:"6px 0",cursor:qty>0?"pointer":"not-allowed",fontSize:9,fontWeight:900,
+                      background:qty>0?`linear-gradient(90deg,${C.gold}22,${C.gold}0a)`:"transparent",
+                      color:qty>0?C.gold:"#2a2a3a",
+                      boxShadow:qty>0?`0 0 10px ${C.gold}22`:undefined,
+                    }}>
+                    VENDER · +5 Z5
                   </button>
                 </div>
               );})}
