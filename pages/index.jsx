@@ -37,19 +37,6 @@ const CHARS = [
 /* Precios venta */
 const SELL_PRICES = { common:20, uncommon:50, rare:120, epic:260, legendary:600 };
 
-/* Arena enemies */
-const ARENA_ENEMIES = [
-  { name:"Golem Roto",      icon:"enemy_golem",    tier:0, hp:80,   atk:14,  def:6,   reward:25,  xp:8  },
-  { name:"Lobo Sombra",     icon:"enemy_wolf",     tier:0, hp:110,  atk:20,  def:8,   reward:35,  xp:10 },
-  { name:"Arquera Oscura",  icon:"enemy_archer",   tier:1, hp:160,  atk:32,  def:15,  reward:60,  xp:15 },
-  { name:"Espectro Maldito",icon:"skull_horns",    tier:1, hp:140,  atk:38,  def:12,  reward:70,  xp:18 },
-  { name:"Caballero Roto",  icon:"enemy_knight",   tier:2, hp:240,  atk:52,  def:28,  reward:110, xp:25 },
-  { name:"Dragón Menor",    icon:"enemy_dragon",   tier:2, hp:300,  atk:60,  def:35,  reward:140, xp:30 },
-  { name:"Demonio Élite",   icon:"enemy_demon",    tier:3, hp:450,  atk:88,  def:48,  reward:230, xp:45 },
-  { name:"Ángel Caído",     icon:"enemy_demon",    tier:3, hp:500,  atk:95,  def:55,  reward:260, xp:50 },
-  { name:"Dragón Arcano",   icon:"enemy_dragon",   tier:4, hp:800,  atk:140, def:80,  reward:420, xp:80 },
-  { name:"Titán del Vacío", icon:"enemy_golem",    tier:5, hp:2000, atk:400, def:280, reward:900, xp:150},
-];
 
 const TRAIN_COST = (lvl) => 30 + lvl * 15;
 
@@ -119,49 +106,81 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
 
   /* Full card */
   const cardW = 170;
-  const cardH = 280;
+  const cardH = 285;
+  const corner = (t,l,r,b)=>({position:"absolute",top:t,left:l,right:r,bottom:b,width:14,height:14,
+    borderColor:col,borderStyle:"solid",borderWidth:0,
+    ...(t!==undefined&&l!==undefined?{borderTopWidth:2,borderLeftWidth:2}:{}),
+    ...(t!==undefined&&r!==undefined?{borderTopWidth:2,borderRightWidth:2}:{}),
+    ...(b!==undefined&&l!==undefined?{borderBottomWidth:2,borderLeftWidth:2}:{}),
+    ...(b!==undefined&&r!==undefined?{borderBottomWidth:2,borderRightWidth:2}:{}),
+    boxShadow:`0 0 8px ${col}88`,pointerEvents:"none",zIndex:4,
+  });
 
   return (
     <div onClick={onClick} style={{
       position:"relative", width:cardW, height:cardH, userSelect:"none",
       cursor:onClick?"pointer":"default",
-      transition:"transform .2s, filter .2s",
-      filter: selected ? `drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})` : `drop-shadow(0 0 8px ${col}44)`,
+      borderRadius:12,
+      transition:"transform .2s, box-shadow .2s",
       transform: selected ? "scale(1.05) translateY(-4px)" : undefined,
+      boxShadow: selected
+        ? `0 0 0 1.5px ${col}, 0 0 24px ${col}aa, 0 0 60px ${col}44`
+        : `0 0 0 1px ${col}55, 0 0 12px ${col}22`,
     }}
-      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-8px) scale(1.03)";e.currentTarget.style.filter=`drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})`;} }}
-      onMouseLeave={e=>{e.currentTarget.style.transform=selected?"scale(1.05) translateY(-4px)":"";e.currentTarget.style.filter=selected?`drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})`:`drop-shadow(0 0 8px ${col}44)`;}}
+      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-6px) scale(1.02)";e.currentTarget.style.boxShadow=`0 0 0 1.5px ${col}, 0 0 28px ${col}aa, 0 0 60px ${col}44`;}}}
+      onMouseLeave={e=>{e.currentTarget.style.transform=selected?"scale(1.05) translateY(-4px)":"";e.currentTarget.style.boxShadow=selected?`0 0 0 1.5px ${col}, 0 0 24px ${col}aa, 0 0 60px ${col}44`:`0 0 0 1px ${col}55, 0 0 12px ${col}22`;}}
     >
-      {/* ── CHARACTER IMAGE (behind frame) ── */}
-      <div style={{position:"absolute",inset:0,borderRadius:14,overflow:"hidden",background:"#000"}}>
-        <img src={ch.img} alt={ch.name} style={{
-          width:"100%", height:"100%",
-          objectFit:"cover", objectPosition:"center top",
-          display:"block",
-          filter: isDivine ? "brightness(1) contrast(1.1)" : "brightness(0.88) contrast(1.05)"
-        }}/>
+      {/* ── CHARACTER ── */}
+      <div style={{position:"absolute",inset:0,borderRadius:11,overflow:"hidden",background:"#000"}}>
+        <div style={{position:"absolute",top:"-15%",left:"-8%",right:"-8%",bottom:"-5%"}}>
+          <img src={ch.img} alt={ch.name} style={{
+            width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 12%",display:"block",
+            filter:isDivine?"brightness(1.05) contrast(1.1)":"brightness(0.88) contrast(1.05)",
+          }}/>
+        </div>
       </div>
 
-      {/* Frame — screen blend makes the black center transparent */}
-      <img src="/marco_v2.png" style={{
-        position:"absolute", top:0, left:0, width:"100%", height:"100%",
-        objectFit:"fill", pointerEvents:"none",
-        mixBlendMode:"screen",
-        filter:`drop-shadow(0 0 18px ${col}88) drop-shadow(0 0 6px ${col})`,
-      }} alt="marco"/>
+      {/* ── GRADIENT OVERLAYS ── */}
+      {/* Top tint */}
+      <div style={{position:"absolute",top:0,left:0,right:0,height:"45%",borderRadius:"11px 11px 0 0",
+        background:`linear-gradient(to bottom, ${col}33 0%, ${col}11 40%, transparent 100%)`,
+        pointerEvents:"none",zIndex:1}}/>
+      {/* Bottom dark panel */}
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:mode==="mission"?"52px":"72px",
+        borderRadius:"0 0 11px 11px",
+        background:`linear-gradient(to top, #000000f5 0%, #000000cc 50%, transparent 100%)`,
+        pointerEvents:"none",zIndex:1}}/>
+      {/* Left glow strip */}
+      <div style={{position:"absolute",left:0,top:"20%",bottom:"20%",width:2,zIndex:2,
+        background:`linear-gradient(to bottom,transparent,${col}88,transparent)`,borderRadius:1,pointerEvents:"none"}}/>
+      {/* Right glow strip */}
+      <div style={{position:"absolute",right:0,top:"20%",bottom:"20%",width:2,zIndex:2,
+        background:`linear-gradient(to bottom,transparent,${col}88,transparent)`,borderRadius:1,pointerEvents:"none"}}/>
 
-      {/* Rarity badge */}
+      {/* ── CORNER BRACKETS ── */}
+      <div style={{...corner(4,4,undefined,undefined)}}/>
+      <div style={{...corner(4,undefined,4,undefined)}}/>
+      <div style={{...corner(undefined,4,undefined,4)}}/>
+      <div style={{...corner(undefined,undefined,4,4)}}/>
+      {/* Top center gem */}
+      <div style={{position:"absolute",top:-5,left:"50%",transform:"translateX(-50%) rotate(45deg)",
+        width:10,height:10,background:col,zIndex:5,pointerEvents:"none",
+        boxShadow:`0 0 12px ${col}, 0 0 4px #fff`}}/>
+      {/* Bottom center gem */}
+      <div style={{position:"absolute",bottom:-5,left:"50%",transform:"translateX(-50%) rotate(45deg)",
+        width:8,height:8,background:col,zIndex:5,pointerEvents:"none",
+        boxShadow:`0 0 10px ${col}`}}/>
+
+      {/* ── RARITY BADGE ── */}
       <div style={{
-        position:"absolute", top:6, left:"50%", transform:"translateX(-50%)",
-        background:"#000000cc", backdropFilter:"blur(6px)",
-        border:`1px solid ${col}88`, borderRadius:20,
-        padding:"2px 10px", fontSize:8, color:col, fontWeight:900,
-        letterSpacing:2, textShadow:`0 0 8px ${col}`,
-        whiteSpace:"nowrap",
+        position:"absolute",top:8,left:"50%",transform:"translateX(-50%)",
+        background:"#000000dd",border:`1px solid ${col}88`,borderRadius:20,
+        padding:"2px 10px",fontSize:7,color:col,fontWeight:900,
+        letterSpacing:2,textShadow:`0 0 8px ${col}`,whiteSpace:"nowrap",zIndex:3,
       }}>{r.label}</div>
 
       {/* Stars */}
-      <div style={{position:"absolute",top:22,left:"50%",transform:"translateX(-50%)",display:"flex",gap:1}}>
+      <div style={{position:"absolute",top:22,left:"50%",transform:"translateX(-50%)",display:"flex",gap:1,zIndex:3}}>
         {Array.from({length:r.stars},(_,i)=>(
           <span key={i} style={{fontSize:7,color:col,textShadow:`0 0 5px ${col}`}}>★</span>
         ))}
@@ -169,41 +188,36 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
 
       {/* Status badge */}
       {card.status!=="idle"&&(
-        <div style={{position:"absolute",top:6,right:6,background:"#000000cc",
+        <div style={{position:"absolute",top:6,right:8,background:"#000000cc",
           border:`1px solid ${stCol}66`,borderRadius:20,padding:"2px 6px",
-          fontSize:7,color:stCol,fontWeight:700,letterSpacing:1}}>
+          fontSize:7,color:stCol,fontWeight:900,letterSpacing:1,zIndex:3}}>
           {card.status==="mission"?"MISIÓN":card.status==="injured"?"HERIDA":"DESC."}
         </div>
       )}
-      {card.shielded&&<div style={{position:"absolute",top:28,right:8,fontSize:11}}></div>}
+      {card.shielded&&<div style={{position:"absolute",top:28,right:8,fontSize:10,zIndex:3}}></div>}
 
-      {/* BOTTOM PANEL */}
+      {/* ── BOTTOM CONTENT ── */}
       {mode==="mission" ? (
-        /* Clickable area over the frame's built-in button */
-        <button
-          onClick={e=>{e.stopPropagation();onSendMission&&onSendMission();}}
+        <button onClick={e=>{e.stopPropagation();onSendMission&&onSendMission();}}
           disabled={card.status!=="idle"}
           style={{
-            position:"absolute", bottom:0, left:0, right:0, height:52,
-            background:"transparent", border:"none",
+            position:"absolute",bottom:0,left:0,right:0,height:52,zIndex:3,
+            background:card.status==="idle"
+              ?`linear-gradient(90deg,${col}cc,${col}66)`:"#ffffff08",
+            border:"none",borderRadius:"0 0 11px 11px",
+            color:card.status==="idle"?"#000":"#444",
+            fontSize:10,fontWeight:900,letterSpacing:2,
             cursor:card.status==="idle"?"pointer":"not-allowed",
-          }}
-          title={card.status==="idle"?"Enviar misión":card.status==="mission"?"En misión":"No disponible"}
-        >
-          {card.status!=="idle"&&(
-            <div style={{position:"absolute",inset:0,background:"#000000aa",display:"flex",alignItems:"center",justifyContent:"center",borderRadius:"0 0 14px 14px"}}>
-              <span style={{color:stCol,fontSize:10,fontWeight:900,letterSpacing:2}}>
-                {card.status==="mission"?"EN MISIÓN":"NO DISPONIBLE"}
-              </span>
-            </div>
-          )}
+            fontFamily:"'Orbitron',sans-serif",
+            boxShadow:card.status==="idle"?`inset 0 1px 0 ${col}66`:undefined,
+          }}>
+          {card.status==="idle"?"ENVIAR MISIÓN":card.status==="mission"?"EN MISIÓN":"NO DISPONIBLE"}
         </button>
       ) : (
-        /* Col / arena: stats at bottom */
-        <div style={{position:"absolute",bottom:4,left:8,right:8}}>
+        <div style={{position:"absolute",bottom:6,left:8,right:8,zIndex:3}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:2}}>
             <span style={{fontSize:11,fontWeight:900,color:"#fff",textShadow:`0 0 10px ${col}`,letterSpacing:1}}>{card.name}</span>
-            {card.level>1&&<span style={{fontSize:8,color:C.gold,fontWeight:700,letterSpacing:1}}>LV{card.level}</span>}
+            {card.level>1&&<span style={{fontSize:8,color:C.gold,fontWeight:700}}>LV{card.level}</span>}
           </div>
           <div style={{height:2,background:"#ffffff10",borderRadius:2,overflow:"hidden",marginBottom:3}}>
             <div style={{height:"100%",borderRadius:2,
@@ -219,14 +233,12 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
         </div>
       )}
 
-      {/* Removed the old decorative gems, hearts, and sidebars here. */}
-
-      {/* Selected check */}
-      {selected && (
-        <div style={{position:"absolute",top:12,left:"50%",transform:"translateX(-50%)",
-          background:col,color:"#000",borderRadius:"50%",width:22,height:22,
-          fontSize:12,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center",
-          boxShadow:`0 0 12px ${col}`,zIndex:5}}>✓</div>
+      {/* Selected ✓ */}
+      {selected&&(
+        <div style={{position:"absolute",top:10,left:"50%",transform:"translateX(-50%)",
+          background:col,color:"#000",borderRadius:"50%",width:20,height:20,
+          fontSize:11,fontWeight:900,display:"flex",alignItems:"center",justifyContent:"center",
+          boxShadow:`0 0 14px ${col}`,zIndex:6}}>✓</div>
       )}
     </div>
   );
@@ -272,7 +284,7 @@ function Sprite({ icon, size=40, style={} }) {
       width: s.wide ? size*2 : size, height: size,
       backgroundImage: "url('/spritesheet.png')",
       backgroundSize: "500% 600%",
-      mixBlendMode: "screen",
+      filter: "brightness(1.15) contrast(1.1) drop-shadow(0 0 4px currentColor)",
       backgroundPosition: `${s.col * 25}% ${s.row * 20}%`,
       display: "inline-block", verticalAlign: "middle", ...style
     }} />
@@ -378,20 +390,16 @@ function calcMissionStats(card,mission){
     reward:rew, bonusReward:Math.round(rew*1.6), bonusPct:Math.round(bonusPct), xpGain:12+tier*7 };
 }
 
-function CatLogo({size=28}){
+function Z5Icon({size=28}){
   return(
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <ellipse cx="16" cy="19" rx="10" ry="9" fill="#111"/>
-      <polygon points="8,11 5,3 12,9" fill="#111"/>
-      <polygon points="24,11 27,3 20,9" fill="#111"/>
-      <circle cx="12.5" cy="19" r="2.8" fill={C.gold} opacity=".95"/>
-      <circle cx="19.5" cy="19" r="2.8" fill={C.gold} opacity=".95"/>
-      <circle cx="12.5" cy="19" r="1.3" fill="#07071a"/>
-      <circle cx="19.5" cy="19" r="1.3" fill="#07071a"/>
-      <path d="M14 23 Q16 25 18 23" stroke={C.gold} strokeWidth="1.1" fill="none" strokeLinecap="round"/>
-    </svg>
+    <img src="/Z5.png" alt="Z5" style={{
+      width:size, height:size,
+      objectFit:"contain", display:"inline-block", verticalAlign:"middle",
+      mixBlendMode:"screen", flexShrink:0,
+    }}/>
   );
 }
+function CatLogo({size=28}){ return <Z5Icon size={size}/>; }
 
 /* ── CARD PACK REVEAL ── */
 function CardPackReveal({card,onClose}){
@@ -492,7 +500,7 @@ function DailyModal({reward,streak,onClaim}){
         <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both"}}></div>
         <div style={{fontSize:22,fontWeight:900,color:C.gold,letterSpacing:2}}>BONUS DIARIO</div>
         <div style={{fontSize:12,color:C.muted,marginTop:4,marginBottom:20}}>Racha: {streak} día{streak!==1?"s":""}</div>
-        <div style={{fontSize:48,fontWeight:900,color:C.gold,marginBottom:24}}>+{reward} COIN</div>
+        <div style={{fontSize:48,fontWeight:900,color:C.gold,marginBottom:24}}>+{reward} Z5</div>
         <button onClick={onClaim} style={{background:C.gold,color:"#000",border:"none",
           borderRadius:12,padding:"14px 50px",fontWeight:900,fontSize:16,cursor:"pointer"}}>¡RECLAMAR!</button>
       </div>
@@ -500,32 +508,6 @@ function DailyModal({reward,streak,onClaim}){
   );
 }
 
-/* ── ARENA RESULT ── */
-function ArenaResultModal({result,onClose}){
-  const won=result.won;
-  return(
-    <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{background:C.bg2,border:`2px solid ${won?C.gold:C.red}44`,borderRadius:22,padding:"32px 36px",textAlign:"center",maxWidth:360,width:"100%"}}>
-        
-        <div style={{fontSize:22,fontWeight:900,color:won?C.gold:C.red,letterSpacing:2}}>{won?"¡VICTORIA!":"DERROTA"}</div>
-        <div style={{fontSize:13,color:C.muted,marginTop:4,marginBottom:16,display:"flex",alignItems:"center",gap:6,justifyContent:"center"}}>
-          {result.card.name} vs <Sprite icon={result.enemy.icon} size={20} /> {result.enemy.name}
-        </div>
-        <div style={{background:C.bg3,borderRadius:12,padding:14,marginBottom:20,textAlign:"left"}}>
-          {[["COIN",`+${result.coinGain}`,won?C.gold:C.muted],["XP",`+${result.xpGain}`,C.cyan],["Rondas",`${result.rounds}`,C.muted]].map(([l,v,col])=>(
-            <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-              <span style={{fontSize:12,color:C.muted}}>{l}</span>
-              <span style={{fontSize:13,fontWeight:700,color:col}}>{v}</span>
-            </div>
-          ))}
-          {result.leveledUp&&<div style={{fontSize:12,color:C.gold,marginTop:4}}> {result.card.name} subió de nivel!</div>}
-        </div>
-        <button onClick={onClose} style={{width:"100%",background:won?C.gold:C.red,color:"#000",
-          border:"none",borderRadius:10,padding:"11px 0",fontWeight:900,fontSize:14,cursor:"pointer"}}>CONTINUAR</button>
-      </div>
-    </div>
-  );
-}
 
 /* ── MISSION RESULT MODAL ── */
 function MissionResultModal({reward,onClaim}){
@@ -543,7 +525,7 @@ function MissionResultModal({reward,onClaim}){
           {ok?(
             <>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-                <span style={{fontSize:12,color:C.muted}}>COIN</span>
+                <span style={{fontSize:12,color:C.muted}}>Z5</span>
                 <span style={{fontSize:16,fontWeight:900,color:C.gold}}>+{reward.lili}{reward.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:5}}>★BONUS</span>}</span>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
@@ -587,7 +569,7 @@ function MissionModal({mission,cards,onSend,onClose}){
           <div style={{display:"flex",alignItems:"center",gap:8}}><Sprite icon={mission.icon||"map"} size={26} />
             <div style={{fontSize:22,fontWeight:900,color:"#fff",letterSpacing:1}}>{mission.name}</div>
           </div>
-            <div style={{fontSize:12,color:C.muted,marginTop:2}}>⏱ {mission.time}s · Base: {mission.baseReward} COIN · Riesgo: {Math.round(mission.baseRisk*100)}%</div>
+            <div style={{fontSize:12,color:C.muted,marginTop:2}}>⏱ {mission.time}s · Base: {mission.baseReward} Z5 · Riesgo: {Math.round(mission.baseRisk*100)}%</div>
           </div>
           <button onClick={onClose} style={{background:"transparent",border:`1px solid ${C.muted}33`,
             color:C.muted,borderRadius:8,width:32,height:32,cursor:"pointer",fontSize:16}}>✕</button>
@@ -626,7 +608,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                 ))}
                 <div style={{background:C.bg3,border:`1px solid ${C.gold}18`,borderRadius:10,padding:12,marginBottom:12}}>
                   <div style={{fontSize:10,color:C.gold,fontWeight:700,marginBottom:8}}>RECOMPENSAS</div>
-                  {[["COIN base",`+${stats.reward}`,C.gold],[`Bonus (${stats.bonusPct}%)`,`+${stats.bonusReward}`,C.gold],["XP",`+${stats.xpGain}`,C.cyan]].map(([l,v,col])=>(
+                  {[["Z5 base",`+${stats.reward}`,C.gold],[`Bonus (${stats.bonusPct}%)`,`+${stats.bonusReward}`,C.gold],["XP",`+${stats.xpGain}`,C.cyan]].map(([l,v,col])=>(
                     <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
                       <span style={{fontSize:11,color:C.muted}}>{l}</span>
                       <span style={{fontSize:12,color:col,fontWeight:700}}>{v}</span>
@@ -637,7 +619,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                   style={{width:"100%",background:C.pink,color:"#000",border:"none",
                     borderRadius:10,padding:"12px 0",fontWeight:900,fontSize:14,cursor:"pointer",
                     boxShadow:`0 0 22px ${C.pink}55`}}>
-                   ENVIAR (5 COIN)
+                   ENVIAR (5 Z5)
                 </button>
               </div>
             )}
@@ -674,9 +656,9 @@ function LoginScreen({onAuth}){
       <div style={{background:"#03030eee",border:`1px solid ${C.pink}44`,borderRadius:16,padding:"40px 36px",width:"100%",maxWidth:380,
         boxShadow:`0 0 80px ${C.pink}22, 0 0 160px ${C.pink}0a, inset 0 0 40px ${C.pink}04`}}>
         <div style={{textAlign:"center",marginBottom:28}}>
-          <CatLogo size={48}/>
-          <div style={{fontSize:32,fontWeight:900,color:C.pink,letterSpacing:8,marginTop:10,fontFamily:"'Orbitron',sans-serif",
-            textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>COIN</div>
+          <Z5Icon size={72}/>
+          <div style={{fontSize:28,fontWeight:900,color:C.pink,letterSpacing:6,marginTop:6,fontFamily:"'Orbitron',sans-serif",
+            textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>Z5</div>
           <div style={{fontSize:8,color:C.pink,letterSpacing:6,opacity:.5}}>CARD UNIVERSE</div>
         </div>
         <form onSubmit={handle}>
@@ -704,7 +686,7 @@ function LoginScreen({onAuth}){
   );
 }
 
-const TABS=["Colección","Tienda","Fusión","Misiones","Arena"];
+const TABS=["Colección","Tienda","Fusión","Misiones"];
 const DEFAULT_ITEMS={health_potion:2,medicine:1,food:1,ration:0,atk_potion:0,shield:0,antidote:0,elixir:0,revive:0};
 
 export default function App(){
@@ -732,9 +714,6 @@ export default function App(){
   useEffect(()=>{stateRef.current={lili,cards,items};},[lili,cards,items]);
   /* nuevas mecánicas */
   const[codeModal,setCodeModal]=useState(false);
-  const[arenaEnemy,setArenaEnemy]=useState(null);
-  const[arenaFighter,setArenaFighter]=useState(null);
-  const[arenaResult,setArenaResult]=useState(null);
   const[dailyModal,setDailyModal]=useState(false);
   const[dailyReward,setDailyReward]=useState(0);
   const[dailyStreak,setDailyStreak]=useState(1);
@@ -840,20 +819,18 @@ export default function App(){
     }
   },[]);
 
-  // Arena enemy
-  useEffect(()=>{if(tab==="Arena"&&!arenaEnemy)rollArenaEnemy_();},[tab]);
 
   function toast_(msg){setToast(msg);setTimeout(()=>setToast(null),2600);}
 
   /* ── GAME ACTIONS ── */
   function buyCardPack(pack){
-    if(lili<pack.price){toast_("COIN insuficiente ");return;}
+    if(lili<pack.price){toast_("Z5 insuficiente ");return;}
     const nc=makeCard(null,pack.rates);
     setLili(lili-pack.price);setCardsS([...cards,nc]);
     setCardReveal(nc);
   }
   function buyItemPack(pack){
-    if(lili<pack.price){toast_("COIN insuficiente ");return;}
+    if(lili<pack.price){toast_("Z5 insuficiente ");return;}
     const count=pack.count||1;
     const got=Array.from({length:count},()=>rollItemFromPool(pack.pool));
     const newItems={...items};got.forEach(k=>{newItems[k]=(newItems[k]||0)+1;});
@@ -870,13 +847,13 @@ export default function App(){
   function claimReward(rw){
     if(rw.lili>0)setLiliS(lili+rw.lili);
     setPendingRewards(pr=>pr.filter(r=>r.id!==rw.id));
-    if(!rw.failed)toast_(` +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
+    if(!rw.failed)toast_(` +${rw.lili} Z5 · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
     else toast_(` ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
   function claimDailyBonus(){
     setLiliS(lili+dailyReward);
     setDailyModal(false);
-    toast_(` +${dailyReward} COIN — Día ${dailyStreak}`);
+    toast_(` +${dailyReward} Z5 — Día ${dailyStreak}`);
   }
   function redeemCode(code){
     const c=code.trim().toUpperCase();
@@ -898,19 +875,19 @@ export default function App(){
     setActiveCard(null);
     setLili(lili+price);
     setCardsS(cards.filter(c=>c.id!==cardId));
-    toast_(` Vendida ${card.name} → +${price} COIN`);
+    toast_(` Vendida ${card.name} → +${price} Z5`);
   }
   function sellItem(itemId){
     if(!items[itemId]||items[itemId]<1){toast_("Sin ítems para vender");return;}
     setItemsS({...items,[itemId]:items[itemId]-1});
     setLiliS(lili+5);
-    toast_(` Vendido ${ITEMS[itemId].name} → +5 COIN`);
+    toast_(` Vendido ${ITEMS[itemId].name} → +5 Z5`);
   }
   function trainStat(cardId,stat){
     const card=cards.find(c=>c.id===cardId);
     if(!card||card.unique)return;
     const cost=TRAIN_COST(card.trainLevel||0);
-    if(lili<cost){toast_(`Necesitas ${cost} COIN `);return;}
+    if(lili<cost){toast_(`Necesitas ${cost} Z5`);return;}
     const boost={hp:15,atk:5,def:4,spd:3}[stat]||5;
     setCardsS(cards.map(c=>c.id===cardId?{...c,
       hp:stat==="hp"?c.hp+boost:c.hp,maxHp:stat==="hp"?c.maxHp+boost:c.maxHp,
@@ -918,51 +895,13 @@ export default function App(){
       spd:stat==="spd"?c.spd+boost:c.spd,trainLevel:(c.trainLevel||0)+1,
     }:c));
     setLiliS(lili-cost);
-    toast_(` +${boost} ${stat.toUpperCase()} en ${card.name} (-${cost} COIN)`);
-  }
-  function rollArenaEnemy_(){
-    const maxTier=cards.length?Math.max(...cards.map(c=>RARITY[c.rarity].tier)):0;
-    const tier=Math.min(5,Math.max(0,maxTier+Math.floor(Math.random()*3)-1));
-    const pool=ARENA_ENEMIES.filter(e=>e.tier<=Math.max(1,tier));
-    setArenaEnemy(pool[Math.floor(Math.random()*pool.length)]);
-    setArenaFighter(null);
-  }
-  function startArenaBattle(){
-    const card=cards.find(c=>c.id===arenaFighter);
-    const enemy=arenaEnemy;
-    if(!card||!enemy){toast_("Selecciona un personaje");return;}
-    if(card.status!=="idle"){toast_("El personaje debe estar libre");return;}
-    let pHP=card.hp,eHP=enemy.hp,rounds=0,leveledUp=false;
-    while(pHP>0&&eHP>0&&rounds<200){
-      const pDmg=Math.max(1,card.atk-Math.floor(enemy.def*0.6)+Math.floor(Math.random()*12));
-      eHP-=pDmg;if(eHP<=0)break;
-      const eDmg=Math.max(1,enemy.atk-Math.floor(card.def*0.6)+Math.floor(Math.random()*10));
-      if(!card.shielded)pHP-=eDmg;else pHP-=Math.floor(eDmg*0.3);
-      rounds++;
-    }
-    const won=eHP<=0;
-    const coinGain=won?enemy.reward:Math.max(5,Math.floor(enemy.reward*0.08));
-    const xpGain=won?enemy.xp:Math.floor(enemy.xp*0.2);
-    const newCards=cards.map(c=>{
-      if(c.id!==card.id)return c;
-      if(c.unique)return{...c,xp:c.xp+xpGain};
-      const newHP=Math.max(1,Math.floor(c.hp*(pHP/card.hp)));
-      const newXp=c.xp+xpGain; const lUp=newXp>=(c.level*20);
-      if(lUp)leveledUp=true;
-      return{...c,hp:newHP,status:!won&&newHP<c.maxHp*0.25?"injured":c.status,
-        restEnd:!won&&newHP<c.maxHp*0.25?Date.now()+45000:c.restEnd,
-        emotionalState:won?"motivated":c.emotionalState,
-        xp:lUp?newXp-c.level*20:newXp,level:lUp?c.level+1:c.level,
-        atk:lUp?c.atk+3:c.atk,def:lUp?c.def+2:c.def};
-    });
-    setLili(lili+coinGain);setCardsS(newCards);
-    setArenaResult({won,enemy,card,coinGain,xpGain,rounds,leveledUp});
+    toast_(` +${boost} ${stat.toUpperCase()} en ${card.name} (-${cost} Z5)`);
   }
   function doFusion(idA,idB){
     const ca=cards.find(c=>c.id===idA),cb=cards.find(c=>c.id===idB);
     if(!ca||!cb)return null;
     if(ca.rarity!==cb.rarity||ca.rarity==="legendary"||ca.unique||cb.unique)return null;
-    if(lili<25){toast_("Necesitas 25 COIN para fusionar");return null;}
+    if(lili<25){toast_("Necesitas 25 Z5 para fusionar");return null;}
     const nxt=FUSION_MAP[FUSION_MAP.indexOf(ca.rarity)+1];
     const result=makeCard(nxt);
     const newCards=cards.filter(c=>c.id!==ca.id&&c.id!==cb.id).concat(result);
@@ -994,11 +933,11 @@ export default function App(){
     }
     if(totalFused===0){toast_("Sin pares para fusionar");setAutoFusing(false);return;}
     setLili(lili-cost);setCardsS(current);
-    toast_(` Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} COIN)`);
+    toast_(` Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} Z5)`);
     setAutoFusing(false);
   }
   function sendOnMission(cardId,mission){
-    if(lili<5){toast_("Sin COIN");return;}
+    if(lili<5){toast_("Sin Z5");return;}
     const card=cards.find(c=>c.id===cardId);if(!card)return;
     setLili(lili-5);
     setCardsS(cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c));
@@ -1063,11 +1002,11 @@ export default function App(){
         padding:"10px 20px",
         display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <CatLogo size={36}/>
+          <Z5Icon size={42}/>
           <div>
-            <div style={{fontSize:24,fontWeight:900,letterSpacing:6,color:C.pink,fontFamily:"'Orbitron',sans-serif",
-              textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>COIN</div>
-            <div style={{fontSize:7,color:C.pink,letterSpacing:6,marginTop:-2,opacity:.6}}>CARD UNIVERSE</div>
+            <div style={{fontSize:22,fontWeight:900,letterSpacing:5,color:C.pink,fontFamily:"'Orbitron',sans-serif",
+              textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>Z5</div>
+            <div style={{fontSize:7,color:C.pink,letterSpacing:4,marginTop:-2,opacity:.6}}>CARD UNIVERSE</div>
           </div>
         </div>
         <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{TABS.map(t=><NavBtn key={t} t={t}/>)}</div>
@@ -1076,7 +1015,7 @@ export default function App(){
             display:"flex",alignItems:"center",gap:7,boxShadow:`0 0 16px ${C.gold}22`}}>
             <CatLogo size={14}/>
             <span style={{color:C.gold,fontWeight:900,fontSize:16,textShadow:`0 0 10px ${C.gold}88`}}>{lili}</span>
-            <span style={{color:C.muted,fontSize:10,letterSpacing:1}}>COIN</span>
+            <span style={{color:C.muted,fontSize:10,letterSpacing:1}}>Z5</span>
           </div>
           <span style={{fontSize:11,color:C.muted,letterSpacing:1}}>{cards.length} </span>
           <button onClick={()=>setCodeModal(true)}
@@ -1127,13 +1066,13 @@ export default function App(){
                           style={{width:"100%",background:`${C.gold}10`,color:C.gold,
                             border:`1px solid ${C.gold}30`,borderRadius:7,padding:"6px 0",
                             cursor:"pointer",fontSize:11,fontWeight:700,marginBottom:8}}>
-                           Vender ({SELL_PRICES[c.rarity]||20} COIN)
+                           Vender ({SELL_PRICES[c.rarity]||20} Z5)
                         </button>
                       )}
                       {!c.unique&&(
                         <div style={{marginBottom:8}}>
                           <div style={{fontSize:9,color:C.cyan,marginBottom:4,fontWeight:700,letterSpacing:1}}>
-                            ENTRENAR ({TRAIN_COST(c.trainLevel||0)} COIN)
+                            ENTRENAR ({TRAIN_COST(c.trainLevel||0)} Z5)
                           </div>
                           <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
                             {[["hp","HP"],["atk","ATK"],["def","DEF"],["spd","SPD"]].map(([s,e])=>(
@@ -1205,7 +1144,7 @@ export default function App(){
                       color:lili>=pack.price?"#000":"#333",border:"none",borderRadius:9,
                       padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed",
                       display:"flex",alignItems:"center",justifyContent:"center",gap:7}}>
-                    <CatLogo size={14}/> {pack.price} COIN
+                    <Z5Icon size={18}/> {pack.price} Z5
                   </button>
                 </div>
               ))}
@@ -1227,12 +1166,12 @@ export default function App(){
                     style={{marginTop:12,width:"100%",background:lili>=pack.price?pack.color:"#ffffff08",
                       color:lili>=pack.price?"#000":"#333",border:"none",borderRadius:9,
                       padding:"9px 0",fontWeight:900,fontSize:14,cursor:lili>=pack.price?"pointer":"not-allowed"}}>
-                    {pack.price} COIN
+                    {pack.price} Z5
                   </button>
                 </div>
               ))}
             </div>
-            <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:12,letterSpacing:2}}>VENDER ÍTEMS (5 COIN c/u)</div>
+            <div style={{fontSize:11,color:C.gold,fontWeight:700,marginBottom:12,letterSpacing:2}}>VENDER ÍTEMS (5 Z5 c/u)</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
               {ITEM_ORDER.map(k=>{const it=ITEMS[k],qty=items[k]||0;return(
                 <div key={k} style={{background:C.bg3,border:`1px solid ${it.color}22`,borderRadius:12,
@@ -1258,7 +1197,7 @@ export default function App(){
         {tab==="Fusión"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{background:C.bg3,border:`1px solid ${C.pink}18`,borderRadius:14,padding:14,marginBottom:16}}>
-              <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:8,letterSpacing:2}}>FÓRMULA – 25 COIN</div>
+              <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:8,letterSpacing:2}}>FÓRMULA – 25 Z5</div>
               <div style={{display:"flex",flexWrap:"wrap",gap:6,alignItems:"center"}}>
                 {FUSION_MAP.map((r,i)=>(
                   <span key={r} style={{display:"flex",alignItems:"center",gap:3}}>
@@ -1311,7 +1250,7 @@ export default function App(){
                       style={{background:ok&&lili>=25?C.pink:"#ffffff0a",color:ok&&lili>=25?"#000":"#333",
                         border:"none",borderRadius:10,padding:"11px 26px",fontWeight:900,fontSize:14,
                         cursor:ok&&lili>=25?"pointer":"not-allowed"}}>
-                      Fusionar (25 COIN)
+                      Fusionar (25 Z5)
                     </button>
                   </div>
                 </div>
@@ -1359,7 +1298,7 @@ export default function App(){
                             </span>
                           </div>
                           <div style={{fontSize:10,color:C.muted}}>{rw.missionName}</div>
-                          {!rw.failed&&<div style={{fontSize:17,fontWeight:900,color:C.gold,marginTop:4}}>+{rw.lili} COIN{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:6}}>★BONUS</span>}</div>}
+                          {!rw.failed&&<div style={{fontSize:17,fontWeight:900,color:C.gold,marginTop:4}}>+{rw.lili} Z5{rw.bonus&&<span style={{fontSize:10,color:C.pink,marginLeft:6}}>★BONUS</span>}</div>}
                           {rw.failed&&rw.dmg&&<div style={{fontSize:11,color:C.red,marginTop:4}}>-{rw.dmg} HP</div>}
                         </div>
                         <div style={{background:rw.failed?C.red:C.gold,color:"#000",borderRadius:10,
@@ -1374,12 +1313,10 @@ export default function App(){
               </div>
             )}
 
-            {/* Héroes en misión */}
+            {/* ── EN MISIÓN ── */}
             {cards.filter(c=>c.status==="mission").length>0&&(
               <div style={{marginBottom:20}}>
-                <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>
-                  ⚔️ EN MISIÓN
-                </div>
+                <div style={{fontSize:10,color:C.cyan,fontWeight:900,marginBottom:10,letterSpacing:3,fontFamily:"'Orbitron',sans-serif"}}>⚔ EN MISIÓN</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
                   {cards.filter(c=>c.status==="mission").map(c=>{
                     const secs=Math.max(0,Math.ceil((c.missionEnd-now)/1000));
@@ -1388,21 +1325,22 @@ export default function App(){
                     const r=RARITY[c.rarity];
                     const ch=CHARS[c.charIdx]||CHARS[0];
                     return(
-                      <div key={c.id} style={{background:C.bg3,border:`1px solid ${r.color}22`,borderRadius:14,padding:12,
-                        minWidth:220,flex:"1 1 220px",maxWidth:320}}>
+                      <div key={c.id} style={{
+                        background:`linear-gradient(135deg,#04001a,${C.bg3})`,
+                        border:`1px solid ${C.cyan}33`,borderRadius:12,padding:"10px 14px",
+                        minWidth:200,flex:"1 1 200px",maxWidth:300,
+                        boxShadow:`0 0 20px ${C.cyan}11`}}>
                         <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:8}}>
-                          <img src={ch.img} alt={ch.name} style={{width:44,height:55,objectFit:"cover",objectPosition:"center top",borderRadius:8,flexShrink:0,border:`1px solid ${r.color}40`}}/>
+                          <img src={ch.img} alt={ch.name} style={{width:40,height:52,objectFit:"cover",objectPosition:"center 15%",borderRadius:6,flexShrink:0,border:`1px solid ${r.color}55`}}/>
                           <div style={{flex:1}}>
-                            <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{c.name}</div>
-                            <div style={{fontSize:10,color:r.color}}>{r.label}</div>
-                            <div style={{fontSize:12,color:C.gold,fontWeight:700,marginTop:2}}>
-                              ⏱ {secs}s
-                            </div>
+                            <div style={{fontSize:12,fontWeight:900,color:"#fff",letterSpacing:1}}>{c.name}</div>
+                            <div style={{fontSize:9,color:r.color,letterSpacing:1}}>{r.label}</div>
+                            <div style={{fontSize:13,color:C.gold,fontWeight:900,marginTop:3,fontFamily:"'Orbitron',sans-serif"}}>⏱ {secs}s</div>
                           </div>
                         </div>
-                        <div style={{height:5,background:"#ffffff08",borderRadius:4,overflow:"hidden"}}>
-                          <div style={{height:"100%",background:`linear-gradient(90deg,${C.cyan},${C.gold})`,borderRadius:4,
-                            width:pct+"%",transition:"width 1s linear",boxShadow:`0 0 8px ${C.gold}88`}}/>
+                        <div style={{height:3,background:"#ffffff08",borderRadius:2,overflow:"hidden"}}>
+                          <div style={{height:"100%",background:`linear-gradient(90deg,${C.cyan},${C.pink})`,borderRadius:2,
+                            width:pct+"%",transition:"width 1s linear",boxShadow:`0 0 6px ${C.pink}`}}/>
                         </div>
                       </div>
                     );
@@ -1411,148 +1349,83 @@ export default function App(){
               </div>
             )}
 
-            {/* Misiones disponibles */}
-            <div style={{fontSize:11,color:C.muted,marginBottom:12,letterSpacing:1}}>MISIONES DISPONIBLES</div>
-            <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:16}}>
-            {MISSIONS.map(m=>(
-              <div key={m.id} onClick={()=>setActiveMission(m)}
+            {/* ── GRID DE MISIONES ── */}
+            <div style={{fontSize:10,color:C.muted,marginBottom:12,letterSpacing:3,fontFamily:"'Orbitron',sans-serif"}}>MISIONES DISPONIBLES</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12,marginBottom:activeMission?0:0}}>
+            {MISSIONS.map(m=>{
+              const active=activeMission?.id===m.id;
+              return(
+              <div key={m.id} onClick={()=>setActiveMission(active?null:m)}
                 style={{
-                  position:"relative",
-                  borderRadius:16, overflow:"hidden", border:`1.5px solid ${C.pink}33`,
-                  cursor:"pointer", transition:"all .2s",
-                  flex:"1 1 280px", minWidth:280, height:140,
-                  boxShadow:`0 0 15px #000000aa`
-                }}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor=C.pink;e.currentTarget.style.transform="scale(1.02)";}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${C.pink}33`;e.currentTarget.style.transform="";}}>
-                
-                <img src={m.img} alt={m.name} style={{width:"100%", height:"100%", objectFit:"cover", display:"block"}} />
-                <div style={{
-                  position:"absolute", inset:0,
-                  background:`linear-gradient(to top, #000000ee 0%, #00000055 45%, transparent 100%)`,
-                  pointerEvents:"none"
-                }}/>
-
-                <div style={{position:"absolute", bottom:0, left:0, right:0, padding:"12px 14px", display:"flex", justifyContent:"space-between", alignItems:"flex-end", pointerEvents:"none"}}>
+                  position:"relative",borderRadius:14,overflow:"hidden",
+                  border:`1.5px solid ${active?C.pink:C.pink+"28"}`,
+                  cursor:"pointer",transition:"all .2s",height:130,
+                  boxShadow:active?`0 0 30px ${C.pink}44, 0 0 60px ${C.pink}18`:`0 0 10px #00000088`,
+                  transform:active?"scale(1.01)":undefined,
+                }}>
+                <img src={m.img} alt={m.name} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+                <div style={{position:"absolute",inset:0,background:active
+                  ?`linear-gradient(to top,#000000f5 0%,${C.pink}18 100%)`
+                  :`linear-gradient(to top,#000000ee 0%,#00000044 55%,transparent 100%)`}}/>
+                <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"10px 12px",display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
                   <div>
-                    {/* El usuario mencionó que la imagen ya tiene el nombre, pero mantenemos una versión opcional de refuerzo */}
-                    <div style={{fontSize:15,fontWeight:900,color:"#fff",textShadow:"0 2px 4px #000",marginBottom:2}}>
-                      {m.name}
-                    </div>
-                    <div style={{fontSize:11,color:"#ddd",textShadow:"0 1px 2px #000"}}>
-                      ⏱ {m.time}s · ⚠ {Math.round(m.baseRisk*100)}% riesgo
-                    </div>
+                    <div style={{fontSize:13,fontWeight:900,color:"#fff",textShadow:`0 0 10px ${C.pink}`,letterSpacing:1}}>{m.name}</div>
+                    <div style={{fontSize:9,color:"#ccc",marginTop:1}}>⏱ {m.time}s &nbsp;⚠ {Math.round(m.baseRisk*100)}%</div>
                   </div>
                   <div style={{textAlign:"right"}}>
-                    <div style={{fontSize:11,color:C.pink,fontWeight:800,marginBottom:2,textShadow:"0 1px 2px #000"}}>RECOMPENSA</div>
-                    <div style={{fontSize:14,fontWeight:900,color:C.gold,textShadow:"0 1px 2px #000"}}>
-                      {m.baseReward} COIN
-                    </div>
+                    <div style={{fontSize:9,color:C.pink,fontWeight:900,letterSpacing:1}}>RECOMPENSA</div>
+                    <div style={{fontSize:15,fontWeight:900,color:C.gold,textShadow:`0 0 8px ${C.gold}`}}>{m.baseReward}</div>
                   </div>
                 </div>
+                {active&&<div style={{position:"absolute",top:8,right:8,background:C.pink,borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:900,color:"#000"}}>✓</div>}
               </div>
-            ))}
+            );})}
             </div>
-            {/* Cartas disponibles con botón ENVIAR MISIÓN */}
+
+            {/* ── SELECTOR DE PERSONAJE (panel deslizable) ── */}
             {activeMission&&(
-              <div style={{marginTop:16}}>
-                <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:14,letterSpacing:2}}>
-                  {activeMission.name} — ELIGE PERSONAJE
+              <div style={{
+                marginTop:16,
+                background:`linear-gradient(135deg,#0a0018,#030010)`,
+                border:`1px solid ${C.pink}44`,
+                borderRadius:16,padding:"18px 20px",
+                boxShadow:`0 0 40px ${C.pink}18, inset 0 0 40px ${C.pink}04`,
+                animation:"fade_in .25s both",
+              }}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                  <div>
+                    <div style={{fontSize:11,fontWeight:900,color:C.pink,letterSpacing:4,fontFamily:"'Orbitron',sans-serif"}}>
+                      ELIGE PERSONAJE
+                    </div>
+                    <div style={{fontSize:10,color:C.muted,marginTop:2}}>{activeMission.name} · {activeMission.baseReward} Z5 base · {Math.round(activeMission.baseRisk*100)}% riesgo</div>
+                  </div>
+                  <button onClick={()=>setActiveMission(null)} style={{
+                    background:"transparent",color:C.pink,border:`1px solid ${C.pink}44`,
+                    borderRadius:8,width:30,height:30,cursor:"pointer",fontSize:14,fontWeight:900,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    boxShadow:`0 0 10px ${C.pink}22`}}>✕</button>
                 </div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:20,alignItems:"flex-start"}}>
-                  {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).map(c=>(
-                    <CardUI key={c.id} card={c} mode="mission"
-                      onSendMission={()=>sendOnMission(c.id,activeMission)}/>
-                  ))}
-                  {cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier).length===0&&(
-                    <div style={{color:C.muted,fontSize:13}}>Sin personajes disponibles para esta misión.</div>
-                  )}
-                </div>
-                <button onClick={()=>setActiveMission(null)}
-                  style={{marginTop:16,background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
-                    borderRadius:8,padding:"6px 16px",cursor:"pointer",fontSize:12}}>
-                  ← Volver a misiones
-                </button>
+                {(()=>{
+                  const avail=cards.filter(c=>c.status==="idle"&&RARITY[c.rarity].tier>=activeMission.minTier);
+                  if(avail.length===0) return(
+                    <div style={{color:C.muted,fontSize:13,padding:"20px 0",textAlign:"center",letterSpacing:1}}>
+                      Sin personajes disponibles para esta misión
+                    </div>
+                  );
+                  return(
+                    <div style={{display:"flex",flexWrap:"wrap",gap:16,alignItems:"flex-start"}}>
+                      {avail.map(c=>(
+                        <CardUI key={c.id} card={c} mode="mission"
+                          onSendMission={()=>{sendOnMission(c.id,activeMission);setActiveMission(null);}}/>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
         )}
 
-        {/* ── ARENA ── */}
-        {tab==="Arena"&&(
-          <div style={{animation:"fade_in .3s both"}}>
-            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:20}}>
-              <div style={{fontSize:20,fontWeight:900,color:C.red,letterSpacing:2}}> ARENA</div>
-              <div style={{fontSize:11,color:C.muted}}>Lucha contra enemigos — gana COIN y XP sin costo</div>
-            </div>
-            {arenaEnemy&&(
-              <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
-                <div style={{flex:"0 0 220px"}}>
-                  <div style={{fontSize:11,color:C.red,fontWeight:700,marginBottom:10,letterSpacing:2}}>ENEMIGO</div>
-                  <div style={{background:`linear-gradient(135deg,#1a0505,${C.bg3})`,
-                    border:`2px solid ${C.red}40`,borderRadius:18,padding:22,textAlign:"center"}}>
-                    <Sprite icon={arenaEnemy.icon} size={64} style={{marginBottom:8, margin:"0 auto"}} />
-                    <div style={{fontSize:18,fontWeight:900,color:"#fff",marginBottom:4}}>{arenaEnemy.name}</div>
-                    <div style={{display:"flex",justifyContent:"center",gap:12,fontSize:13,marginBottom:14}}>
-                      <span style={{color:"#ff7043"}}>{arenaEnemy.atk}</span>
-                      <span style={{color:"#42a5f5"}}>{arenaEnemy.def}</span>
-                      <span style={{color:C.green}}>{arenaEnemy.hp}</span>
-                    </div>
-                    <div style={{background:`${C.gold}12`,border:`1px solid ${C.gold}30`,borderRadius:10,padding:"8px 0",marginBottom:8}}>
-                      <div style={{fontSize:11,color:C.muted,marginBottom:2}}>Recompensa</div>
-                      <div style={{fontSize:20,fontWeight:900,color:C.gold}}>+{arenaEnemy.reward} COIN</div>
-                      <div style={{fontSize:11,color:C.cyan}}>+{arenaEnemy.xp} XP</div>
-                    </div>
-                  </div>
-                  <button onClick={rollArenaEnemy_}
-                    style={{marginTop:10,width:"100%",background:`${C.muted}12`,color:C.muted,
-                      border:`1px solid ${C.muted}25`,borderRadius:10,padding:"8px 0",
-                      cursor:"pointer",fontSize:12,fontWeight:700}}> Otro enemigo</button>
-                </div>
-                <div style={{flex:"1 1 300px"}}>
-                  <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:14,letterSpacing:2}}>TU LUCHADOR</div>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:20,marginBottom:16,alignItems:"flex-start"}}>
-                    {cards.filter(c=>c.status==="idle").map(c=>(
-                      <CardUI key={c.id} card={c} selected={arenaFighter===c.id} mode="col"
-                        onClick={()=>setArenaFighter(arenaFighter===c.id?null:c.id)}/>
-                    ))}
-                    {cards.filter(c=>c.status==="idle").length===0&&(
-                      <div style={{color:C.muted,fontSize:13}}>Sin personajes libres.</div>
-                    )}
-                  </div>
-                  {arenaFighter&&(()=>{
-                    const fc=cards.find(c=>c.id===arenaFighter);
-                    if(!fc)return null;
-                    const winChance=Math.min(95,Math.max(5,
-                      50+Math.round(((fc.atk-arenaEnemy.atk)/2)+((fc.def-arenaEnemy.def)*0.8)+((fc.hp-arenaEnemy.hp)/10))
-                    ));
-                    return(
-                      <div style={{background:C.bg3,border:`1px solid ${C.pink}22`,borderRadius:14,padding:16,maxWidth:340}}>
-                        <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:12}}>
-                          <img src={(CHARS[fc.charIdx]||CHARS[0]).img} style={{width:50,height:62,objectFit:"cover",objectPosition:"center top",borderRadius:8,border:`1px solid ${RARITY[fc.rarity].color}40`,flexShrink:0}}/>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:14,fontWeight:800,color:"#fff"}}>{fc.name}</div>
-                            <div style={{fontSize:10,color:RARITY[fc.rarity].color}}>{RARITY[fc.rarity].label}</div>
-                          </div>
-                          <div style={{textAlign:"right"}}>
-                            <div style={{fontSize:10,color:C.muted}}>Victoria</div>
-                            <div style={{fontSize:22,fontWeight:900,color:winChance>60?C.green:winChance>40?C.gold:C.red}}>{winChance}%</div>
-                          </div>
-                        </div>
-                        <button onClick={startArenaBattle}
-                          style={{width:"100%",background:`linear-gradient(90deg,${C.red},${C.pink})`,
-                            color:"#fff",border:"none",borderRadius:12,padding:"13px 0",
-                            fontWeight:900,fontSize:15,cursor:"pointer",letterSpacing:1}}>
-                           ¡LUCHAR!
-                        </button>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
       </div>
 
@@ -1562,7 +1435,6 @@ export default function App(){
       {activeMission&&tab!=="Misiones"&&<MissionModal mission={activeMission} cards={cards} onSend={sendOnMission} onClose={()=>setActiveMission(null)}/>}
       {codeModal&&<CodeModal onClose={()=>setCodeModal(false)} onRedeem={redeemCode}/>}
       {dailyModal&&<DailyModal reward={dailyReward} streak={dailyStreak} onClaim={claimDailyBonus}/>}
-      {arenaResult&&<ArenaResultModal result={arenaResult} onClose={()=>{setArenaResult(null);rollArenaEnemy_();}}/>}
       {missionResultModal&&<MissionResultModal reward={missionResultModal} onClaim={()=>{claimReward(missionResultModal);setMissionResultModal(null);}}/>}
 
       {/* TOAST */}
