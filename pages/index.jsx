@@ -2,19 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 
 const C = {
-  bg:"#070710", bg2:"#0c0c1e", bg3:"#111128",
-  pink:"#e040fb", cyan:"#00e5ff", gold:"#ffd54f",
-  red:"#ff1744", green:"#00e676", purple:"#7c4dff",
-  text:"#e8e8f8", muted:"#5a5a7a", border:"#ffffff0d",
+  bg:"#000008", bg2:"#03030e", bg3:"#070714",
+  pink:"#ff00cc", cyan:"#00cfff", gold:"#ffc400",
+  red:"#ff0044", green:"#00ff88", purple:"#bb00ff",
+  text:"#f0f0ff", muted:"#484870", border:"#ffffff08",
 };
 
 const RARITY = {
-  common:    { label:"Común",      color:"#78909c", glow:"#78909c22", tier:0, stars:1 },
-  uncommon:  { label:"Poco Común", color:"#26a69a", glow:"#26a69a22", tier:1, stars:2 },
-  rare:      { label:"Raro",       color:"#1e88e5", glow:"#1e88e522", tier:2, stars:3 },
-  epic:      { label:"Épico",      color:"#ab47bc", glow:"#ab47bc33", tier:3, stars:4 },
-  legendary: { label:"Legendario", color:"#ffd54f", glow:"#ffd54f44", tier:4, stars:5 },
-  divine:    { label:"DIVINA",     color:"#ffffff", glow:"#ffffff55", tier:5, stars:6 },
+  common:    { label:"COMÚN",      color:"#8899aa", glow:"#8899aa30", tier:0, stars:1 },
+  uncommon:  { label:"POCO COMÚN", color:"#00e5cc", glow:"#00e5cc40", tier:1, stars:2 },
+  rare:      { label:"RARO",       color:"#2979ff", glow:"#2979ff50", tier:2, stars:3 },
+  epic:      { label:"ÉPICO",      color:"#dd00ff", glow:"#dd00ff50", tier:3, stars:4 },
+  legendary: { label:"LEGENDARIO", color:"#ffc400", glow:"#ffc40055", tier:4, stars:5 },
+  divine:    { label:"DIVINA",     color:"#ffffff", glow:"#ffffff66", tier:5, stars:6 },
 };
 const FUSION_MAP = ["common","uncommon","rare","epic","legendary"];
 
@@ -126,123 +126,98 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
       position:"relative", width:cardW, height:cardH, userSelect:"none",
       cursor:onClick?"pointer":"default",
       transition:"transform .2s, filter .2s",
-      filter: selected ? `drop-shadow(0 0 18px ${col})` : undefined,
-      transform: selected ? "scale(1.03)" : undefined,
+      filter: selected ? `drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})` : `drop-shadow(0 0 8px ${col}44)`,
+      transform: selected ? "scale(1.05) translateY(-4px)" : undefined,
     }}
-      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-6px) scale(1.02)";e.currentTarget.style.filter=`drop-shadow(0 0 20px ${col})`;} }}
-      onMouseLeave={e=>{e.currentTarget.style.transform=selected?"scale(1.03)":"";e.currentTarget.style.filter=selected?`drop-shadow(0 0 18px ${col})`:"";}}
+      onMouseEnter={e=>{if(onClick){e.currentTarget.style.transform="translateY(-8px) scale(1.03)";e.currentTarget.style.filter=`drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})`;} }}
+      onMouseLeave={e=>{e.currentTarget.style.transform=selected?"scale(1.05) translateY(-4px)":"";e.currentTarget.style.filter=selected?`drop-shadow(0 0 24px ${col}) drop-shadow(0 0 8px ${col})`:`drop-shadow(0 0 8px ${col}44)`;}}
     >
-      {/* ── CARD BODY ── */}
-      <div style={{
-        position:"absolute", inset: 0,
-        borderRadius:14,
-        overflow:"hidden",
-        backgroundColor:"#07071a",
-      }}>
-        {/* Character image */}
+      {/* ── CHARACTER IMAGE (behind frame) ── */}
+      <div style={{position:"absolute",inset:0,borderRadius:14,overflow:"hidden",background:"#000"}}>
         <img src={ch.img} alt={ch.name} style={{
           width:"100%", height:"100%",
           objectFit:"cover", objectPosition:"center top",
           display:"block",
-          filter: isDivine ? "brightness(0.9) contrast(1.15)" : "brightness(0.75) contrast(1.1)"
+          filter: isDivine ? "brightness(1) contrast(1.1)" : "brightness(0.88) contrast(1.05)"
         }}/>
       </div>
 
-      {/* Frame overlay */}
+      {/* Frame — screen blend makes the black center transparent */}
       <img src="/marco_v2.png" style={{
         position:"absolute", top:0, left:0, width:"100%", height:"100%",
         objectFit:"fill", pointerEvents:"none",
-        filter: `drop-shadow(0 0 10px ${col}66)`
+        mixBlendMode:"screen",
+        filter:`drop-shadow(0 0 18px ${col}88) drop-shadow(0 0 6px ${col})`,
       }} alt="marco"/>
 
-        {/* Top gradient overlay */}
-        <div style={{
-          position:"absolute", top:0, left:0, right:0, height:70,
-          background:`linear-gradient(${col}44 0%, transparent 100%)`,
-          pointerEvents:"none", borderRadius:"14px 14px 0 0"
-        }}/>
+      {/* Rarity badge */}
+      <div style={{
+        position:"absolute", top:6, left:"50%", transform:"translateX(-50%)",
+        background:"#000000cc", backdropFilter:"blur(6px)",
+        border:`1px solid ${col}88`, borderRadius:20,
+        padding:"2px 10px", fontSize:8, color:col, fontWeight:900,
+        letterSpacing:2, textShadow:`0 0 8px ${col}`,
+        whiteSpace:"nowrap",
+      }}>{r.label}</div>
 
-        {/* Rarity badge */}
-        <div style={{
-          position:"absolute", top:8, left:8,
-          background:"#000000bb", backdropFilter:"blur(6px)",
-          border:`1px solid ${col}66`, borderRadius:20,
-          padding:"2px 8px", fontSize:9, color:col, fontWeight:700,
-          textShadow: isDivine ? `0 0 8px #fff` : undefined,
-        }}>{r.label}</div>
+      {/* Stars */}
+      <div style={{position:"absolute",top:22,left:"50%",transform:"translateX(-50%)",display:"flex",gap:1}}>
+        {Array.from({length:r.stars},(_,i)=>(
+          <span key={i} style={{fontSize:7,color:col,textShadow:`0 0 5px ${col}`}}>★</span>
+        ))}
+      </div>
 
-        {/* Stars top right */}
-        <div style={{position:"absolute",top:8,right:8,display:"flex",gap:1}}>
-          {Array.from({length:Math.max(5,r.stars)},(_,i)=>(
-            <span key={i} style={{fontSize:8,color:i<r.stars?col:"#ffffff18",
-              textShadow:i<r.stars?`0 0 5px ${col}`:undefined}}>★</span>
-          ))}
+      {/* Status badge */}
+      {card.status!=="idle"&&(
+        <div style={{position:"absolute",top:6,right:6,background:"#000000cc",
+          border:`1px solid ${stCol}66`,borderRadius:20,padding:"2px 6px",
+          fontSize:7,color:stCol,fontWeight:700,letterSpacing:1}}>
+          {card.status==="mission"?"MISIÓN":card.status==="injured"?"HERIDA":"DESC."}
         </div>
+      )}
+      {card.shielded&&<div style={{position:"absolute",top:28,right:8,fontSize:11}}></div>}
 
-        {/* Status badge */}
-        {card.status !== "idle" && (
-          <div style={{position:"absolute",top:28,right:8,background:"#000000aa",
-            border:`1px solid ${stCol}44`,borderRadius:20,padding:"2px 7px",
-            fontSize:8,color:stCol,fontWeight:700}}>
-            {card.status==="mission"?" Misión":card.status==="injured"?" Herida":" Desc."}
-          </div>
-        )}
-        {card.shielded && <div style={{position:"absolute",top:48,right:8,fontSize:12}}></div>}
-
-        {/* Bottom gradient */}
-        <div style={{
-          position:"absolute", bottom:0, left:0, right:0, height: mode==="mission" ? 72 : 90,
-          background:`linear-gradient(transparent, ${col}18 30%, #000000ee)`,
-          pointerEvents:"none",
-        }}/>
-
-        {/* BOTTOM PANEL */}
-        {mode === "mission" ? (
-          /* ── MISIONES: nombre + botón ENVIAR ── */
-          <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"6px 8px 8px"}}>
-            <div style={{fontSize:13,fontWeight:900,color:"#fff",textAlign:"center",marginBottom:5,
-              textShadow:`0 0 10px ${col}`}}>{card.name}</div>
-            <button
-              onClick={e=>{e.stopPropagation();onSendMission&&onSendMission();}}
-              disabled={card.status!=="idle"}
-              style={{
-                width:"100%",
-                background: card.status==="idle"
-                  ? `linear-gradient(90deg, ${col}cc, ${col}88)`
-                  : "#ffffff10",
-                color: card.status==="idle" ? "#000" : "#333",
-                border:`1.5px solid ${card.status==="idle"?col:"#333"}`,
-                borderRadius:8, padding:"7px 0",
-                fontWeight:900, fontSize:11, letterSpacing:1,
-                cursor: card.status==="idle" ? "pointer" : "not-allowed",
-                boxShadow: card.status==="idle" ? `0 0 14px ${col}66` : undefined,
-              }}>
-              {card.status==="idle" ? "ENVIAR MISIÓN" : card.status==="mission" ? "EN MISIÓN" : "NO DISPONIBLE"}
-            </button>
-          </div>
-        ) : (
-          /* ── COLECCIÓN / ARENA: estadísticas ── */
-          <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"6px 8px 8px"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:3}}>
-              <span style={{fontSize:13,fontWeight:900,color:"#fff",textShadow:`0 0 8px ${col}`}}>{card.name}</span>
-              {card.level>1&&<span style={{fontSize:9,color:C.gold,fontWeight:700}}>Lv{card.level}</span>}
+      {/* BOTTOM PANEL */}
+      {mode==="mission" ? (
+        /* Clickable area over the frame's built-in button */
+        <button
+          onClick={e=>{e.stopPropagation();onSendMission&&onSendMission();}}
+          disabled={card.status!=="idle"}
+          style={{
+            position:"absolute", bottom:0, left:0, right:0, height:52,
+            background:"transparent", border:"none",
+            cursor:card.status==="idle"?"pointer":"not-allowed",
+          }}
+          title={card.status==="idle"?"Enviar misión":card.status==="mission"?"En misión":"No disponible"}
+        >
+          {card.status!=="idle"&&(
+            <div style={{position:"absolute",inset:0,background:"#000000aa",display:"flex",alignItems:"center",justifyContent:"center",borderRadius:"0 0 14px 14px"}}>
+              <span style={{color:stCol,fontSize:10,fontWeight:900,letterSpacing:2}}>
+                {card.status==="mission"?"EN MISIÓN":"NO DISPONIBLE"}
+              </span>
             </div>
-            {/* HP bar */}
-            <div style={{height:3,background:"#ffffff12",borderRadius:3,overflow:"hidden",marginBottom:4}}>
-              <div style={{height:"100%",borderRadius:3,
-                background:isDivine?C.divine:hpPct>60?C.green:hpPct>30?C.gold:C.red,
-                width:(isDivine?100:hpPct)+"%",
-                boxShadow:`0 0 6px currentColor`}}/>
-            </div>
-            {/* Stats */}
-            <div style={{display:"flex",gap:6,fontSize:10,justifyContent:"space-around"}}>
-              <span style={{color:"#ff7043",fontWeight:700}}>{card.atk}</span>
-              <span style={{color:"#42a5f5",fontWeight:700}}>{card.def}</span>
-              <span style={{color:"#ab47bc",fontWeight:700}}>{card.spd}</span>
-              <span style={{color:hpPct>60?C.green:hpPct>30?C.gold:C.red,fontWeight:700}}>{card.hp}</span>
-            </div>
+          )}
+        </button>
+      ) : (
+        /* Col / arena: stats at bottom */
+        <div style={{position:"absolute",bottom:4,left:8,right:8}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:2}}>
+            <span style={{fontSize:11,fontWeight:900,color:"#fff",textShadow:`0 0 10px ${col}`,letterSpacing:1}}>{card.name}</span>
+            {card.level>1&&<span style={{fontSize:8,color:C.gold,fontWeight:700,letterSpacing:1}}>LV{card.level}</span>}
           </div>
-        )}
+          <div style={{height:2,background:"#ffffff10",borderRadius:2,overflow:"hidden",marginBottom:3}}>
+            <div style={{height:"100%",borderRadius:2,
+              background:isDivine?C.gold:hpPct>60?C.green:hpPct>30?C.gold:C.red,
+              width:(isDivine?100:hpPct)+"%",boxShadow:`0 0 6px currentColor`}}/>
+          </div>
+          <div style={{display:"flex",gap:4,fontSize:9,justifyContent:"space-around"}}>
+            <span style={{color:"#ff6644",fontWeight:700}}>{card.atk}</span>
+            <span style={{color:"#44aaff",fontWeight:700}}>{card.def}</span>
+            <span style={{color:"#cc44ff",fontWeight:700}}>{card.spd}</span>
+            <span style={{color:hpPct>60?C.green:hpPct>30?C.gold:C.red,fontWeight:700}}>{card.hp}</span>
+          </div>
+        </div>
+      )}
 
       {/* Removed the old decorative gems, hearts, and sidebars here. */}
 
@@ -297,6 +272,7 @@ function Sprite({ icon, size=40, style={} }) {
       width: s.wide ? size*2 : size, height: size,
       backgroundImage: "url('/spritesheet.png')",
       backgroundSize: "500% 600%",
+      mixBlendMode: "screen",
       backgroundPosition: `${s.col * 25}% ${s.row * 20}%`,
       display: "inline-block", verticalAlign: "middle", ...style
     }} />
@@ -690,15 +666,18 @@ function LoginScreen({onAuth}){
     onAuth(res.data.session||res.data.user);
   }
   return(
-    <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Rajdhani',sans-serif"}}>
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Rajdhani',sans-serif",
+      backgroundImage:`radial-gradient(ellipse at 20% 50%, ${C.pink}08 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, ${C.purple}08 0%, transparent 50%)`}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Orbitron:wght@700;900&display=swap');
       `}</style>
-      <div style={{background:C.bg2,border:`1px solid ${C.pink}28`,borderRadius:20,padding:"40px 36px",width:"100%",maxWidth:380,boxShadow:`0 0 60px ${C.pink}12`}}>
+      <div style={{background:"#03030eee",border:`1px solid ${C.pink}44`,borderRadius:16,padding:"40px 36px",width:"100%",maxWidth:380,
+        boxShadow:`0 0 80px ${C.pink}22, 0 0 160px ${C.pink}0a, inset 0 0 40px ${C.pink}04`}}>
         <div style={{textAlign:"center",marginBottom:28}}>
-          <CatLogo size={44}/>
-          <div style={{fontSize:28,fontWeight:900,color:C.pink,letterSpacing:3,marginTop:8}}>COIN</div>
-          <div style={{fontSize:10,color:C.muted,letterSpacing:4}}>CARD UNIVERSE</div>
+          <CatLogo size={48}/>
+          <div style={{fontSize:32,fontWeight:900,color:C.pink,letterSpacing:8,marginTop:10,fontFamily:"'Orbitron',sans-serif",
+            textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>COIN</div>
+          <div style={{fontSize:8,color:C.pink,letterSpacing:6,opacity:.5}}>CARD UNIVERSE</div>
         </div>
         <form onSubmit={handle}>
           <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="Correo" required
@@ -749,6 +728,8 @@ export default function App(){
   const[toast,setToast]=useState(null);
   const[now,setNow]=useState(Date.now());
   const saveTimer=useRef(null);
+  const stateRef=useRef({lili:300,cards:[],items:DEFAULT_ITEMS});
+  useEffect(()=>{stateRef.current={lili,cards,items};},[lili,cards,items]);
   /* nuevas mecánicas */
   const[codeModal,setCodeModal]=useState(false);
   const[arenaEnemy,setArenaEnemy]=useState(null);
@@ -782,18 +763,19 @@ export default function App(){
       setItems(data.items||DEFAULT_ITEMS);
     }
   }
-  function scheduleSave(newLili,newCards,newItems){
+  function scheduleSave(){
     if(!user)return;
     clearTimeout(saveTimer.current);
     saveTimer.current=setTimeout(async()=>{
+      const{lili:l,cards:c,items:i}=stateRef.current;
       await supabase.from("player_state").upsert({
-        user_id:user.id,lili:newLili,cards:newCards,items:newItems,updated_at:new Date().toISOString()
+        user_id:user.id,lili:l,cards:c,items:i,updated_at:new Date().toISOString()
       },{onConflict:"user_id"});
     },2000);
   }
-  function setLiliS(v){setLili(v);scheduleSave(v,cards,items);}
-  function setCardsS(v){setCards(v);scheduleSave(lili,v,items);}
-  function setItemsS(v){setItems(v);scheduleSave(lili,cards,v);}
+  function setLiliS(v){setLili(v);scheduleSave();}
+  function setCardsS(v){setCards(v);scheduleSave();}
+  function setItemsS(v){setItems(v);scheduleSave();}
 
   async function logout(){
     await supabase.auth.signOut();
@@ -867,8 +849,7 @@ export default function App(){
   function buyCardPack(pack){
     if(lili<pack.price){toast_("COIN insuficiente ");return;}
     const nc=makeCard(null,pack.rates);
-    const newCards=[...cards,nc];
-    setLiliS(lili-pack.price);setCards(newCards);scheduleSave(lili-pack.price,newCards,items);
+    setLili(lili-pack.price);setCardsS([...cards,nc]);
     setCardReveal(nc);
   }
   function buyItemPack(pack){
@@ -887,10 +868,8 @@ export default function App(){
     toast_(` Usado ${ITEMS[itemId].name} en ${cards.find(c=>c.id===cardId)?.name}`);
   }
   function claimReward(rw){
-    const newLili=rw.lili>0?lili+rw.lili:lili;
-    if(rw.lili>0)setLili(newLili);
+    if(rw.lili>0)setLiliS(lili+rw.lili);
     setPendingRewards(pr=>pr.filter(r=>r.id!==rw.id));
-    scheduleSave(newLili,cards,items);
     if(!rw.failed)toast_(` +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
     else toast_(` ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
@@ -917,8 +896,8 @@ export default function App(){
     if(!card||card.unique||card.status==="mission")return;
     const price=SELL_PRICES[card.rarity]||20;
     setActiveCard(null);
+    setLili(lili+price);
     setCardsS(cards.filter(c=>c.id!==cardId));
-    setLiliS(lili+price);
     toast_(` Vendida ${card.name} → +${price} COIN`);
   }
   function sellItem(itemId){
@@ -976,7 +955,7 @@ export default function App(){
         xp:lUp?newXp-c.level*20:newXp,level:lUp?c.level+1:c.level,
         atk:lUp?c.atk+3:c.atk,def:lUp?c.def+2:c.def};
     });
-    setLiliS(lili+coinGain);setCardsS(newCards);
+    setLili(lili+coinGain);setCardsS(newCards);
     setArenaResult({won,enemy,card,coinGain,xpGain,rounds,leveledUp});
   }
   function doFusion(idA,idB){
@@ -987,7 +966,7 @@ export default function App(){
     const nxt=FUSION_MAP[FUSION_MAP.indexOf(ca.rarity)+1];
     const result=makeCard(nxt);
     const newCards=cards.filter(c=>c.id!==ca.id&&c.id!==cb.id).concat(result);
-    setLiliS(lili-25);setCards(newCards);scheduleSave(lili-25,newCards,items);
+    setLili(lili-25);setCardsS(newCards);
     return result;
   }
   function manualFusion(){
@@ -1014,15 +993,15 @@ export default function App(){
       }
     }
     if(totalFused===0){toast_("Sin pares para fusionar");setAutoFusing(false);return;}
-    setLiliS(lili-cost);setCards(current);scheduleSave(lili-cost,current,items);
+    setLili(lili-cost);setCardsS(current);
     toast_(` Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} COIN)`);
     setAutoFusing(false);
   }
   function sendOnMission(cardId,mission){
     if(lili<5){toast_("Sin COIN");return;}
     const card=cards.find(c=>c.id===cardId);if(!card)return;
-    const newCards=cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c);
-    setCards(newCards);setLiliS(lili-5);scheduleSave(lili-5,newCards,items);
+    setLili(lili-5);
+    setCardsS(cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c));
     setActiveMission(null);
     toast_(` ${card.name} → "${mission.name}"`);
   }
@@ -1035,12 +1014,15 @@ export default function App(){
     const isPending=t==="Misiones"&&pendingCount>0;
     return(
       <button onClick={()=>setTab(t)} style={{
-        background:tab===t?C.pink:"transparent",color:tab===t?"#000":C.muted,
-        border:`1px solid ${tab===t?C.pink:"#ffffff10"}`,
-        borderRadius:8,padding:"7px 16px",cursor:"pointer",
-        fontWeight:tab===t?800:500,fontSize:13,letterSpacing:.5,
+        background:tab===t?`linear-gradient(135deg,${C.pink}cc,${C.purple}88)`:"transparent",
+        color:tab===t?"#fff":C.muted,
+        border:`1px solid ${tab===t?C.pink+"66":"#ffffff0d"}`,
+        borderRadius:6,padding:"6px 14px",cursor:"pointer",
+        fontWeight:900,fontSize:11,letterSpacing:2,
         transition:"all .15s",position:"relative",
-        boxShadow:tab===t?`0 0 16px ${C.pink}44`:undefined,
+        textTransform:"uppercase",fontFamily:"'Orbitron',sans-serif",
+        boxShadow:tab===t?`0 0 20px ${C.pink}55, inset 0 0 20px ${C.pink}11`:undefined,
+        textShadow:tab===t?`0 0 10px #fff`:undefined,
       }}>
         {t}
         {isPending&&<span style={{position:"absolute",top:-6,right:-6,background:C.red,color:"#fff",
@@ -1056,41 +1038,54 @@ export default function App(){
   return(
     <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Rajdhani',sans-serif"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&display=swap');
-        @keyframes fade_in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Orbitron:wght@700;900&display=swap');
+        @keyframes fade_in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
         @keyframes bonus_pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+        @keyframes neon_pulse{0%,100%{opacity:.7}50%{opacity:1}}
+        @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
         *{box-sizing:border-box}
-        ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:#0c0c1e}
-        ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:4px}
+        ::-webkit-scrollbar{width:3px;height:3px}
+        ::-webkit-scrollbar-track{background:#000008}
+        ::-webkit-scrollbar-thumb{background:${C.pink}66;border-radius:4px}
       `}</style>
-      <div style={{position:"fixed",inset:0,backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 3px,#ffffff01 3px,#ffffff01 4px)",pointerEvents:"none",zIndex:0}}/>
+      {/* Scanline effect */}
+      <div style={{position:"fixed",inset:0,backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 2px,#ffffff04 2px,#ffffff04 4px)",pointerEvents:"none",zIndex:0}}/>
+      {/* Ambient glow orbs */}
+      <div style={{position:"fixed",top:"-10%",left:"10%",width:500,height:500,borderRadius:"50%",background:`radial-gradient(circle,${C.pink}08 0%,transparent 70%)`,pointerEvents:"none",zIndex:0}}/>
+      <div style={{position:"fixed",bottom:"-10%",right:"5%",width:400,height:400,borderRadius:"50%",background:`radial-gradient(circle,${C.purple}08 0%,transparent 70%)`,pointerEvents:"none",zIndex:0}}/>
+      <div style={{position:"fixed",top:"40%",right:"0%",width:300,height:300,borderRadius:"50%",background:`radial-gradient(circle,${C.cyan}06 0%,transparent 70%)`,pointerEvents:"none",zIndex:0}}/>
 
       {/* HEADER */}
-      <div style={{position:"sticky",top:0,zIndex:30,background:"#07071099",backdropFilter:"blur(18px)",
-        borderBottom:`1px solid ${C.pink}18`,padding:"12px 18px",
+      <div style={{position:"sticky",top:0,zIndex:30,
+        background:"#00000599",backdropFilter:"blur(24px)",
+        borderBottom:`1px solid ${C.pink}30`,
+        boxShadow:`0 0 40px ${C.pink}18, 0 1px 0 ${C.pink}20`,
+        padding:"10px 20px",
         display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <CatLogo size={38}/>
+          <CatLogo size={36}/>
           <div>
-            <div style={{fontSize:22,fontWeight:900,letterSpacing:3,color:C.pink,textShadow:`0 0 20px ${C.pink}88`}}>COIN</div>
-            <div style={{fontSize:8,color:C.muted,letterSpacing:4,marginTop:-3}}>CARD UNIVERSE</div>
+            <div style={{fontSize:24,fontWeight:900,letterSpacing:6,color:C.pink,fontFamily:"'Orbitron',sans-serif",
+              textShadow:`0 0 10px ${C.pink}, 0 0 30px ${C.pink}88, 0 0 60px ${C.pink}44`}}>COIN</div>
+            <div style={{fontSize:7,color:C.pink,letterSpacing:6,marginTop:-2,opacity:.6}}>CARD UNIVERSE</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{TABS.map(t=><NavBtn key={t} t={t}/>)}</div>
+        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{TABS.map(t=><NavBtn key={t} t={t}/>)}</div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          <div style={{background:`${C.gold}10`,border:`1px solid ${C.gold}28`,borderRadius:24,padding:"5px 14px",display:"flex",alignItems:"center",gap:7}}>
-            <CatLogo size={15}/>
-            <span style={{color:C.gold,fontWeight:900,fontSize:16}}>{lili}</span>
-            <span style={{color:C.muted,fontSize:11}}>COIN</span>
+          <div style={{background:`#000000aa`,border:`1px solid ${C.gold}44`,borderRadius:24,padding:"5px 14px",
+            display:"flex",alignItems:"center",gap:7,boxShadow:`0 0 16px ${C.gold}22`}}>
+            <CatLogo size={14}/>
+            <span style={{color:C.gold,fontWeight:900,fontSize:16,textShadow:`0 0 10px ${C.gold}88`}}>{lili}</span>
+            <span style={{color:C.muted,fontSize:10,letterSpacing:1}}>COIN</span>
           </div>
-          <span style={{fontSize:12,color:C.muted}}>{cards.length}</span>
+          <span style={{fontSize:11,color:C.muted,letterSpacing:1}}>{cards.length} </span>
           <button onClick={()=>setCodeModal(true)}
-            style={{background:`${C.cyan}10`,color:C.cyan,border:`1px solid ${C.cyan}30`,
-              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}></button>
+            style={{background:`${C.cyan}12`,color:C.cyan,border:`1px solid ${C.cyan}44`,
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700,
+              boxShadow:`0 0 12px ${C.cyan}22`}}></button>
           <button onClick={logout}
-            style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
-              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11}}>Salir</button>
+            style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}20`,
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,letterSpacing:1}}>SALIR</button>
         </div>
       </div>
 
@@ -1383,8 +1378,7 @@ export default function App(){
             {cards.filter(c=>c.status==="mission").length>0&&(
               <div style={{marginBottom:20}}>
                 <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:10,letterSpacing:2}}>
-                  <img src="/icons/in_mission.png" alt="mission" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
-                  EN MISIÓN
+                  ⚔️ EN MISIÓN
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
                   {cards.filter(c=>c.status==="mission").map(c=>{
@@ -1402,8 +1396,7 @@ export default function App(){
                             <div style={{fontSize:13,fontWeight:700,color:"#fff"}}>{c.name}</div>
                             <div style={{fontSize:10,color:r.color}}>{r.label}</div>
                             <div style={{fontSize:12,color:C.gold,fontWeight:700,marginTop:2}}>
-                              <img src="/icons/time.png" alt="tiempo" style={{width:12,height:12,verticalAlign:"middle",marginRight:4}}/>
-                              {secs}s
+                              ⏱ {secs}s
                             </div>
                           </div>
                         </div>
@@ -1444,18 +1437,15 @@ export default function App(){
                   <div>
                     {/* El usuario mencionó que la imagen ya tiene el nombre, pero mantenemos una versión opcional de refuerzo */}
                     <div style={{fontSize:15,fontWeight:900,color:"#fff",textShadow:"0 2px 4px #000",marginBottom:2}}>
-                      <img src="/icons/mission.png" alt="mision" style={{width:16,height:16,verticalAlign:"middle",marginRight:4}}/>
                       {m.name}
                     </div>
                     <div style={{fontSize:11,color:"#ddd",textShadow:"0 1px 2px #000"}}>
-                      <img src="/icons/time.png" alt="time" style={{width:12,height:12,verticalAlign:"middle",marginRight:4}}/> {m.time}s · 
-                      <img src="/icons/risk.png" alt="risk" style={{width:12,height:12,verticalAlign:"middle",marginLeft:6,marginRight:4}}/> {Math.round(m.baseRisk*100)}% riesgo
+                      ⏱ {m.time}s · ⚠ {Math.round(m.baseRisk*100)}% riesgo
                     </div>
                   </div>
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:11,color:C.pink,fontWeight:800,marginBottom:2,textShadow:"0 1px 2px #000"}}>RECOMPENSA</div>
                     <div style={{fontSize:14,fontWeight:900,color:C.gold,textShadow:"0 1px 2px #000"}}>
-                      <img src="/icons/coin.png" alt="coin" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
                       {m.baseReward} COIN
                     </div>
                   </div>
@@ -1467,7 +1457,6 @@ export default function App(){
             {activeMission&&(
               <div style={{marginTop:16}}>
                 <div style={{fontSize:11,color:C.pink,fontWeight:700,marginBottom:14,letterSpacing:2}}>
-                  <img src="/icons/mission.png" alt="mision" style={{width:14,height:14,verticalAlign:"middle",marginRight:4}}/>
                   {activeMission.name} — ELIGE PERSONAJE
                 </div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:20,alignItems:"flex-start"}}>
@@ -1578,11 +1567,12 @@ export default function App(){
 
       {/* TOAST */}
       {toast&&(
-        <div style={{position:"fixed",bottom:22,left:"50%",transform:"translateX(-50%)",
-          background:C.bg3,border:`1px solid ${C.pink}30`,borderRadius:12,
-          padding:"10px 26px",color:C.pink,fontSize:13,fontWeight:700,
-          boxShadow:`0 4px 30px #000000aa,0 0 20px ${C.pink}18`,
-          zIndex:600,pointerEvents:"none",whiteSpace:"nowrap",letterSpacing:.4}}>
+        <div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",
+          background:"#000000ee",border:`1px solid ${C.pink}66`,borderRadius:8,
+          padding:"10px 28px",color:"#fff",fontSize:12,fontWeight:700,
+          boxShadow:`0 0 40px ${C.pink}44, 0 0 80px ${C.pink}18, inset 0 0 20px ${C.pink}08`,
+          zIndex:600,pointerEvents:"none",whiteSpace:"nowrap",letterSpacing:2,
+          textShadow:`0 0 10px ${C.pink}`,fontFamily:"'Orbitron',sans-serif"}}>
           {toast}
         </div>
       )}
