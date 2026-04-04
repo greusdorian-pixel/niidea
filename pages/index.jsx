@@ -105,7 +105,7 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
             borderRadius:"50%",width:16,height:16,fontSize:9,fontWeight:900,
             display:"flex",alignItems:"center",justifyContent:"center"}}>✓</div>}
           {card.status !== "idle" && (
-            <div style={{position:"absolute",bottom:38,right:4,fontSize:10}}>{card.status==="mission"?"🎯":card.status==="injured"?"🩹":"😴"}</div>
+            <div style={{position:"absolute",bottom:38,right:4,fontSize:10}}>{card.status==="mission"?"":card.status==="injured"?"":""}</div>
           )}
         </div>
         {/* Corner top ornaments */}
@@ -184,10 +184,10 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
           <div style={{position:"absolute",top:28,right:8,background:"#000000aa",
             border:`1px solid ${stCol}44`,borderRadius:20,padding:"2px 7px",
             fontSize:8,color:stCol,fontWeight:700}}>
-            {card.status==="mission"?"🎯 Misión":card.status==="injured"?"🩹 Herida":"😴 Desc."}
+            {card.status==="mission"?" Misión":card.status==="injured"?" Herida":" Desc."}
           </div>
         )}
-        {card.shielded && <div style={{position:"absolute",top:48,right:8,fontSize:12}}>🛡️</div>}
+        {card.shielded && <div style={{position:"absolute",top:48,right:8,fontSize:12}}></div>}
 
         {/* Bottom gradient */}
         <div style={{
@@ -236,10 +236,10 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
             </div>
             {/* Stats */}
             <div style={{display:"flex",gap:6,fontSize:10,justifyContent:"space-around"}}>
-              <span style={{color:"#ff7043",fontWeight:700}}>⚔{card.atk}</span>
-              <span style={{color:"#42a5f5",fontWeight:700}}>🛡{card.def}</span>
-              <span style={{color:"#ab47bc",fontWeight:700}}>💨{card.spd}</span>
-              <span style={{color:hpPct>60?C.green:hpPct>30?C.gold:C.red,fontWeight:700}}>❤{card.hp}</span>
+              <span style={{color:"#ff7043",fontWeight:700}}>{card.atk}</span>
+              <span style={{color:"#42a5f5",fontWeight:700}}>{card.def}</span>
+              <span style={{color:"#ab47bc",fontWeight:700}}>{card.spd}</span>
+              <span style={{color:hpPct>60?C.green:hpPct>30?C.gold:C.red,fontWeight:700}}>{card.hp}</span>
             </div>
           </div>
         )}
@@ -489,7 +489,7 @@ function CodeModal({onClose,onRedeem}){
   return(
     <div style={{position:"fixed",inset:0,background:"#000000dd",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <div style={{background:C.bg2,border:`1px solid ${C.cyan}30`,borderRadius:20,padding:"32px 36px",width:"100%",maxWidth:380}}>
-        <div style={{fontSize:18,fontWeight:900,color:C.cyan,letterSpacing:3,marginBottom:6,textAlign:"center"}}>🔑 CÓDIGO SECRETO</div>
+        <div style={{fontSize:18,fontWeight:900,color:C.cyan,letterSpacing:3,marginBottom:6,textAlign:"center"}}> CÓDIGO SECRETO</div>
         <div style={{fontSize:11,color:C.muted,textAlign:"center",marginBottom:20}}>Ingresa un código para desbloquear recompensas únicas</div>
         <input value={val} onChange={e=>setVal(e.target.value.toUpperCase())}
           placeholder="CÓDIGO..." autoFocus
@@ -513,7 +513,7 @@ function DailyModal({reward,streak,onClaim}){
     <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <div style={{background:C.bg2,border:`2px solid ${C.gold}44`,borderRadius:24,padding:"40px 44px",textAlign:"center"}}>
         <style>{`@keyframes bonus_pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}`}</style>
-        <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both"}}>🎁</div>
+        <div style={{fontSize:52,marginBottom:8,animation:"bonus_pop .6s cubic-bezier(.34,1.56,.64,1) both"}}></div>
         <div style={{fontSize:22,fontWeight:900,color:C.gold,letterSpacing:2}}>BONUS DIARIO</div>
         <div style={{fontSize:12,color:C.muted,marginTop:4,marginBottom:20}}>Racha: {streak} día{streak!==1?"s":""}</div>
         <div style={{fontSize:48,fontWeight:900,color:C.gold,marginBottom:24}}>+{reward} COIN</div>
@@ -530,7 +530,7 @@ function ArenaResultModal({result,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"#000000ee",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center"}}>
       <div style={{background:C.bg2,border:`2px solid ${won?C.gold:C.red}44`,borderRadius:22,padding:"32px 36px",textAlign:"center",maxWidth:360,width:"100%"}}>
-        <div style={{fontSize:44,marginBottom:8}}>{won?"🏆":"💀"}</div>
+        
         <div style={{fontSize:22,fontWeight:900,color:won?C.gold:C.red,letterSpacing:2}}>{won?"¡VICTORIA!":"DERROTA"}</div>
         <div style={{fontSize:13,color:C.muted,marginTop:4,marginBottom:16,display:"flex",alignItems:"center",gap:6,justifyContent:"center"}}>
           {result.card.name} vs <Sprite icon={result.enemy.icon} size={20} /> {result.enemy.name}
@@ -542,7 +542,7 @@ function ArenaResultModal({result,onClose}){
               <span style={{fontSize:13,fontWeight:700,color:col}}>{v}</span>
             </div>
           ))}
-          {result.leveledUp&&<div style={{fontSize:12,color:C.gold,marginTop:4}}>⬆️ {result.card.name} subió de nivel!</div>}
+          {result.leveledUp&&<div style={{fontSize:12,color:C.gold,marginTop:4}}> {result.card.name} subió de nivel!</div>}
         </div>
         <button onClick={onClose} style={{width:"100%",background:won?C.gold:C.red,color:"#000",
           border:"none",borderRadius:10,padding:"11px 0",fontWeight:900,fontSize:14,cursor:"pointer"}}>CONTINUAR</button>
@@ -559,7 +559,7 @@ function MissionResultModal({reward,onClaim}){
       <style>{`@keyframes mr_pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}`}</style>
       <div style={{background:C.bg2,border:`2px solid ${ok?C.gold:C.red}44`,borderRadius:22,padding:"32px 36px",textAlign:"center",maxWidth:360,width:"100%",
         animation:"mr_pop .5s cubic-bezier(.34,1.56,.64,1) both"}}>
-        <div style={{fontSize:52,marginBottom:8}}>{ok?"🎉":"💔"}</div>
+        
         <div style={{fontSize:22,fontWeight:900,color:ok?C.gold:C.red,letterSpacing:2}}>{ok?"¡MISIÓN EXITOSA!":"MISIÓN FALLIDA"}</div>
         <div style={{fontSize:14,color:"#fff",marginTop:6,fontWeight:700}}>{reward.charName}</div>
         <div style={{fontSize:11,color:C.muted,marginTop:2,marginBottom:16}}>{reward.missionName}</div>
@@ -581,7 +581,7 @@ function MissionResultModal({reward,onClaim}){
                 <span style={{fontSize:12,color:C.muted}}>Daño recibido</span>
                 <span style={{fontSize:13,fontWeight:700,color:C.red}}>-{reward.dmg} HP</span>
               </div>
-              <div style={{fontSize:11,color:C.muted,marginTop:4}}>🩹 Tu personaje necesita descansar...</div>
+              <div style={{fontSize:11,color:C.muted,marginTop:4}}> Personaje en reposo</div>
             </>
           )}
         </div>
@@ -635,7 +635,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                 <div style={{background:C.bg3,border:`1px solid ${RARITY[sc.rarity].color}22`,borderRadius:12,padding:10,marginBottom:14}}>
                   <div style={{fontSize:13,fontWeight:800,color:"#fff"}}>{sc.name}</div>
                   <div style={{fontSize:10,color:RARITY[sc.rarity].color}}>{RARITY[sc.rarity].label}</div>
-                  <div style={{fontSize:10,color:C.muted,marginTop:2}}>⚔{sc.atk} 🛡{sc.def} 💨{sc.spd}</div>
+                  <div style={{fontSize:10,color:C.muted,marginTop:2}}>{sc.atk} {sc.def} {sc.spd}</div>
                 </div>
                 {[["✓ Éxito",stats.successPct,C.green],["✕ Fallo",stats.failPct,C.red]].map(([l,v,col])=>(
                   <div key={l} style={{marginBottom:12}}>
@@ -661,7 +661,7 @@ function MissionModal({mission,cards,onSend,onClose}){
                   style={{width:"100%",background:C.pink,color:"#000",border:"none",
                     borderRadius:10,padding:"12px 0",fontWeight:900,fontSize:14,cursor:"pointer",
                     boxShadow:`0 0 22px ${C.pink}55`}}>
-                  🚀 ENVIAR (5 COIN)
+                   ENVIAR (5 COIN)
                 </button>
               </div>
             )}
@@ -862,14 +862,14 @@ export default function App(){
 
   /* ── GAME ACTIONS ── */
   function buyCardPack(pack){
-    if(lili<pack.price){toast_("COIN insuficiente ❌");return;}
+    if(lili<pack.price){toast_("COIN insuficiente ");return;}
     const nc=makeCard(null,pack.rates);
     const newCards=[...cards,nc];
     setLiliS(lili-pack.price);setCards(newCards);scheduleSave(lili-pack.price,newCards,items);
     setCardReveal(nc);
   }
   function buyItemPack(pack){
-    if(lili<pack.price){toast_("COIN insuficiente ❌");return;}
+    if(lili<pack.price){toast_("COIN insuficiente ");return;}
     const count=pack.count||1;
     const got=Array.from({length:count},()=>rollItemFromPool(pack.pool));
     const newItems={...items};got.forEach(k=>{newItems[k]=(newItems[k]||0)+1;});
@@ -881,33 +881,33 @@ export default function App(){
     const newCards=cards.map(c=>c.id===cardId?ITEMS[itemId].effect(c):c);
     const newItems={...items,[itemId]:items[itemId]-1};
     setCards(newCards);setItemsS(newItems);
-    toast_(`✨ Usado ${ITEMS[itemId].name} en ${cards.find(c=>c.id===cardId)?.name}`);
+    toast_(` Usado ${ITEMS[itemId].name} en ${cards.find(c=>c.id===cardId)?.name}`);
   }
   function claimReward(rw){
     const newLili=rw.lili>0?lili+rw.lili:lili;
     if(rw.lili>0)setLili(newLili);
     setPendingRewards(pr=>pr.filter(r=>r.id!==rw.id));
     scheduleSave(newLili,cards,items);
-    if(!rw.failed)toast_(`✨ +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
-    else toast_(`💔 ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
+    if(!rw.failed)toast_(` +${rw.lili} COIN · ${rw.charName}${rw.bonus?" · BONUS!":""}`);
+    else toast_(` ${rw.charName} falló${rw.dmg?` (-${rw.dmg} HP)`:""}`);
   }
   function claimDailyBonus(){
     setLiliS(lili+dailyReward);
     setDailyModal(false);
-    toast_(`🎁 +${dailyReward} COIN — Día ${dailyStreak}`);
+    toast_(` +${dailyReward} COIN — Día ${dailyStreak}`);
   }
   function redeemCode(code){
     const c=code.trim().toUpperCase();
     if(c==="NOPEGA1"){
-      if(redeemed.has("NOPEGA1")||cards.some(x=>x.name==="Zero")){toast_("Código ya canjeado ❌");return;}
+      if(redeemed.has("NOPEGA1")||cards.some(x=>x.name==="Zero")){toast_("Código ya canjeado ");return;}
       const zc=makeZeroCard();
       setCardsS([...cards,zc]);
       const nr=new Set(redeemed);nr.add("NOPEGA1");setRedeemed(nr);
       try{localStorage.setItem("redeemed",JSON.stringify([...nr]));}catch{}
       setCodeModal(false);
-      toast_("⚡ ZERO desbloqueada — LA ABSOLUTA");
+      toast_(" ZERO desbloqueada — LA ABSOLUTA");
       setTimeout(()=>setCardReveal(zc),300);
-    }else{toast_("Código inválido ❌");}
+    }else{toast_("Código inválido ");}
   }
   function sellCard(cardId){
     const card=cards.find(c=>c.id===cardId);
@@ -916,19 +916,19 @@ export default function App(){
     setActiveCard(null);
     setCardsS(cards.filter(c=>c.id!==cardId));
     setLiliS(lili+price);
-    toast_(`💰 Vendida ${card.name} → +${price} COIN`);
+    toast_(` Vendida ${card.name} → +${price} COIN`);
   }
   function sellItem(itemId){
     if(!items[itemId]||items[itemId]<1){toast_("Sin ítems para vender");return;}
     setItemsS({...items,[itemId]:items[itemId]-1});
     setLiliS(lili+5);
-    toast_(`💰 Vendido ${ITEMS[itemId].name} → +5 COIN`);
+    toast_(` Vendido ${ITEMS[itemId].name} → +5 COIN`);
   }
   function trainStat(cardId,stat){
     const card=cards.find(c=>c.id===cardId);
     if(!card||card.unique)return;
     const cost=TRAIN_COST(card.trainLevel||0);
-    if(lili<cost){toast_(`Necesitas ${cost} COIN ❌`);return;}
+    if(lili<cost){toast_(`Necesitas ${cost} COIN `);return;}
     const boost={hp:15,atk:5,def:4,spd:3}[stat]||5;
     setCardsS(cards.map(c=>c.id===cardId?{...c,
       hp:stat==="hp"?c.hp+boost:c.hp,maxHp:stat==="hp"?c.maxHp+boost:c.maxHp,
@@ -936,7 +936,7 @@ export default function App(){
       spd:stat==="spd"?c.spd+boost:c.spd,trainLevel:(c.trainLevel||0)+1,
     }:c));
     setLiliS(lili-cost);
-    toast_(`💪 +${boost} ${stat.toUpperCase()} en ${card.name} (-${cost} COIN)`);
+    toast_(` +${boost} ${stat.toUpperCase()} en ${card.name} (-${cost} COIN)`);
   }
   function rollArenaEnemy_(){
     const maxTier=cards.length?Math.max(...cards.map(c=>RARITY[c.rarity].tier)):0;
@@ -992,7 +992,7 @@ export default function App(){
     if(!ca||!cb){toast_("Selecciona 2 cartas");return;}
     if(ca.rarity!==cb.rarity){toast_("Misma rareza");return;}
     const result=doFusion(fusionA,fusionB);
-    if(result){setFusionResult(result);setFusionA(null);setFusionB(null);toast_(`🔥 Fusión → ${RARITY[result.rarity].label}`);}
+    if(result){setFusionResult(result);setFusionA(null);setFusionB(null);toast_(` Fusión → ${RARITY[result.rarity].label}`);}
   }
   function autoFusion(){
     setAutoFusing(true);
@@ -1012,7 +1012,7 @@ export default function App(){
     }
     if(totalFused===0){toast_("Sin pares para fusionar");setAutoFusing(false);return;}
     setLiliS(lili-cost);setCards(current);scheduleSave(lili-cost,current,items);
-    toast_(`⚡ Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} COIN)`);
+    toast_(` Auto-fusión: ${totalFused} fusión${totalFused>1?"es":""} (-${cost} COIN)`);
     setAutoFusing(false);
   }
   function sendOnMission(cardId,mission){
@@ -1021,7 +1021,7 @@ export default function App(){
     const newCards=cards.map(c=>c.id===cardId?{...c,status:"mission",missionEnd:Date.now()+mission.time*1000,currentMission:mission.id}:c);
     setCards(newCards);setLiliS(lili-5);scheduleSave(lili-5,newCards,items);
     setActiveMission(null);
-    toast_(`🎯 ${card.name} → "${mission.name}"`);
+    toast_(` ${card.name} → "${mission.name}"`);
   }
 
   const filterFn={all:()=>true,idle:c=>c.status==="idle",mission:c=>c.status==="mission",injured:c=>c.status==="injured"};
@@ -1080,10 +1080,10 @@ export default function App(){
             <span style={{color:C.gold,fontWeight:900,fontSize:16}}>{lili}</span>
             <span style={{color:C.muted,fontSize:11}}>COIN</span>
           </div>
-          <span style={{fontSize:12,color:C.muted}}>🎴{cards.length}</span>
+          <span style={{fontSize:12,color:C.muted}}>{cards.length}</span>
           <button onClick={()=>setCodeModal(true)}
             style={{background:`${C.cyan}10`,color:C.cyan,border:`1px solid ${C.cyan}30`,
-              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>🔑</button>
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}></button>
           <button onClick={logout}
             style={{background:"transparent",color:C.muted,border:`1px solid ${C.muted}22`,
               borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11}}>Salir</button>
@@ -1128,7 +1128,7 @@ export default function App(){
                           style={{width:"100%",background:`${C.gold}10`,color:C.gold,
                             border:`1px solid ${C.gold}30`,borderRadius:7,padding:"6px 0",
                             cursor:"pointer",fontSize:11,fontWeight:700,marginBottom:8}}>
-                          💰 Vender ({SELL_PRICES[c.rarity]||20} COIN)
+                           Vender ({SELL_PRICES[c.rarity]||20} COIN)
                         </button>
                       )}
                       {!c.unique&&(
@@ -1137,7 +1137,7 @@ export default function App(){
                             ENTRENAR ({TRAIN_COST(c.trainLevel||0)} COIN)
                           </div>
                           <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-                            {[["hp","❤️"],["atk","⚔️"],["def","🛡️"],["spd","💨"]].map(([s,e])=>(
+                            {[["hp","HP"],["atk","ATK"],["def","DEF"],["spd","SPD"]].map(([s,e])=>(
                               <button key={s} onClick={()=>trainStat(c.id,s)}
                                 disabled={lili<TRAIN_COST(c.trainLevel||0)}
                                 style={{flex:1,minWidth:34,background:lili>=TRAIN_COST(c.trainLevel||0)?`${C.cyan}15`:"transparent",
@@ -1168,7 +1168,7 @@ export default function App(){
                       })}
                       {c.status==="injured"&&c.restEnd&&(
                         <div style={{fontSize:9,color:C.cyan,textAlign:"center",marginTop:4}}>
-                          🩹 Auto-cura en {Math.max(0,Math.ceil((c.restEnd-now)/1000))}s
+                           Auto-cura en {Math.max(0,Math.ceil((c.restEnd-now)/1000))}s
                         </div>
                       )}
                     </div>
@@ -1278,7 +1278,7 @@ export default function App(){
                 style={{background:`linear-gradient(90deg,${C.pink},${C.purple})`,color:"#fff",border:"none",
                   borderRadius:12,padding:"12px 28px",fontWeight:900,fontSize:14,cursor:"pointer",
                   letterSpacing:1,display:"flex",alignItems:"center",gap:8}}>
-                ⚡ AUTO-FUSIÓN
+                 AUTO-FUSIÓN
                 <span style={{fontSize:11,color:"#ffffff88",fontWeight:400}}>(fusiona todos los pares)</span>
               </button>
             </div>
@@ -1306,7 +1306,7 @@ export default function App(){
                   <div style={{fontSize:32,color:C.gold}}>→</div>
                   <div>
                     <div style={{color:ok?RARITY[nxt]?.color:C.red,fontSize:17,fontWeight:900,marginBottom:10}}>
-                      {ok?`✨ ${RARITY[nxt]?.label}`:"Rareza diferente ❌"}
+                      {ok?` ${RARITY[nxt]?.label}`:"Rareza diferente "}
                     </div>
                     <button onClick={manualFusion} disabled={!ok||lili<25}
                       style={{background:ok&&lili>=25?C.pink:"#ffffff0a",color:ok&&lili>=25?"#000":"#333",
@@ -1321,7 +1321,7 @@ export default function App(){
             {fusionResult&&(
               <div style={{marginTop:18,display:"flex",gap:14,alignItems:"flex-start"}}>
                 <div>
-                  <div style={{fontSize:12,color:C.gold,fontWeight:700,marginBottom:8}}>✨ Resultado:</div>
+                  <div style={{fontSize:12,color:C.gold,fontWeight:700,marginBottom:8}}> Resultado:</div>
                   <CardUI card={fusionResult}/>
                 </div>
                 <button onClick={()=>setFusionResult(null)}
@@ -1354,7 +1354,7 @@ export default function App(){
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
                         <div style={{flex:1,minWidth:0}}>
                           <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-                            <span style={{fontSize:18}}>{rw.failed?"💔":"🎉"}</span>
+                            
                             <span style={{fontSize:13,fontWeight:800,color:rw.failed?C.red:C.gold}}>
                               {rw.failed?"Misión Fallida":rw.charName}
                             </span>
@@ -1489,7 +1489,7 @@ export default function App(){
         {tab==="Arena"&&(
           <div style={{animation:"fade_in .3s both"}}>
             <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:20}}>
-              <div style={{fontSize:20,fontWeight:900,color:C.red,letterSpacing:2}}>⚔️ ARENA</div>
+              <div style={{fontSize:20,fontWeight:900,color:C.red,letterSpacing:2}}> ARENA</div>
               <div style={{fontSize:11,color:C.muted}}>Lucha contra enemigos — gana COIN y XP sin costo</div>
             </div>
             {arenaEnemy&&(
@@ -1501,9 +1501,9 @@ export default function App(){
                     <Sprite icon={arenaEnemy.icon} size={64} style={{marginBottom:8, margin:"0 auto"}} />
                     <div style={{fontSize:18,fontWeight:900,color:"#fff",marginBottom:4}}>{arenaEnemy.name}</div>
                     <div style={{display:"flex",justifyContent:"center",gap:12,fontSize:13,marginBottom:14}}>
-                      <span style={{color:"#ff7043"}}>⚔️{arenaEnemy.atk}</span>
-                      <span style={{color:"#42a5f5"}}>🛡️{arenaEnemy.def}</span>
-                      <span style={{color:C.green}}>❤️{arenaEnemy.hp}</span>
+                      <span style={{color:"#ff7043"}}>{arenaEnemy.atk}</span>
+                      <span style={{color:"#42a5f5"}}>{arenaEnemy.def}</span>
+                      <span style={{color:C.green}}>{arenaEnemy.hp}</span>
                     </div>
                     <div style={{background:`${C.gold}12`,border:`1px solid ${C.gold}30`,borderRadius:10,padding:"8px 0",marginBottom:8}}>
                       <div style={{fontSize:11,color:C.muted,marginBottom:2}}>Recompensa</div>
@@ -1514,7 +1514,7 @@ export default function App(){
                   <button onClick={rollArenaEnemy_}
                     style={{marginTop:10,width:"100%",background:`${C.muted}12`,color:C.muted,
                       border:`1px solid ${C.muted}25`,borderRadius:10,padding:"8px 0",
-                      cursor:"pointer",fontSize:12,fontWeight:700}}>🔄 Otro enemigo</button>
+                      cursor:"pointer",fontSize:12,fontWeight:700}}> Otro enemigo</button>
                 </div>
                 <div style={{flex:"1 1 300px"}}>
                   <div style={{fontSize:11,color:C.cyan,fontWeight:700,marginBottom:14,letterSpacing:2}}>TU LUCHADOR</div>
@@ -1550,7 +1550,7 @@ export default function App(){
                           style={{width:"100%",background:`linear-gradient(90deg,${C.red},${C.pink})`,
                             color:"#fff",border:"none",borderRadius:12,padding:"13px 0",
                             fontWeight:900,fontSize:15,cursor:"pointer",letterSpacing:1}}>
-                          ⚔️ ¡LUCHAR!
+                           ¡LUCHAR!
                         </button>
                       </div>
                     );
