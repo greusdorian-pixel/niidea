@@ -19,19 +19,19 @@ const RARITY = {
 const FUSION_MAP = ["common","uncommon","rare","epic","legendary"];
 
 const CHARS = [
-  { name:"Yoru",  img:"/chars/yoru.png",  role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb" },
-  { name:"Akari", img:"/chars/akari.png", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",        c:"#7c4dff" },
-  { name:"Sera",  img:"/chars/sera.png",  role:"Sanadora",   cls:"Clérigo", atkT:"Luz",          c:"#00e676" },
-  { name:"Nyx",   img:"/chars/nyx.png",   role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff" },
-  { name:"Rein",  img:"/chars/rein.png",  role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f" },
-  { name:"Vex",   img:"/chars/vex.png",   role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081" },
-  { name:"Lyra",  img:"/chars/lyra.png",  role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800" },
-  { name:"Kaine", img:"/chars/kaine.png", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744" },
-  { name:"Faye",  img:"/chars/faye.png",  role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5" },
-  { name:"Mira",  img:"/chars/mira.png",  role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03" },
-  { name:"Dusk",  img:"/chars/dusk.png",  role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2" },
-  { name:"Rin",   img:"/chars/rin.png",   role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081" },
-  { name:"Zero",  img:"/chars/zero.png",  role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff" },
+  { name:"Yoru",  img:"/chars/yoru.png",  pos:"center 20%", role:"Asesina",    cls:"Sombra",  atkT:"Filo",         c:"#e040fb" },
+  { name:"Akari", img:"/chars/akari.png", pos:"center 15%", role:"Maga Oscura",cls:"Maga",    atkT:"Magia",        c:"#7c4dff" },
+  { name:"Sera",  img:"/chars/sera.png",  pos:"center 10%", role:"Sanadora",   cls:"Clérigo", atkT:"Luz",          c:"#00e676" },
+  { name:"Nyx",   img:"/chars/nyx.png",   pos:"center 30%", role:"Cazadora",   cls:"Arquera", atkT:"Flecha",       c:"#00e5ff" },
+  { name:"Rein",  img:"/chars/rein.png",  pos:"center 15%", role:"Guardiana",  cls:"Paladín", atkT:"Escudo",       c:"#ffd54f" },
+  { name:"Vex",   img:"/chars/vex.png",   pos:"center 15%", role:"Invocadora", cls:"Maga",    atkT:"Caos",         c:"#ff4081" },
+  { name:"Lyra",  img:"/chars/lyra.png",  pos:"center 10%", role:"Bardo",      cls:"Soporte", atkT:"Sonido",       c:"#ff9800" },
+  { name:"Kaine", img:"/chars/kaine.png", pos:"center 20%", role:"Berserker",  cls:"Guerrera",atkT:"Fuerza",       c:"#ff1744" },
+  { name:"Faye",  img:"/chars/faye.png",  pos:"center 20%", role:"Espía",      cls:"Sombra",  atkT:"Veneno",       c:"#00bfa5" },
+  { name:"Mira",  img:"/chars/mira.png",  pos:"center 10%", role:"Druida",     cls:"Maga",    atkT:"Natura",       c:"#76ff03" },
+  { name:"Dusk",  img:"/chars/dusk.png",  pos:"center 15%", role:"Nigromante", cls:"Maga",    atkT:"Muerte",       c:"#7e57c2" },
+  { name:"Rin",   img:"/chars/rin.png",   pos:"center 5%",  role:"Kunoichi",   cls:"Sombra",  atkT:"Shuriken",     c:"#ff4081" },
+  { name:"Zero",  img:"/chars/zero.png",  pos:"center 5%",  role:"La Absoluta",cls:"Vacío",   atkT:"Aniquilación", c:"#ffffff" },
 ];
 
 /* Precios venta */
@@ -134,7 +134,7 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
       <div style={{position:"absolute",inset:0,borderRadius:11,overflow:"hidden",background:"#000"}}>
         <div style={{position:"absolute",top:"-15%",left:"-8%",right:"-8%",bottom:"-5%"}}>
           <img src={ch.img} alt={ch.name} style={{
-            width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 12%",display:"block",
+            width:"100%",height:"100%",objectFit:"cover",objectPosition:ch.pos||"center 12%",display:"block",
             filter:isDivine?"brightness(1.05) contrast(1.1)":"brightness(0.88) contrast(1.05)",
           }}/>
         </div>
@@ -279,15 +279,30 @@ const SPRITES = {
 function Sprite({ icon, size=40, style={} }) {
   const s = SPRITES[icon];
   if (!s) return null;
+  const w = s.wide ? size*2 : size;
+  // Sprite sheet: 5 cols × 6 rows
+  // backgroundSize in px so positioning is pixel-perfect
+  const sheetW = size * 5;
+  const sheetH = size * 6;
+  const posX = -(s.col * size);
+  const posY = -(s.row * size);
   return (
     <div style={{
-      width: s.wide ? size*2 : size, height: size,
-      backgroundImage: "url('/spritesheet.png')",
-      backgroundSize: "500% 600%",
-      filter: "brightness(1.15) contrast(1.1) drop-shadow(0 0 4px currentColor)",
-      backgroundPosition: `${s.col * 25}% ${s.row * 20}%`,
-      display: "inline-block", verticalAlign: "middle", ...style
-    }} />
+      width: w, height: size, flexShrink:0,
+      display:"inline-flex", alignItems:"center", justifyContent:"center",
+      verticalAlign:"middle", ...style,
+    }}>
+      <div style={{
+        width: w, height: size,
+        backgroundImage: "url('/spritesheet.png')",
+        backgroundSize: `${sheetW}px ${sheetH}px`,
+        backgroundPosition: `${posX}px ${posY}px`,
+        backgroundRepeat: "no-repeat",
+        mixBlendMode: "screen",
+        filter: "brightness(1.2) saturate(1.3)",
+        flexShrink: 0,
+      }}/>
+    </div>
   );
 }
 
@@ -339,7 +354,7 @@ function rollItemFromPool(pool){
 }
 function makeCard(rarity,rates){
   const r=rarity||rollRarity(rates||{common:100});
-  const eligibleChars=CHARS.filter(c=>c.name!=="Zero");
+  const eligibleChars=CHARS.filter(c=>!["Zero","Faye","Kaine"].includes(c.name));
   const ch=eligibleChars[Math.floor(Math.random()*eligibleChars.length)];
   const tier=RARITY[r].tier;
   return{
@@ -952,7 +967,7 @@ export default function App(){
   const NavBtn=({t})=>{
     const isPending=t==="Misiones"&&pendingCount>0;
     return(
-      <button onClick={()=>setTab(t)} style={{
+      <button onClick={()=>{setTab(t);setActiveMission(null);}} style={{
         background:tab===t?`linear-gradient(135deg,${C.pink}cc,${C.purple}88)`:"transparent",
         color:tab===t?"#fff":C.muted,
         border:`1px solid ${tab===t?C.pink+"66":"#ffffff0d"}`,
@@ -1432,7 +1447,6 @@ export default function App(){
       {/* MODALS */}
       {cardReveal&&<CardPackReveal card={cardReveal} onClose={()=>setCardReveal(null)}/>}
       {itemReveal&&<ItemPackReveal items={itemReveal} onClose={()=>setItemReveal(null)}/>}
-      {activeMission&&tab!=="Misiones"&&<MissionModal mission={activeMission} cards={cards} onSend={sendOnMission} onClose={()=>setActiveMission(null)}/>}
       {codeModal&&<CodeModal onClose={()=>setCodeModal(false)} onRedeem={redeemCode}/>}
       {dailyModal&&<DailyModal reward={dailyReward} streak={dailyStreak} onClaim={claimDailyBonus}/>}
       {missionResultModal&&<MissionResultModal reward={missionResultModal} onClaim={()=>{claimReward(missionResultModal);setMissionResultModal(null);}}/>}
