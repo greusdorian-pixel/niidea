@@ -39,16 +39,16 @@ const SELL_PRICES = { common:20, uncommon:50, rare:120, epic:260, legendary:600 
 
 /* Arena enemies */
 const ARENA_ENEMIES = [
-  { name:"Golem Roto",      icon:"/icons/enemies/enemy_golem.png",    tier:0, hp:80,   atk:14,  def:6,   reward:25,  xp:8  },
-  { name:"Lobo Sombra",     icon:"/icons/enemies/enemy_wolf.png",     tier:0, hp:110,  atk:20,  def:8,   reward:35,  xp:10 },
-  { name:"Arquera Oscura",  icon:"/icons/enemies/enemy_archer.png",   tier:1, hp:160,  atk:32,  def:15,  reward:60,  xp:15 },
-  { name:"Espectro Maldito",icon:"/icons/enemies/enemy_ghost.png",    tier:1, hp:140,  atk:38,  def:12,  reward:70,  xp:18 },
-  { name:"Caballero Roto",  icon:"/icons/enemies/enemy_knight.png",   tier:2, hp:240,  atk:52,  def:28,  reward:110, xp:25 },
-  { name:"Dragón Menor",    icon:"/icons/enemies/enemy_dragon.png",   tier:2, hp:300,  atk:60,  def:35,  reward:140, xp:30 },
-  { name:"Demonio Élite",   icon:"/icons/enemies/enemy_demon.png",    tier:3, hp:450,  atk:88,  def:48,  reward:230, xp:45 },
-  { name:"Ángel Caído",     icon:"/icons/enemies/enemy_angel.png",    tier:3, hp:500,  atk:95,  def:55,  reward:260, xp:50 },
-  { name:"Dragón Arcano",   icon:"/icons/enemies/enemy_arcane.png",   tier:4, hp:800,  atk:140, def:80,  reward:420, xp:80 },
-  { name:"Titán del Vacío", icon:"/icons/enemies/enemy_titan.png",    tier:5, hp:2000, atk:400, def:280, reward:900, xp:150},
+  { name:"Golem Roto",      icon:"enemy_golem",    tier:0, hp:80,   atk:14,  def:6,   reward:25,  xp:8  },
+  { name:"Lobo Sombra",     icon:"enemy_wolf",     tier:0, hp:110,  atk:20,  def:8,   reward:35,  xp:10 },
+  { name:"Arquera Oscura",  icon:"enemy_archer",   tier:1, hp:160,  atk:32,  def:15,  reward:60,  xp:15 },
+  { name:"Espectro Maldito",icon:"skull_horns",    tier:1, hp:140,  atk:38,  def:12,  reward:70,  xp:18 },
+  { name:"Caballero Roto",  icon:"enemy_knight",   tier:2, hp:240,  atk:52,  def:28,  reward:110, xp:25 },
+  { name:"Dragón Menor",    icon:"enemy_dragon",   tier:2, hp:300,  atk:60,  def:35,  reward:140, xp:30 },
+  { name:"Demonio Élite",   icon:"enemy_demon",    tier:3, hp:450,  atk:88,  def:48,  reward:230, xp:45 },
+  { name:"Ángel Caído",     icon:"enemy_demon",    tier:3, hp:500,  atk:95,  def:55,  reward:260, xp:50 },
+  { name:"Dragón Arcano",   icon:"enemy_dragon",   tier:4, hp:800,  atk:140, def:80,  reward:420, xp:80 },
+  { name:"Titán del Vacío", icon:"enemy_golem",    tier:5, hp:2000, atk:400, def:280, reward:900, xp:150},
 ];
 
 const TRAIN_COST = (lvl) => 30 + lvl * 15;
@@ -257,17 +257,63 @@ function CardUI({ card, selected, onClick, mode="col", onSendMission }) {
   );
 }
 
+const SPRITES = {
+  health_potion: { col: 0, row: 0 },
+  medicine:      { col: 1, row: 0 },
+  food:          { col: 2, row: 0 },
+  ration:        { col: 3, row: 0 },
+  shield:        { col: 4, row: 0 },
+  atk_potion:    { col: 0, row: 1 },
+  enemy_wolf:    { col: 1, row: 1 },
+  item_headphones: { col: 2, row: 1 },
+  enemy_archer:  { col: 3, row: 1 },
+  antidote:      { col: 4, row: 1 },
+  enemy_golem:   { col: 0, row: 2 },
+  enemy_wolf2:   { col: 1, row: 2 },
+  enemy_knight:  { col: 2, row: 2 },
+  enemy_dragon:  { col: 3, row: 2 },
+  enemy_demon:   { col: 4, row: 2 },
+  pack_healing:  { col: 0, row: 3 },
+  pack_skull:    { col: 1, row: 3 },
+  pack_support:  { col: 2, row: 3 },
+  pack_combat:   { col: 3, row: 3 },
+  pack_premium:  { col: 4, row: 3 },
+  coin:          { col: 0, row: 4 },
+  skull_horns:   { col: 1, row: 4 },
+  timer:         { col: 2, row: 4 },
+  warning:       { col: 3, row: 4 },
+  map:           { col: 4, row: 4 },
+  revive:        { col: 0, row: 5 },
+  star_badge:    { col: 1, row: 5 },
+  elixir:        { col: 2, row: 5 },
+  btn_mission:   { col: 3, row: 5, wide: true },
+};
+
+function Sprite({ icon, size=40, style={} }) {
+  const s = SPRITES[icon];
+  if (!s) return null;
+  return (
+    <div style={{
+      width: s.wide ? size*2 : size, height: size,
+      backgroundImage: "url('/spritesheet.png')",
+      backgroundSize: "500% 600%",
+      backgroundPosition: `${s.col * 25}% ${s.row * 20}%`,
+      display: "inline-block", verticalAlign: "middle", ...style
+    }} />
+  );
+}
+
 /* ── ITEMS ── */
 const ITEMS = {
-  health_potion:{ name:"Poción HP",    icon:"/icons/items/item_health_potion.png", color:C.green,  desc:"Restaura HP al 100%",       effect:c=>({...c,hp:c.maxHp,status:c.status==="injured"?"idle":c.status}) },
-  medicine:     { name:"Medicina",     icon:"/icons/items/item_medicine.png",      color:C.cyan,   desc:"+40 HP, cura herida",        effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+40),status:c.status==="injured"?"idle":c.status}) },
-  food:         { name:"Comida",       icon:"/icons/items/item_food.png",          color:"#ff9800", desc:"+20 HP",                    effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+20)}) },
-  ration:       { name:"Ración",       icon:"/icons/items/item_ration.png",        color:"#ffd54f", desc:"+15 HP +5% éxito misión",  effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+15),missionBonus:(c.missionBonus||0)+0.05}) },
-  atk_potion:   { name:"Elixir ATK",   icon:"/icons/items/item_atk_potion.png",    color:C.red,    desc:"+20 ATK próxima misión",    effect:c=>({...c,atk:c.atk+20,atkBuff:(c.atkBuff||0)+1}) },
-  shield:       { name:"Escudo",       icon:"/icons/items/item_shield.png",        color:C.pink,   desc:"Absorbe 1 fallo en misión", effect:c=>({...c,shielded:true}) },
-  antidote:     { name:"Antídoto",     icon:"/icons/items/item_antidote.png",      color:"#ea80fc", desc:"Cura estado traumatizado",  effect:c=>({...c,emotionalState:"idle"}) },
-  elixir:       { name:"Elixir Épico", icon:"/icons/items/item_elixir.png",        color:C.gold,   desc:"+50HP +10ATK permanente",   effect:c=>({...c,hp:Math.min(c.maxHp+20,c.hp+50),atk:c.atk+10,maxHp:c.maxHp+20}) },
-  revive:       { name:"Revive",       icon:"/icons/items/item_revive.png",        color:C.gold,   desc:"Revive con 50% HP",         effect:c=>({...c,hp:Math.floor(c.maxHp*0.5),status:"idle",emotionalState:"traumatized"}) },
+  health_potion:{ name:"Poción HP",    icon:"health_potion", color:C.green,  desc:"Restaura HP al 100%",       effect:c=>({...c,hp:c.maxHp,status:c.status==="injured"?"idle":c.status}) },
+  medicine:     { name:"Medicina",     icon:"medicine",      color:C.cyan,   desc:"+40 HP, cura herida",        effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+40),status:c.status==="injured"?"idle":c.status}) },
+  food:         { name:"Comida",       icon:"food",          color:"#ff9800", desc:"+20 HP",                    effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+20)}) },
+  ration:       { name:"Ración",       icon:"ration",        color:"#ffd54f", desc:"+15 HP +5% éxito misión",  effect:c=>({...c,hp:Math.min(c.maxHp,c.hp+15),missionBonus:(c.missionBonus||0)+0.05}) },
+  atk_potion:   { name:"Elixir ATK",   icon:"atk_potion",    color:C.red,    desc:"+20 ATK próxima misión",    effect:c=>({...c,atk:c.atk+20,atkBuff:(c.atkBuff||0)+1}) },
+  shield:       { name:"Escudo",       icon:"shield",        color:C.pink,   desc:"Absorbe 1 fallo en misión", effect:c=>({...c,shielded:true}) },
+  antidote:     { name:"Antídoto",     icon:"antidote",      color:"#ea80fc", desc:"Cura estado traumatizado",  effect:c=>({...c,emotionalState:"idle"}) },
+  elixir:       { name:"Elixir Épico", icon:"elixir",        color:C.gold,   desc:"+50HP +10ATK permanente",   effect:c=>({...c,hp:Math.min(c.maxHp+20,c.hp+50),atk:c.atk+10,maxHp:c.maxHp+20}) },
+  revive:       { name:"Revive",       icon:"revive",        color:C.gold,   desc:"Revive con 50% HP",         effect:c=>({...c,hp:Math.floor(c.maxHp*0.5),status:"idle",emotionalState:"traumatized"}) },
 };
 const ITEM_ORDER=["health_potion","medicine","food","ration","atk_potion","shield","antidote","elixir","revive"];
 
@@ -279,18 +325,18 @@ const CARD_PACKS = [
 ];
 
 const ITEM_PACKS = [
-  { id:"ip1", name:"Kit Sanación", price:35,  color:C.green, icon:"/icons/packs/pack_healing.png", pool:[["health_potion",0.5],["medicine",0.5]],                                               desc:"1 ítem de curación" },
-  { id:"ip2", name:"Kit Combate",  price:45,  color:C.red,   icon:"/icons/packs/pack_combat.png",  pool:[["atk_potion",0.5],["ration",0.3],["shield",0.2]],                                    desc:"1 ítem de combate" },
-  { id:"ip3", name:"Kit Soporte",  price:55,  color:C.cyan,  icon:"/icons/packs/pack_support.png", pool:[["shield",0.4],["antidote",0.4],["food",0.2]],                                        desc:"1 ítem de soporte" },
-  { id:"ip4", name:"Kit Premium",  price:180, color:C.pink,  icon:"/icons/packs/pack_premium.png", pool:[["elixir",0.3],["revive",0.25],["shield",0.2],["atk_potion",0.15],["health_potion",0.1]], count:2, desc:"2 ítems raros" },
+  { id:"ip1", name:"Kit Sanación", price:35,  color:C.green, icon:"pack_healing", pool:[["health_potion",0.5],["medicine",0.5]],                                               desc:"1 ítem de curación" },
+  { id:"ip2", name:"Kit Combate",  price:45,  color:C.red,   icon:"pack_combat",  pool:[["atk_potion",0.5],["ration",0.3],["shield",0.2]],                                    desc:"1 ítem de combate" },
+  { id:"ip3", name:"Kit Soporte",  price:55,  color:C.cyan,  icon:"pack_support", pool:[["shield",0.4],["antidote",0.4],["food",0.2]],                                        desc:"1 ítem de soporte" },
+  { id:"ip4", name:"Kit Premium",  price:180, color:C.pink,  icon:"pack_premium", pool:[["elixir",0.3],["revive",0.25],["shield",0.2],["atk_potion",0.15],["health_potion",0.1]], count:2, desc:"2 ítems raros" },
 ];
 
 const MISSIONS = [
-  { id:"m1", name:"Bosque Oscuro",    time:15,  baseReward:25,  baseRisk:0.35, minTier:0, emoji:"🌲", bg:"#071007", img: "/conceptos para misiones/bosque oscuro.webp" },
-  { id:"m2", name:"Mina Maldita",     time:30,  baseReward:55,  baseRisk:0.45, minTier:1, emoji:"⛏️", bg:"#130a07", img: "/conceptos para misiones/mina maldita.webp" },
-  { id:"m3", name:"Torre del Abismo", time:50,  baseReward:100, baseRisk:0.55, minTier:2, emoji:"🏰", bg:"#07071a", img: "/conceptos para misiones/torre delabismo.webp" },
-  { id:"m4", name:"Cripta Eterna",    time:90,  baseReward:190, baseRisk:0.65, minTier:3, emoji:"💀", bg:"#13071a", img: "/conceptos para misiones/crytap eterna.webp" },
-  { id:"m5", name:"El Imposible",     time:150, baseReward:480, baseRisk:0.78, minTier:4, emoji:"⚠️", bg:"#150505", img: "/conceptos para misiones/imposible.webp" },
+  { id:"m1", name:"Bosque Oscuro",    time:15,  baseReward:25,  baseRisk:0.35, minTier:0, icon:"map", bg:"#071007", img: "/conceptos para misiones/bosque oscuro.webp" },
+  { id:"m2", name:"Mina Maldita",     time:30,  baseReward:55,  baseRisk:0.45, minTier:1, icon:"pack_skull", bg:"#130a07", img: "/conceptos para misiones/mina maldita.webp" },
+  { id:"m3", name:"Torre del Abismo", time:50,  baseReward:100, baseRisk:0.55, minTier:2, icon:"skull_horns", bg:"#07071a", img: "/conceptos para misiones/torre delabismo.webp" },
+  { id:"m4", name:"Cripta Eterna",    time:90,  baseReward:190, baseRisk:0.65, minTier:3, icon:"revive", bg:"#13071a", img: "/conceptos para misiones/crytap eterna.webp" },
+  { id:"m5", name:"El Imposible",     time:150, baseReward:480, baseRisk:0.78, minTier:4, icon:"warning", bg:"#150505", img: "/conceptos para misiones/imposible.webp" },
 ];
 
 function rollRarity(rates){
@@ -421,7 +467,7 @@ function ItemPackReveal({items:got,onClose}){
             transition:"all .5s cubic-bezier(.34,1.56,.64,1)",background:C.bg3,
             border:`2px solid ${it.color}`,borderRadius:18,padding:"28px",textAlign:"center",minWidth:130,
             boxShadow:`0 0 40px ${it.color}44`}}>
-            <img src={it.icon} style={{width:52,height:52,objectFit:"contain",marginBottom:8}} alt={it.name}/>
+            <Sprite icon={it.icon} size={52} style={{marginBottom:8, margin:"0 auto"}} />
             <div style={{fontSize:15,fontWeight:800,color:it.color}}>{it.name}</div>
             <div style={{fontSize:11,color:C.muted,marginTop:4}}>{it.desc}</div>
           </div>
@@ -487,7 +533,7 @@ function ArenaResultModal({result,onClose}){
         <div style={{fontSize:44,marginBottom:8}}>{won?"🏆":"💀"}</div>
         <div style={{fontSize:22,fontWeight:900,color:won?C.gold:C.red,letterSpacing:2}}>{won?"¡VICTORIA!":"DERROTA"}</div>
         <div style={{fontSize:13,color:C.muted,marginTop:4,marginBottom:16,display:"flex",alignItems:"center",gap:6,justifyContent:"center"}}>
-          {result.card.name} vs <img src={result.enemy.icon} style={{width:16,height:16}} alt="enemy"/> {result.enemy.name}
+          {result.card.name} vs <Sprite icon={result.enemy.icon} size={20} /> {result.enemy.name}
         </div>
         <div style={{background:C.bg3,borderRadius:12,padding:14,marginBottom:20,textAlign:"left"}}>
           {[["COIN",`+${result.coinGain}`,won?C.gold:C.muted],["XP",`+${result.xpGain}`,C.cyan],["Rondas",`${result.rounds}`,C.muted]].map(([l,v,col])=>(
@@ -562,7 +608,7 @@ function MissionModal({mission,cards,onSend,onClose}){
           padding:"18px 24px",display:"flex",justifyContent:"space-between",alignItems:"center",
           borderRadius:"20px 20px 0 0",position:"sticky",top:0,zIndex:5,backdropFilter:"blur(8px)"}}>
           <div>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><img src="/icons/mission.png" style={{width:24,height:24}} alt="mission"/>
+          <div style={{display:"flex",alignItems:"center",gap:8}}><Sprite icon={mission.icon||"map"} size={26} />
             <div style={{fontSize:22,fontWeight:900,color:"#fff",letterSpacing:1}}>{mission.name}</div>
           </div>
             <div style={{fontSize:12,color:C.muted,marginTop:2}}>⏱ {mission.time}s · Base: {mission.baseReward} COIN · Riesgo: {Math.round(mission.baseRisk*100)}%</div>
@@ -835,7 +881,7 @@ export default function App(){
     const newCards=cards.map(c=>c.id===cardId?ITEMS[itemId].effect(c):c);
     const newItems={...items,[itemId]:items[itemId]-1};
     setCards(newCards);setItemsS(newItems);
-    toast_(`${ITEMS[itemId].emoji} Usado en ${cards.find(c=>c.id===cardId)?.name}`);
+    toast_(`✨ Usado ${ITEMS[itemId].name} en ${cards.find(c=>c.id===cardId)?.name}`);
   }
   function claimReward(rw){
     const newLili=rw.lili>0?lili+rw.lili:lili;
@@ -1058,11 +1104,11 @@ export default function App(){
               ))}
               <div style={{marginLeft:"auto",background:C.bg3,border:`1px solid ${C.border}`,
                 borderRadius:12,padding:"7px 14px",display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
-                <span style={{fontSize:10,color:C.pink,fontWeight:700}}>🎁</span>
+                <Sprite icon="pack_premium" size={24} />
                 {ITEM_ORDER.map(k=>{const it=ITEMS[k],qty=items[k]||0;return(
                   <div key={k} title={`${it.name}: ${it.desc}`}
                     style={{display:"flex",flexDirection:"column",alignItems:"center",opacity:qty>0?1:.22}}>
-                    <span style={{fontSize:17}}>{it.emoji}</span>
+                    <Sprite icon={it.icon} size={22} style={{marginBottom:2}} />
                     <span style={{fontSize:10,color:it.color,fontWeight:700}}>{qty}</span>
                   </div>
                 );})}
@@ -1114,7 +1160,7 @@ export default function App(){
                               border:`1px solid ${!off?it.color+"25":"#ffffff06"}`,
                               borderRadius:6,padding:"3px 7px",cursor:!off?"pointer":"not-allowed",
                               fontSize:11,marginBottom:3,textAlign:"left"}}>
-                            <span style={{fontSize:13}}>{it.emoji}</span>
+                            <Sprite icon={it.icon} size={18} />
                             <span style={{flex:1}}>{it.name}</span>
                             <span style={{fontWeight:800,fontSize:10}}>×{qty}</span>
                           </button>
@@ -1169,12 +1215,12 @@ export default function App(){
             <div style={{display:"flex",flexWrap:"wrap",gap:14,marginBottom:28}}>
               {ITEM_PACKS.map(pack=>(
                 <div key={pack.id} style={{background:C.bg3,border:`1.5px solid ${pack.color}22`,borderRadius:16,padding:18,minWidth:190,maxWidth:220,flex:"1 1 190px"}}>
-                  <div style={{fontSize:26,marginBottom:6}}>{pack.emoji}</div>
+                  <Sprite icon={pack.icon} size={42} style={{marginBottom:6}} />
                   <div style={{fontSize:16,fontWeight:900,color:pack.color,marginBottom:3}}>{pack.name}</div>
                   <div style={{fontSize:11,color:C.muted,marginBottom:12}}>{pack.desc}</div>
                   {pack.pool.map(([k,p])=>(
-                    <div key={k} style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                      <span style={{fontSize:11,color:ITEMS[k]?.color}}>{ITEMS[k]?.emoji} {ITEMS[k]?.name}</span>
+                    <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                      <span style={{fontSize:11,color:ITEMS[k]?.color,display:"flex",alignItems:"center",gap:4}}><Sprite icon={ITEMS[k]?.icon} size={14}/> {ITEMS[k]?.name}</span>
                       <span style={{fontSize:10,color:C.muted}}>{Math.round(p*100)}%</span>
                     </div>
                   ))}
@@ -1192,7 +1238,7 @@ export default function App(){
               {ITEM_ORDER.map(k=>{const it=ITEMS[k],qty=items[k]||0;return(
                 <div key={k} style={{background:C.bg3,border:`1px solid ${it.color}22`,borderRadius:12,
                   padding:"12px 16px",display:"flex",alignItems:"center",gap:10,opacity:qty>0?1:.3}}>
-                  <span style={{fontSize:24}}>{it.emoji}</span>
+                  <Sprite icon={it.icon} size={32} />
                   <div>
                     <div style={{fontSize:12,fontWeight:700,color:it.color}}>{it.name}</div>
                     <div style={{fontSize:10,color:C.muted}}>×{qty}</div>
@@ -1452,7 +1498,7 @@ export default function App(){
                   <div style={{fontSize:11,color:C.red,fontWeight:700,marginBottom:10,letterSpacing:2}}>ENEMIGO</div>
                   <div style={{background:`linear-gradient(135deg,#1a0505,${C.bg3})`,
                     border:`2px solid ${C.red}40`,borderRadius:18,padding:22,textAlign:"center"}}>
-                    <img src={arenaEnemy.icon} style={{width:64,height:64,marginBottom:8}} alt={arenaEnemy.name}/>
+                    <Sprite icon={arenaEnemy.icon} size={64} style={{marginBottom:8, margin:"0 auto"}} />
                     <div style={{fontSize:18,fontWeight:900,color:"#fff",marginBottom:4}}>{arenaEnemy.name}</div>
                     <div style={{display:"flex",justifyContent:"center",gap:12,fontSize:13,marginBottom:14}}>
                       <span style={{color:"#ff7043"}}>⚔️{arenaEnemy.atk}</span>
