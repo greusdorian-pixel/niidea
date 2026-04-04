@@ -832,9 +832,11 @@ export default function App(){
             return next;
           });
         }else{
+          console.error("[gen] sin imagen para",name,"– respuesta:",d);
           setCardImages(prev=>{const n={...prev};if(n[name]==="__loading__")delete n[name];return n;});
         }
-      }catch{
+      }catch(err){
+        console.error("[gen] error para",name,":",err);
         setCardImages(prev=>{const n={...prev};if(n[name]==="__loading__")delete n[name];return n;});
       }finally{genRef.current.delete(name);}
     }
@@ -850,11 +852,10 @@ export default function App(){
     genImages([name]);
   }
 
-  // Auto-generar al montar
+  // Auto-generar al montar – solo las que faltan (usa caché para no quemar rate limit)
   useEffect(()=>{
-    try{localStorage.removeItem("lili_imgs");}catch{}
-    setCardImages({});
-    genImages(CHARS.map(c=>c.name));
+    const missing=CHARS.map(c=>c.name).filter(n=>!cardImages[n]&&!genRef.current.has(n));
+    if(missing.length>0)genImages(missing);
   },[]);
 
   // Auto-generar cartas nuevas
@@ -1152,6 +1153,17 @@ export default function App(){
             if(done===total)return<div style={{fontSize:10,color:C.muted,opacity:.5}}>🎨 {done}/{total}</div>;
             return null;
           })()}
+          <button onClick={()=>{
+            try{localStorage.removeItem("lili_imgs");}catch{}
+            setCardImages({});
+            genImages(CHARS.map(c=>c.name));
+            toast_("🎨 Regenerando imágenes...");
+          }}
+            style={{background:`${C.purple}10`,color:C.purple,border:`1px solid ${C.purple}30`,
+              borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}
+            title="Regenerar todas las imágenes">
+            🎨
+          </button>
           <button onClick={()=>setCodeModal(true)}
             style={{background:`${C.cyan}10`,color:C.cyan,border:`1px solid ${C.cyan}30`,
               borderRadius:8,padding:"5px 10px",cursor:"pointer",fontSize:11,fontWeight:700}}>
