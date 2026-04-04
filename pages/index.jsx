@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext, createContext } from "react";
 import { supabase } from "../lib/supabase";
 
-const ImgCtx = createContext({});
+const ImgCtx = createContext({imgs:{}, onErr:()=>{}});
 
 const C = {
   bg:"#070710", bg2:"#0c0c1e", bg3:"#111128",
@@ -54,7 +54,7 @@ const CHAR_PROMPTS = {
 
 /* ── ANIME ART – Fantasy / revealing style ── */
 function AnimeArt({ char, rarity, w=160, h=200 }) {
-  const imgs = useContext(ImgCtx);
+  const {imgs, onErr} = useContext(ImgCtx);
   const imageUrl = imgs[char.name];
 
   if (imageUrl === "__loading__") {
@@ -76,7 +76,7 @@ function AnimeArt({ char, rarity, w=160, h=200 }) {
   if (imageUrl) {
     return (
       <div style={{width:w, height:h, overflow:"hidden", display:"block", position:"relative"}}>
-        <img src={imageUrl} alt={char.name}
+        <img src={imageUrl} alt={char.name} onError={()=>onErr(char.name)}
           style={{width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top", display:"block"}}/>
         <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",pointerEvents:"none"}}
           viewBox="0 0 160 200" preserveAspectRatio="none">
@@ -685,10 +685,22 @@ export default function App(){
     }
   }
 
-  /* Auto-generar todos los personajes al montar */
+  /* Limpiar URL caducada y regenerar */
+  function clearAndRegen(name){
+    genRef.current.delete(name);
+    setCardImages(prev=>{
+      const next={...prev};delete next[name];
+      try{const s=JSON.parse(localStorage.getItem("lili_imgs")||"{}");delete s[name];localStorage.setItem("lili_imgs",JSON.stringify(s));}catch{}
+      return next;
+    });
+    genImages([name]);
+  }
+
+  /* Auto-generar todos los personajes al montar (ignora caché, URLs de Flux expiran) */
   useEffect(()=>{
-    const missing=CHARS.map(c=>c.name).filter(n=>!cardImages[n]&&!genRef.current.has(n));
-    if(missing.length>0)genImages(missing);
+    try{localStorage.removeItem("lili_imgs");}catch{}
+    setCardImages({});
+    genImages(CHARS.map(c=>c.name));
   },[]);
 
   /* Auto-generar cuando aparece una carta nueva sin imagen */
@@ -812,7 +824,7 @@ export default function App(){
   if(!user) return <LoginScreen onAuth={u=>setUser(u)}/>;
 
   return(
-    <ImgCtx.Provider value={cardImages}>
+    <ImgCtx.Provider value={{imgs:cardImages, onErr:clearAndRegen}}>
     <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',sans-serif"}}>
       <style>{`
         @keyframes fade_in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
